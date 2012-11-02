@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/plugin_test</url>
   <depend package="roscpp"/>
   <depend package="pluginlib"/>
+  <depend package="segment_planes"/>
 
 </package>
 

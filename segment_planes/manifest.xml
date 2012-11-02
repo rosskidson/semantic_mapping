@@ -11,6 +11,11 @@
   <depend package="roscpp"/>
   <depend package="pluginlib"/>
   <depend package="pcl"/>
+  <depend package="segmentation_interface"/>
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsegment_planes" />
+      <segmentation_interface plugin="${prefix}/segment_planes_plugin.xml" />
+  </export>
 
 </package>
 

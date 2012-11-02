@@ -1,0 +1,7 @@
+<library path="lib/segment_planes">
+  <class name="SegmentPlanes" type="segment_planes::SegmentPlanes" base_class_type="segmentation_interface::Segmentation">
+  <description>
+  This is a plane segmentation plugin
+  </description>
+  </class>
+</library>

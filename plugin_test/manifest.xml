@@ -1,0 +1,16 @@
+<package>
+  <description brief="plugin_test">
+
+     plugin_test
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/plugin_test</url>
+  <depend package="roscpp"/>
+  <depend package="pluginlib"/>
+
+</package>
+
+

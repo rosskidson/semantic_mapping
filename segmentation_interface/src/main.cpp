@@ -6,7 +6,6 @@
  */
 
 #include <ros/ros.h>
-#include "segmentation_interface/segment_planes.h"
 #include "segmentation_interface/segment_fixtures.h"
 
 int main (int argc, char** argv)

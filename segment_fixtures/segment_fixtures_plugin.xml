@@ -1,0 +1,7 @@
+<library path="lib/libsegment_fixtures">
+  <class name="segment_fixtures/SegmentFixtures" type="segment_fixtures::SegmentFixtures" base_class_type="segmentation_interface::Segmentation">
+  <description>
+  This is a fixtures segmentation plugin
+  </description>
+  </class>
+</library>

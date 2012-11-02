@@ -20,5 +20,5 @@ namespace segment_planes
 
       void segment (std::vector<PointCloudConstPtr> segmented_clouds);
   };
-}
+};
 #endif /* SEGMENT_PLANES_H_ */

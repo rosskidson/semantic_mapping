@@ -28,4 +28,4 @@ namespace segment_planes
   {
     ROS_INFO_STREAM("segment planes");
   }
-}
+};

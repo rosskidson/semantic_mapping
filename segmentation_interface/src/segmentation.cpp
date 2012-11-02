@@ -5,6 +5,8 @@
  *      Author: kidson
  */
 
+// NB:  THIS IS NOT USED.  THIS STUFF IS EITHER ALREADY DECLARED IN H FILE OR PURE VIRTUAL
+
 #include "segmentation_interface/segmentation.h"
 
 

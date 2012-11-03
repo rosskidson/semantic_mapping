@@ -1,0 +1,31 @@
+create meshset3D file from the bag:
+N  http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_registration/mesh_registration/tools/bag_to_meshset3d.cpp
+
+visualize meshset3D:
+N  http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_surface_reconstruction/view_meshset3d/
+
+if clous is unorganized, one would use:
+Y  http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_surface_reconstruction/mesh_generator/
+
+For texture reconstruction use the following stack:
+N http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_texture_reconstruction/
+N http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_texture_reconstruction/README
+
+tools you would need if you run Poission-based reconstruction:
+http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_surface_reconstruction/mesh_generator/tools/
+http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_surface_reconstruction/surface_modelling_common/src/compute_concave_hull.cpp
+http://svn.code.sf.net/p/bosch-ros-pkg/code/trunk/stacks/bosch_surface_reconstruction/mesh_generator/tools/create_truncated_square_pyramid.cpp
+
+Processing of the point cloud for semantic mapping:
+Segmentation into planes and handles:
+http://code.cs.tum.edu/indefero/index.php//p/mapping-private/source/tree/master/autonomous_mapping/src/segmentation (from Luci)
+
+Handle detector from NANs (handles with specular surfaces):
+http://code.cs.tum.edu/indefero/index.php//p/mapping/source/tree/master/handle_detection2D
+
+Learning of articulation models:
+http://ros.org/wiki/articulation_perception/Tutorials/KinectDemo (ask Juergen for the most recent version)
+
+Segmentation of differences (e.g. opened/closed door):
+http://code.cs.tum.edu/indefero/index.php//p/mapping-private/source/tree/master/autonomous_mapping/src/segmentation/segment_differences.cpp
+

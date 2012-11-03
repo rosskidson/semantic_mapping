@@ -1,0 +1,33 @@
+General:
+Distributed architecture
+
+Floor and Ceiling and Wall Segmenter
+input: axis aligned pointcloud
+output: floor, ceiling and wall point clouds + the rest, parametric model, extents
+functionality: segments the floor, the ceiling and the walls
+algorithms: 
+todo: interactive or not
+
+
+Plane Segmenter
+inputs: orientation, rest point cloud from "Floor and Ceiling and Wall Segmenter", seed points
+outputs: plane point clouds + rest, parametric model, extents
+functionality: horizontal planes, vertical planes, support various plane segmentation algorithms (various ransac-based methods, region growing, hough-voting, etc)
+algorithms:  
+todo: interactive or not
+
+
+Fixture Segmenter
+inputs: fixture type, rest point cloud from "Plane Segmenter", seed points
+outputs: fixture point clouds + rest, parametric model, extents
+functionality: handles (on cabinet doors, drawers and doors), knobs, tap, 
+algorithms:   
+todo: interactive or not
+
+
+Spatio-Temporal Difference Segmenter
+inputs: rest point cloud from "Floor and Ceiling and Wall Segmenter" or plane point clouds from Plane Segmenter or fixture point clouds  from Fixture Segmenter, robot or not
+outputs: plane point clouds, parametric model, extents
+functionality: spatio-temporal segmentation, registration with the rest of the model, calculation of a depth, articulation model
+algorithms:   
+todo: interactive or not

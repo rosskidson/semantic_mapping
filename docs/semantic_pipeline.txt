@@ -1,0 +1,68 @@
+
+Semantic Mapping Pipeline
+---------------------------------------------
+
+1. Import Mesh
+
+2. Is Model complete?       (Dejan)
+    -Allow the user to 'complete' the model by finishing planes, edges, fine details with a GUI.
+    -Includes 'inside' data.  Inside of drawers, doors etc.
+    -complete areas where there were problems with specular surfaces
+
+3. Principle axis identification/alignment.
+ 3.1 Is the alignmnet to walls/ceiling correct?
+     Allow user input of 90 degree rotations
+     
+4. Segmentation of Planes
+    - use connected components from alex trevor (see paper/pcl)
+
+ 4.1 Check if correct
+     -Allow user to select correct planes
+     -Allow user to select incorrect planes
+     -Deal with over/under segmentation (merge/split)
+     -rerun algorithm (refined parameters/thresholds)
+     -specify a plane by selecting points
+     
+5. Segment Fixtures
+
+ 5.1 Check if correct
+     -Allow user to select correct fixtures
+     -Allow user to select incorrect fixture
+     -rerun algorithm (refined parameters/thresholds)
+     -specify a fixture by selecting points
+     -specify hidden handles (e.g. recessed handles for dishwashers)
+
+6. User Interaction - obtain data for articulation model
+    -User is asked to move kinect to drawer and setup with tripod
+    -Run segmentation (returns if successful or not)
+    -Ask user to open the door.  (Specify openning angle as parameter)
+    -Record video pointcloud
+    
+7. Segment doors/drawers/moving parts 
+    -Difference segmentation
+    -Articulation Model (juergen)
+    
+  7.1 Check if correct
+    -rerun algorithm
+    
+8. Labelling 
+   -group and label planes
+   -use ray tracing to find planes that belong to a container
+   -certain fixtures must also be grouped, e.g. handles
+   -user interface to label items -drop down menu containing options
+   -User can also manually enter a name 
+
+ 8.1 Check if correct
+   -Grouping of segmented planes/fixtures could end up not being classified correctly
+   -User can select which segmented items belong to which container
+   
+9. Export to KnowRob
+ 
+ 
+Sidenotes
+--------------
+
+-Interaction of running algorithms (steps described above) is provided by the GUI (dejan)
+-GUI can select mesh or point cloud for visualization
+-Conversion between mesh/pointcloud required
+-All segmented data is to be saved in a database.  Each item shall be labeled by its segmentation step (among other things) 

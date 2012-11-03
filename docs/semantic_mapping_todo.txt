@@ -1,0 +1,9 @@
+
+- http://www.123dapp.com/catch#catchApps
+create maps with video only
+
+- Test RGBDLSAM with new data and feedback to juergen
+
+- Semantic Mapping
+
+- Building models with vlads code

@@ -1,0 +1,17 @@
+<package>
+  <description brief="mesh_io">
+
+     mesh_io
+
+  </description>
+  <author>Ross Kidson local</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/mesh_io</url>
+  <depend package="roscpp"/>
+  <depend package="rosservice"/>
+  <depend package="pcl"/>
+
+</package>
+
+

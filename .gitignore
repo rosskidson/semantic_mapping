@@ -7,3 +7,5 @@ build
 cmake_install.cmake
 *.cfgc
 lib
+srv_gen
+msg_gen

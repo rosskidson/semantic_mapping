@@ -1,0 +1,21 @@
+<package>
+  <description brief="register_kinect_to_model">
+
+     register_kinect_to_model
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/register_kinect_to_model</url>
+  <depend package="pcl"/>
+  <depend package="opencv2"/>
+  <depend package="image_transport"/>
+  <depend package="roscpp"/>
+  <depend package="cv_bridge"/>
+  <depend package="sensor_msgs"/>
+  <depend package="rosservice"/>
+
+</package>
+
+

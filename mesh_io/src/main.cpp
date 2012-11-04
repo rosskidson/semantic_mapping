@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- * image changer node
+ * mesh io node
  *
  *  Created on: Oct 30, 2012
  *      Author: rosskidson
@@ -14,7 +14,7 @@ int main (int argc, char** argv)
 {
   ros::init (argc, argv, "mesh_io");
 
-  static MeshConverter mesh_obj;
+  MeshConverter mesh_obj;
   ros::spin();
 
 //  ros::Rate loop_rate (100);

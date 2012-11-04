@@ -87,7 +87,6 @@ void KinectRegistration::registerKinectToModel ()
   std::vector<cv::Mat> images;
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > transforms;
   readImagesTransformsFromDirectory (images,transforms);
-  ROS_INFO_STREAM("\n" << transforms.front());
   //image = imread(argv[1], CV_LOAD_IMAGE_COLOR);
 
 

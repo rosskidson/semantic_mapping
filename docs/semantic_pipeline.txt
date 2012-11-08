@@ -1,8 +1,10 @@
-
 Semantic Mapping Pipeline
 ---------------------------------------------
 
 1. Import Mesh
+
+1a. Think about how to store and retrieve the data (Dejan), e.g. 
+when user inspects the registerted model it shall have a side image widget for introspection.
 
 2. Is Model complete?       (Dejan)
     -Allow the user to 'complete' the model by finishing planes, edges, fine details with a GUI.

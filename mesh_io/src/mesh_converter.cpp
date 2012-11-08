@@ -16,7 +16,7 @@
 MeshConverter::MeshConverter ()
 {
   ros::NodeHandle n("~");
-  service_ = n.advertiseService("load_mesh_from_file", &MeshConverter::loadModelFromFileService, this);
+  service_ = n.advertiseService("load_model_from_file", &MeshConverter::loadModelFromFileService, this);
   ROS_INFO("mesh_io services up and running");
 }
 

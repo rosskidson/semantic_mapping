@@ -15,7 +15,7 @@ int main (int argc, char** argv)
   ros::init (argc, argv, "mesh_io");
 
   KinectRegistration registration_obj;
-  registration_obj.registerKinectToModel();
+  registration_obj.getTransformFromClosestImage();
   ros::spin();
 
   return 0;

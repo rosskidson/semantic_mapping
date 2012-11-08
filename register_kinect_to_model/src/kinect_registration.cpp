@@ -6,6 +6,7 @@
  */
 
 #include "../include/register_kinect_to_model/kinect_registration.h"
+#include "register_kinect_to_model/icp_wrapper.h"
 
 #include <Eigen/Core>
 
@@ -31,8 +32,8 @@ static const bool SAVE_FEATURES_IMAGE = true;
 KinectRegistration::KinectRegistration () :
   nh_ ("~"), image_counter_ (0)
 {
-  service_ = nh_.advertiseService ("register_kinect_to_model",
-      &KinectRegistration::registerKinectToModel, this);
+ // service_ = nh_.advertiseService ("register_kinect_to_model",
+   //   &KinectRegistration::getTransformFromClosestImage, this);
   ROS_INFO("register kinect service up and running");
 }
 
@@ -201,24 +202,53 @@ int KinectRegistration::findMatchingImage (const cv::Mat query_image,
     }
   }
 
-
-
-  // find the best match
-  // ????
-
   return 0;
 }
 
-void KinectRegistration::registerKinectToModel ()
+void KinectRegistration::getTransformFromClosestImage ()
 {
   //load all the data.  This is a bunch of hardcoded stuff that will be moved out once this package is working
 
   std::vector<cv::Mat> images;
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > transforms;
   readImagesTransformsFromDirectory (images, transforms);
-
   cv::Mat kinect_img = cv::imread (
       "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
+
+//#include "ros/ros.h"
+//#include "beginner_tutorials/AddTwoInts.h"
+//#include <cstdlib>
+//
+//int main(int argc, char **argv)
+//{
+//  ros::init(argc, argv, "add_two_ints_client");
+//  if (argc != 3)
+//  {
+//    ROS_INFO("usage: add_two_ints_client X Y");
+//    return 1;
+//  }
+//
+//  ros::NodeHandle n;
+//  ros::ServiceClient client = n.serviceClient<beginner_tutorials::AddTwoInts>("add_two_ints");
+//  beginner_tutorials::AddTwoInts srv;
+//  srv.request.a = atoll(argv[1]);
+//  srv.request.b = atoll(argv[2]);
+//  if (client.call(srv))
+//  {
+//    ROS_INFO("Sum: %ld", (long int)srv.response.sum);
+//  }
+//  else
+//  {
+//    ROS_ERROR("Failed to call service add_two_ints");
+//    return 1;
+//  }
+//
+//  return 0;
+//}
+
   findMatchingImage (kinect_img, images);
+
+  ICPWrapper icp;
+  icp.performICP()
 
 }

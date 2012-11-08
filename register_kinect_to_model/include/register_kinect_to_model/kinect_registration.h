@@ -20,7 +20,7 @@ class KinectRegistration
     KinectRegistration ();
     virtual ~KinectRegistration ();
 
-    void registerKinectToModel();
+    void getTransformFromClosestImage();
   private:
     bool registerKinectToModel (register_kinect_to_model::registerKinectToModel::Request &req,
         register_kinect_to_model::registerKinectToModel::Response &res);

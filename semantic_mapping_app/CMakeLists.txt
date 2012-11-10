@@ -33,6 +33,6 @@ SET(VTK_LIBRARIES vtkalglib vtkCharts vtkCommon vtkDICOMParser vtkexoIIc vtkFilt
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(main src/main.cpp src/visualize_wrapper.cpp)
+rosbuild_add_executable(main src/main.cpp src/visualization.cpp)
 rosbuild_link_boost(main thread)
 target_link_libraries(main ${VTK_LIBRARIES})

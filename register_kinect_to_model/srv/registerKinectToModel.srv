@@ -10,6 +10,9 @@ sensor_msgs/Image kinect_image
 # single pointcloud frame from the kinect
 sensor_msgs/PointCloud2 kinect_cloud
 
+# the model (pointcloud)
+sensor_msgs/PointCloud2 model
+
 ---
 # transformation the aligns current kinect pointcloud with the model 
 geometry_msgs/Transform output_transform

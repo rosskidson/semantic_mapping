@@ -15,30 +15,27 @@
 #include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "misc.cpp"
+
 static const std::string FEATURE_EXTRACTOR = "SIFT";
 static const std::string FEATURE_DESCRIPTOR = "SIFT";
 static const std::string DESCRIPTOR_MATCHER = "Bruteforce";
+static const int OUTLIER_REMOVAL_FACTOR = 9; //smaller = remove more outliers
+static const bool SHOW_BEST_MATCHES = false;
 
 static const bool SAVE_FEATURES_IMAGE = true;
 
 KinectRegistration::KinectRegistration () :
   nh_ ("~"), image_counter_ (0)
 {
- // service_ = nh_.advertiseService ("register_kinect_to_model",
-   //   &KinectRegistration::getTransformFromClosestImage, this);
+  service_ = nh_.advertiseService ("register_kinect_to_model",
+      &KinectRegistration::registerKinectToModel, this);
   ROS_INFO("register kinect service up and running");
 }
 
 KinectRegistration::~KinectRegistration ()
 {
   // TODO Auto-generated destructor stub
-}
-
-bool KinectRegistration::registerKinectToModel (
-    register_kinect_to_model::registerKinectToModel::Request &req,
-    register_kinect_to_model::registerKinectToModel::Response &res)
-{
-  return true;
 }
 
 void KinectRegistration::getFeatures (const cv::Mat& input_image,
@@ -104,16 +101,16 @@ void KinectRegistration::findMatches (const cv::Mat& source_descriptors,
   //-- PS.- radiusMatch can also be used here.
   for (uint i = 0; i < all_matches.size (); i++)
   {
-    if (all_matches[i].distance < 10 * min_dist)
+    if (all_matches[i].distance < OUTLIER_REMOVAL_FACTOR * min_dist)
       matches.push_back (all_matches[i]);
   }
 }
 
 /*
  * Finds the best matching image in a vector of images for a given query image based on SIFT features
- * Returns the number of matches
+ * Returns the index of the best match
  */
-int KinectRegistration::findMatchingImage (const cv::Mat query_image,
+uint KinectRegistration::findMatchingImage (const cv::Mat query_image,
     const std::vector<cv::Mat>& images)
 {
   std::vector<cv::KeyPoint> query_keypoints;
@@ -125,10 +122,10 @@ int KinectRegistration::findMatchingImage (const cv::Mat query_image,
 
   // get sift features from input
   getFeatures (query_image, query_keypoints, query_descriptors);
-  ROS_INFO_STREAM("no features " << query_keypoints.size());
+  ROS_INFO_STREAM("num features: " << query_keypoints.size());
   // get sift features from vector
   uint max_matches = 0;
-  uint winner = 0;
+  uint winner_idx = 0;
   for (std::vector<cv::Mat>::const_iterator itr = images.begin (); itr != images.end (); itr++)
   {
     std::vector<cv::KeyPoint> temp_keypoints;
@@ -142,9 +139,9 @@ int KinectRegistration::findMatchingImage (const cv::Mat query_image,
     descriptors_vector.push_back (temp_descriptors);
     matches_vector.push_back (temp_match);
     //ROS_INFO_STREAM("matches " << temp_match.size());
-    if(temp_match.size() > 25)
+    if(temp_match.size() > 25 && SHOW_BEST_MATCHES)
     {
-      ROS_INFO_STREAM("winner matches " << temp_match.size());
+      ROS_INFO_STREAM("winner matches " << temp_match.size()<< " idx: " << itr - images.begin());
       cv::Mat img_matches;
       cv::drawMatches (query_image, query_keypoints, *itr, temp_keypoints,
           temp_match, img_matches, cv::Scalar::all (-1), cv::Scalar::all (-1),
@@ -153,23 +150,30 @@ int KinectRegistration::findMatchingImage (const cv::Mat query_image,
       cv::moveWindow ("Matches", -10, 0);
       cv::waitKey (0);
     }
-  }
+    if(temp_match.size() > max_matches)
+    {
+      max_matches = temp_match.size();
+      winner_idx = itr - images.begin();
+    }
 
-  return 0;
+  }
+  ROS_INFO_STREAM("winner idx " << winner_idx);
+  return winner_idx;
 }
 
-void KinectRegistration::getTransformFromClosestImage ()
+bool KinectRegistration::registerKinectToModel (register_kinect_to_model::registerKinectToModel::Request& req,
+    register_kinect_to_model::registerKinectToModel::Response& res)
 {
-  //load all the data.  This is a bunch of hardcoded stuff that will be moved out once this package is working
-
   std::vector<cv::Mat> images;
-  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > transforms;
   cv::Mat kinect_img = cv::imread (
-      "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
+    "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
+  for(std::vector<sensor_msgs::Image>::iterator itr = req.registration_images.begin();
+      itr != req.registration_images.end(); itr++)
+    images.push_back(convertSensorMsgToCV(*itr));
 
-  findMatchingImage (kinect_img, images);
+  uint best_image = findMatchingImage (kinect_img, images);
 
   ICPWrapper icp;
-  icp.performICP()
-
+  //icp.performICP()
+  return true;
 }

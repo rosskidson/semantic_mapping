@@ -6,18 +6,21 @@
  */
 
 #include "mesh_io/mesh_converter.h"
-#include "ros/ros.h"
 
+//ros
+#include "ros/ros.h"
+#include "tf_conversions/tf_eigen.h"
+//pcl
 #include <pcl/io/ply_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/ros/conversions.h>
 
-#include <opencv2/highgui/highgui.hpp>
 // opencv -> ROS -> opencv
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
-
+//opencv
+#include <opencv2/highgui/highgui.hpp>
 //file reading stuff
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -84,7 +87,7 @@ PointCloudConstPtr MeshConverter::loadPointcloudFromFile (std::string filename)
  */
 
 void MeshConverter::getFileListWithExtension (const std::string& input_dir,
-    const std::string& input_ext, std::vector<std::string>& file_list)
+    const std::string& input_ext, std::set<std::string>& file_list)
 {
   std::ifstream input_stream;
   namespace fs = boost::filesystem;
@@ -96,9 +99,9 @@ void MeshConverter::getFileListWithExtension (const std::string& input_dir,
   BOOST_FOREACH(fs::path const &file_path, std::make_pair(itr, eod))
 {  if(is_regular_file(file_path))
   {
-    ROS_INFO_STREAM("file:" << file_path.c_str() << " ext " << file_path.extension().c_str());
+    //ROS_INFO_STREAM("file:" << file_path.c_str() << " ext " << file_path.extension().c_str());
     if(file_path.extension().string() == input_ext)
-    file_list.push_back(file_path.string());
+    file_list.insert(file_path.string());
   }
 }
 }
@@ -106,9 +109,9 @@ void MeshConverter::getFileListWithExtension (const std::string& input_dir,
 bool MeshConverter::loadImagesFromDirService (mesh_io::loadImagesFromDir::Request &req,
     mesh_io::loadImagesFromDir::Response &res)
 {
-  std::vector<std::string> file_list;
+  std::set<std::string> file_list;
   getFileListWithExtension (req.directory_name, ".png", file_list);
-  for (std::vector<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
+  for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
   {
     cv::Mat cv_image = cv::imread (*itr, CV_LOAD_IMAGE_COLOR);
     cv_bridge::CvImage img_msg;
@@ -120,13 +123,25 @@ bool MeshConverter::loadImagesFromDirService (mesh_io::loadImagesFromDir::Reques
   return true;
 }
 
-bool MeshConverter::loadTransformationsFromDirService (
-    mesh_io::loadTransformationsFromDir::Request &req, mesh_io::loadTransformationsFromDir::Response &res)
+geometry_msgs::Transform MeshConverter::convertMatrix4fToTF(const Eigen::Matrix4f& eigen_mat)
 {
-  std::vector<std::string> file_list;
+  geometry_msgs::Transform transform_msg;
+  Eigen::Matrix4d md(eigen_mat.cast<double>());
+  Eigen::Affine3d affine(md);
+  tf::Transform transform;
+  tf::TransformEigenToTF(affine, transform);
+  tf::transformTFToMsg(transform, transform_msg);
+  return transform_msg;
+}
+
+bool MeshConverter::loadTransformationsFromDirService (
+    mesh_io::loadTransformationsFromDir::Request &req,
+    mesh_io::loadTransformationsFromDir::Response &res)
+{
+  std::set<std::string> file_list;
   getFileListWithExtension (req.directory_name, ".txt", file_list);
-  for (std::vector<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
-    extractTransformationFromFile (*itr);
+  for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
+    res.transformations.push_back (convertMatrix4fToTF(extractTransformationFromFile (*itr)));
   return true;
 }
 
@@ -155,15 +170,15 @@ Eigen::Matrix4f MeshConverter::extractTransformationFromFile (std::string filena
 bool MeshConverter::loadPointcloudsFromDirService (mesh_io::loadPointcloudsFromDir::Request &req,
     mesh_io::loadPointcloudsFromDir::Response &res)
 {
-  std::vector<std::string> file_list;
+  std::set<std::string> file_list;
   pcl::PCDReader reader;
   PointCloud temp_pointcloud;
   sensor_msgs::PointCloud2 temp_msg;
   getFileListWithExtension (req.directory_name, ".pcd", file_list);
-  for (std::vector<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
+  for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
   {
     reader.read (*itr, temp_pointcloud);
-    pcl::toROSMsg(temp_pointcloud,temp_msg);
+    pcl::toROSMsg (temp_pointcloud, temp_msg);
     res.pointclouds.push_back (temp_msg);
   }
   return true;

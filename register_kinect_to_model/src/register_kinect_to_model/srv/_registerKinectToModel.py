@@ -9,7 +9,7 @@ import std_msgs.msg
 import sensor_msgs.msg
 
 class registerKinectToModelRequest(genpy.Message):
-  _md5sum = "23daeab5f3ee2e44f0f013470826f497"
+  _md5sum = "33642baed1bfefef46db117aa63ff8cd"
   _type = "register_kinect_to_model/registerKinectToModelRequest"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
@@ -23,6 +23,9 @@ sensor_msgs/Image kinect_image
 
 
 sensor_msgs/PointCloud2 kinect_cloud
+
+
+sensor_msgs/PointCloud2 model
 
 
 ================================================================================
@@ -145,8 +148,8 @@ uint8  datatype  # Datatype enumeration, see above
 uint32 count     # How many elements in the field
 
 """
-  __slots__ = ['registration_images','registration_transforms','kinect_image','kinect_cloud']
-  _slot_types = ['sensor_msgs/Image[]','geometry_msgs/Transform[]','sensor_msgs/Image','sensor_msgs/PointCloud2']
+  __slots__ = ['registration_images','registration_transforms','kinect_image','kinect_cloud','model']
+  _slot_types = ['sensor_msgs/Image[]','geometry_msgs/Transform[]','sensor_msgs/Image','sensor_msgs/PointCloud2','sensor_msgs/PointCloud2']
 
   def __init__(self, *args, **kwds):
     """
@@ -156,7 +159,7 @@ uint32 count     # How many elements in the field
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       registration_images,registration_transforms,kinect_image,kinect_cloud
+       registration_images,registration_transforms,kinect_image,kinect_cloud,model
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -173,11 +176,14 @@ uint32 count     # How many elements in the field
         self.kinect_image = sensor_msgs.msg.Image()
       if self.kinect_cloud is None:
         self.kinect_cloud = sensor_msgs.msg.PointCloud2()
+      if self.model is None:
+        self.model = sensor_msgs.msg.PointCloud2()
     else:
       self.registration_images = []
       self.registration_transforms = []
       self.kinect_image = sensor_msgs.msg.Image()
       self.kinect_cloud = sensor_msgs.msg.PointCloud2()
+      self.model = sensor_msgs.msg.PointCloud2()
 
   def _get_types(self):
     """
@@ -286,7 +292,37 @@ uint32 count     # How many elements in the field
         buff.write(struct.pack('<I%sB'%length, length, *_x))
       else:
         buff.write(struct.pack('<I%ss'%length, length, _x))
-      buff.write(_struct_B.pack(self.kinect_cloud.is_dense))
+      _x = self
+      buff.write(_struct_B3I.pack(_x.kinect_cloud.is_dense, _x.model.header.seq, _x.model.header.stamp.secs, _x.model.header.stamp.nsecs))
+      _x = self.model.header.frame_id
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_2I.pack(_x.model.height, _x.model.width))
+      length = len(self.model.fields)
+      buff.write(_struct_I.pack(length))
+      for val1 in self.model.fields:
+        _x = val1.name
+        length = len(_x)
+        if python3 or type(_x) == unicode:
+          _x = _x.encode('utf-8')
+          length = len(_x)
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_IBI.pack(_x.offset, _x.datatype, _x.count))
+      _x = self
+      buff.write(_struct_B2I.pack(_x.model.is_bigendian, _x.model.point_step, _x.model.row_step))
+      _x = self.model.data
+      length = len(_x)
+      # - if encoded as a list instead, serialize as bytes instead of string
+      if type(_x) in [list, tuple]:
+        buff.write(struct.pack('<I%sB'%length, length, *_x))
+      else:
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+      buff.write(_struct_B.pack(self.model.is_dense))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -304,6 +340,8 @@ uint32 count     # How many elements in the field
         self.kinect_image = sensor_msgs.msg.Image()
       if self.kinect_cloud is None:
         self.kinect_cloud = sensor_msgs.msg.PointCloud2()
+      if self.model is None:
+        self.model = sensor_msgs.msg.PointCloud2()
       end = 0
       start = end
       end += 4
@@ -463,10 +501,62 @@ uint32 count     # How many elements in the field
         self.kinect_cloud.data = str[start:end].decode('utf-8')
       else:
         self.kinect_cloud.data = str[start:end]
+      _x = self
+      start = end
+      end += 13
+      (_x.kinect_cloud.is_dense, _x.model.header.seq, _x.model.header.stamp.secs, _x.model.header.stamp.nsecs,) = _struct_B3I.unpack(str[start:end])
+      self.kinect_cloud.is_dense = bool(self.kinect_cloud.is_dense)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.model.header.frame_id = str[start:end].decode('utf-8')
+      else:
+        self.model.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 8
+      (_x.model.height, _x.model.width,) = _struct_2I.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      self.model.fields = []
+      for i in range(0, length):
+        val1 = sensor_msgs.msg.PointField()
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1.name = str[start:end].decode('utf-8')
+        else:
+          val1.name = str[start:end]
+        _x = val1
+        start = end
+        end += 9
+        (_x.offset, _x.datatype, _x.count,) = _struct_IBI.unpack(str[start:end])
+        self.model.fields.append(val1)
+      _x = self
+      start = end
+      end += 9
+      (_x.model.is_bigendian, _x.model.point_step, _x.model.row_step,) = _struct_B2I.unpack(str[start:end])
+      self.model.is_bigendian = bool(self.model.is_bigendian)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.model.data = str[start:end].decode('utf-8')
+      else:
+        self.model.data = str[start:end]
       start = end
       end += 1
-      (self.kinect_cloud.is_dense,) = _struct_B.unpack(str[start:end])
-      self.kinect_cloud.is_dense = bool(self.kinect_cloud.is_dense)
+      (self.model.is_dense,) = _struct_B.unpack(str[start:end])
+      self.model.is_dense = bool(self.model.is_dense)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -574,7 +664,37 @@ uint32 count     # How many elements in the field
         buff.write(struct.pack('<I%sB'%length, length, *_x))
       else:
         buff.write(struct.pack('<I%ss'%length, length, _x))
-      buff.write(_struct_B.pack(self.kinect_cloud.is_dense))
+      _x = self
+      buff.write(_struct_B3I.pack(_x.kinect_cloud.is_dense, _x.model.header.seq, _x.model.header.stamp.secs, _x.model.header.stamp.nsecs))
+      _x = self.model.header.frame_id
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
+      _x = self
+      buff.write(_struct_2I.pack(_x.model.height, _x.model.width))
+      length = len(self.model.fields)
+      buff.write(_struct_I.pack(length))
+      for val1 in self.model.fields:
+        _x = val1.name
+        length = len(_x)
+        if python3 or type(_x) == unicode:
+          _x = _x.encode('utf-8')
+          length = len(_x)
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+        _x = val1
+        buff.write(_struct_IBI.pack(_x.offset, _x.datatype, _x.count))
+      _x = self
+      buff.write(_struct_B2I.pack(_x.model.is_bigendian, _x.model.point_step, _x.model.row_step))
+      _x = self.model.data
+      length = len(_x)
+      # - if encoded as a list instead, serialize as bytes instead of string
+      if type(_x) in [list, tuple]:
+        buff.write(struct.pack('<I%sB'%length, length, *_x))
+      else:
+        buff.write(struct.pack('<I%ss'%length, length, _x))
+      buff.write(_struct_B.pack(self.model.is_dense))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -593,6 +713,8 @@ uint32 count     # How many elements in the field
         self.kinect_image = sensor_msgs.msg.Image()
       if self.kinect_cloud is None:
         self.kinect_cloud = sensor_msgs.msg.PointCloud2()
+      if self.model is None:
+        self.model = sensor_msgs.msg.PointCloud2()
       end = 0
       start = end
       end += 4
@@ -752,10 +874,62 @@ uint32 count     # How many elements in the field
         self.kinect_cloud.data = str[start:end].decode('utf-8')
       else:
         self.kinect_cloud.data = str[start:end]
+      _x = self
+      start = end
+      end += 13
+      (_x.kinect_cloud.is_dense, _x.model.header.seq, _x.model.header.stamp.secs, _x.model.header.stamp.nsecs,) = _struct_B3I.unpack(str[start:end])
+      self.kinect_cloud.is_dense = bool(self.kinect_cloud.is_dense)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.model.header.frame_id = str[start:end].decode('utf-8')
+      else:
+        self.model.header.frame_id = str[start:end]
+      _x = self
+      start = end
+      end += 8
+      (_x.model.height, _x.model.width,) = _struct_2I.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      self.model.fields = []
+      for i in range(0, length):
+        val1 = sensor_msgs.msg.PointField()
+        start = end
+        end += 4
+        (length,) = _struct_I.unpack(str[start:end])
+        start = end
+        end += length
+        if python3:
+          val1.name = str[start:end].decode('utf-8')
+        else:
+          val1.name = str[start:end]
+        _x = val1
+        start = end
+        end += 9
+        (_x.offset, _x.datatype, _x.count,) = _struct_IBI.unpack(str[start:end])
+        self.model.fields.append(val1)
+      _x = self
+      start = end
+      end += 9
+      (_x.model.is_bigendian, _x.model.point_step, _x.model.row_step,) = _struct_B2I.unpack(str[start:end])
+      self.model.is_bigendian = bool(self.model.is_bigendian)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.model.data = str[start:end].decode('utf-8')
+      else:
+        self.model.data = str[start:end]
       start = end
       end += 1
-      (self.kinect_cloud.is_dense,) = _struct_B.unpack(str[start:end])
-      self.kinect_cloud.is_dense = bool(self.kinect_cloud.is_dense)
+      (self.model.is_dense,) = _struct_B.unpack(str[start:end])
+      self.model.is_dense = bool(self.model.is_dense)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -765,6 +939,7 @@ _struct_IBI = struct.Struct("<IBI")
 _struct_B = struct.Struct("<B")
 _struct_BI = struct.Struct("<BI")
 _struct_3I = struct.Struct("<3I")
+_struct_B3I = struct.Struct("<B3I")
 _struct_B2I = struct.Struct("<B2I")
 _struct_4d = struct.Struct("<4d")
 _struct_2I = struct.Struct("<2I")
@@ -902,6 +1077,6 @@ _struct_I = genpy.struct_I
 _struct_7d = struct.Struct("<7d")
 class registerKinectToModel(object):
   _type          = 'register_kinect_to_model/registerKinectToModel'
-  _md5sum = '17db16533cb0c8ca17391ef9436a03a0'
+  _md5sum = '715d34165098bfd52c19004983c0cbf5'
   _request_class  = registerKinectToModelRequest
   _response_class = registerKinectToModelResponse

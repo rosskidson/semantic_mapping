@@ -20,12 +20,11 @@ class KinectRegistration
     KinectRegistration ();
     virtual ~KinectRegistration ();
 
-    void getTransformFromClosestImage();
   private:
     bool registerKinectToModel (register_kinect_to_model::registerKinectToModel::Request &req,
         register_kinect_to_model::registerKinectToModel::Response &res);
 
-    int findMatchingImage (const cv::Mat query_image, const std::vector<cv::Mat>& images);
+    uint findMatchingImage (const cv::Mat query_image, const std::vector<cv::Mat>& images);
 
     void getFeatures (const cv::Mat& input_image,
         std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors);

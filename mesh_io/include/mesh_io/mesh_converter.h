@@ -29,6 +29,9 @@ typedef PointCloudNormals::ConstPtr PointCloudNormalsConstPtr;
 #include "mesh_io/loadTransformationsFromDir.h"
 #include "mesh_io/loadPointcloudsFromDir.h"
 
+#include "geometry_msgs/Transform.h"
+
+
 class MeshConverter
 {
   public:
@@ -61,7 +64,9 @@ class MeshConverter
         mesh_io::loadTransformationsFromDir::Response &res);
 
     void getFileListWithExtension(const std::string& input_dir, const std::string& input_ext,
-        std::vector<std::string>& file_list);
+        std::set<std::string>& file_list);
+
+    geometry_msgs::Transform convertMatrix4fToTF(const Eigen::Matrix4f& eigen_mat);
 };
 
 #endif /* MESH_CONVERTER_H_ */

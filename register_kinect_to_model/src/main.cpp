@@ -12,10 +12,9 @@
 
 int main (int argc, char** argv)
 {
-  ros::init (argc, argv, "mesh_io");
+  ros::init (argc, argv, "kinect_registration");
 
   KinectRegistration registration_obj;
-  registration_obj.getTransformFromClosestImage();
   ros::spin();
 
   return 0;

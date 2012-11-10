@@ -1,0 +1,22 @@
+<package>
+  <description brief="semantic_mapping_app">
+
+     semantic_mapping_app
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/semantic_mapping_app</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="std_msgs"/>
+  <depend package="rosservice"/>
+  <depend package="sensor_msgs"/>
+  <depend package="image_transport"/>
+  <depend package="mesh_io"/>
+  <depend package="register_kinect_to_model"/>
+
+</package>
+
+

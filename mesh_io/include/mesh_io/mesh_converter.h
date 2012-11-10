@@ -12,38 +12,56 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 // pcl typedefs
-typedef pcl::PointXYZRGB       PointType;
+typedef pcl::PointXYZRGB PointType;
 typedef pcl::PointXYZRGBNormal PointNormal;
 
-typedef pcl::PointCloud<PointType>  PointCloud;
-typedef PointCloud::Ptr             PointCloudPtr;
-typedef PointCloud::ConstPtr        PointCloudConstPtr;
+typedef pcl::PointCloud<PointType> PointCloud;
+typedef PointCloud::Ptr PointCloudPtr;
+typedef PointCloud::ConstPtr PointCloudConstPtr;
 
-typedef pcl::PointCloud<PointNormal>  PointCloudNormals;
-typedef PointCloudNormals::Ptr        PointCloudNormalsPtr;
-typedef PointCloudNormals::ConstPtr   PointCloudNormalsConstPtr;
+typedef pcl::PointCloud<PointNormal> PointCloudNormals;
+typedef PointCloudNormals::Ptr PointCloudNormalsPtr;
+typedef PointCloudNormals::ConstPtr PointCloudNormalsConstPtr;
 
 #include "ros/ros.h"
 #include "mesh_io/loadModelFromFile.h"
+#include "mesh_io/loadImagesFromDir.h"
+#include "mesh_io/loadTransformationsFromDir.h"
+#include "mesh_io/loadPointcloudsFromDir.h"
 
-class MeshConverter {
-public:
-	MeshConverter();
-	virtual ~MeshConverter();
+class MeshConverter
+{
+  public:
+    MeshConverter ();
+    virtual ~MeshConverter ();
 
-	void convertPCDtoMesh ();
+    void convertPCDtoMesh ();
 
-	void convertMeshToPcd();
+    void convertMeshToPcd ();
 
-	pcl::PointCloud<pcl::PointXYZ>::ConstPtr loadMeshFromFile(std::string filename);
+    pcl::PointCloud<pcl::PointXYZ>::ConstPtr loadMeshFromFile (std::string filename);
 
-	PointCloudConstPtr loadPointcloudFromFile(std::string filename);
+    PointCloudConstPtr loadPointcloudFromFile (std::string filename);
 
-private:
-	ros::ServiceServer service_;
+  private:
+    ros::ServiceServer service_, service_images_, service_transforms_, service_pointclouds_;
 
-	bool loadModelFromFileService(mesh_io::loadModelFromFile::Request  &req,
-	    mesh_io::loadModelFromFile::Response &res );
+    Eigen::Matrix4f extractTransformationFromFile (std::string filename);
+
+    bool loadModelFromFileService (mesh_io::loadModelFromFile::Request &req,
+        mesh_io::loadModelFromFile::Response &res);
+
+    bool loadImagesFromDirService (mesh_io::loadImagesFromDir::Request &req,
+        mesh_io::loadImagesFromDir::Response &res);
+
+    bool loadPointcloudsFromDirService (mesh_io::loadPointcloudsFromDir::Request &req,
+        mesh_io::loadPointcloudsFromDir::Response &res);
+
+    bool loadTransformationsFromDirService (mesh_io::loadTransformationsFromDir::Request &req,
+        mesh_io::loadTransformationsFromDir::Response &res);
+
+    void getFileListWithExtension(const std::string& input_dir, const std::string& input_ext,
+        std::vector<std::string>& file_list);
 };
 
 #endif /* MESH_CONVERTER_H_ */

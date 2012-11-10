@@ -15,14 +15,6 @@
 #include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-//file reading stuff
-// ################ TO BE REMOVED##################
-// when you remove this, don't forgot the linking stuff as well in cmakelists
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <iostream>
-#include <fstream>
-
 static const std::string FEATURE_EXTRACTOR = "SIFT";
 static const std::string FEATURE_DESCRIPTOR = "SIFT";
 static const std::string DESCRIPTOR_MATCHER = "Bruteforce";
@@ -47,45 +39,6 @@ bool KinectRegistration::registerKinectToModel (
     register_kinect_to_model::registerKinectToModel::Response &res)
 {
   return true;
-}
-
-void readImagesTransformsFromDirectory (std::vector<cv::Mat>& images, std::vector<Eigen::Matrix4f,
-    Eigen::aligned_allocator<Eigen::Matrix4f> >& transforms)
-{
-  std::ifstream input_stream;
-  namespace fs = boost::filesystem;
-
-  fs::path targetDir ("/work/kidson/meshes/cabinet_scan_3/KinFuSnapshots");
-
-  fs::directory_iterator it (targetDir), eod;
-
-  BOOST_FOREACH(fs::path const &file_path, std::make_pair(it, eod))
-{  if(is_regular_file(file_path))
-  {
-    ROS_INFO_STREAM("file:" << file_path.c_str() << " ext " << file_path.extension().c_str());
-    if(file_path.extension().string() == ".png")
-    images.push_back(cv::imread(file_path.string(), CV_LOAD_IMAGE_COLOR));
-    if(file_path.extension().string() == ".txt")
-    {
-      // the following file formatting expects output from pcl_kinfu_largeScale
-      Eigen::Matrix4f trafo;
-      input_stream.open (file_path.c_str());
-      std::string abcd;
-      input_stream >> abcd; // TVector
-      for (int row = 0; row < 3; row++)
-      input_stream >> trafo (row, 3);
-      input_stream >> abcd; // RMatrix
-      for (int row = 0; row < 3; row++)
-      for (int col = 0; col < 3; col++)
-      input_stream >> trafo (row, col);
-      for (int col = 0; col < 3; col++)
-      trafo (3, col) = 0;
-      trafo (3, 3) = 1;
-      input_stream.close();
-      transforms.push_back(trafo);
-    }
-  }
-}
 }
 
 void KinectRegistration::getFeatures (const cv::Mat& input_image,
@@ -211,40 +164,8 @@ void KinectRegistration::getTransformFromClosestImage ()
 
   std::vector<cv::Mat> images;
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > transforms;
-  readImagesTransformsFromDirectory (images, transforms);
   cv::Mat kinect_img = cv::imread (
       "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
-
-//#include "ros/ros.h"
-//#include "beginner_tutorials/AddTwoInts.h"
-//#include <cstdlib>
-//
-//int main(int argc, char **argv)
-//{
-//  ros::init(argc, argv, "add_two_ints_client");
-//  if (argc != 3)
-//  {
-//    ROS_INFO("usage: add_two_ints_client X Y");
-//    return 1;
-//  }
-//
-//  ros::NodeHandle n;
-//  ros::ServiceClient client = n.serviceClient<beginner_tutorials::AddTwoInts>("add_two_ints");
-//  beginner_tutorials::AddTwoInts srv;
-//  srv.request.a = atoll(argv[1]);
-//  srv.request.b = atoll(argv[2]);
-//  if (client.call(srv))
-//  {
-//    ROS_INFO("Sum: %ld", (long int)srv.response.sum);
-//  }
-//  else
-//  {
-//    ROS_ERROR("Failed to call service add_two_ints");
-//    return 1;
-//  }
-//
-//  return 0;
-//}
 
   findMatchingImage (kinect_img, images);
 

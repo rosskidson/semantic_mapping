@@ -15,8 +15,8 @@
 
 // register kinect service
 #include "register_kinect_to_model/registerKinectToModel.h"
-
-#include "pcl_tools/kinectSnapshot.h"
+// get a kinect frame service
+#include "kinect_capture_frame/kinectSnapshot.h"
 
 #include "semantic_mapping_app/visualization.h"
 
@@ -58,8 +58,8 @@ int main (int argc, char** argv)
     return 1;
   }
 
-  client = nh.serviceClient<pcl_tools::kinectSnapshot> ("kinect_snapshot_service");
-  pcl_tools::kinectSnapshot get_kinect_frame;
+  client = nh.serviceClient<kinect_capture_frame::kinectSnapshot> ("kinect_snapshot_service");
+  kinect_capture_frame::kinectSnapshot get_kinect_frame;
   ROS_INFO("getting snapshot from kinect");
   if(!client.call(get_kinect_frame))
   {

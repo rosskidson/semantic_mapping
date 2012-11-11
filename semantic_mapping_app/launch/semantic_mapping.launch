@@ -1,0 +1,8 @@
+<launch>
+  <include file="$(find openni_launch)/launch/openni.launch" output="log"/> 
+
+  <node name="kinect_capture_frame" pkg="kinect_capture_frame" type="kinect_snapshot_service" required="true" output="screen"/>
+  <node name="mesh_io" pkg="mesh_io" type="mesh_io" required="true" output="screen"/>
+  <node name="register_kinect_to_model" pkg="register_kinect_to_model" type="register_kinect" required="true" output="screen"/>
+
+</launch>

@@ -1,7 +1,9 @@
 <package>
   <description brief="pcl_tools">
 
-     pcl_tools
+   pcl_tools
+     provides some useful command line tools for 
+   dealing with pointcloud data
 
   </description>
   <author>Ross Kidson</author>

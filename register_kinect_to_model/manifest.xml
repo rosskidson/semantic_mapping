@@ -1,7 +1,11 @@
 <package>
   <description brief="register_kinect_to_model">
 
-     register_kinect_to_model
+   register_kinect_to_model
+     Performs registration between a stationary kinect
+   and the model.  In order to do this, this package needs
+   a number of screenshots taken during registration along with 
+   the cameras  pose for each screenshot.
 
   </description>
   <author>Ross Kidson</author>

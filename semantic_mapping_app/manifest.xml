@@ -1,7 +1,9 @@
 <package>
   <description brief="semantic_mapping_app">
 
-     semantic_mapping_app
+   semantic_mapping_app
+
+  Provides a test interface for the semantic mapping stack
 
   </description>
   <author>Ross Kidson</author>
@@ -15,7 +17,8 @@
   <depend package="sensor_msgs"/>
   <depend package="image_transport"/>
   <depend package="mesh_io"/>
-  <depend package="pcl_tools"/>
+  <depend package="kinect_capture_frame"/>
+  <depend package="box_filter"/>
   <depend package="register_kinect_to_model"/>
 
 </package>

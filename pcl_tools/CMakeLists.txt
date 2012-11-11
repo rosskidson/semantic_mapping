@@ -19,7 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
-rosbuild_gensrv()
+#rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
@@ -29,7 +29,4 @@ rosbuild_gensrv()
 rosbuild_add_executable(vox_filter src/vox_filter.cpp)
 rosbuild_add_executable(transform_cloud src/transform_cloud.cpp)
 rosbuild_add_executable(calculate_normals src/calculate_normals.cpp)
-rosbuild_add_executable(kinect_snapshot src/kinect_capture_frame.cpp)
-rosbuild_add_executable(kinect_snapshot_service src/kinect_capture_frame_service.cpp)
-rosbuild_add_executable(box_filter_service src/box_filter.cpp)
 #target_link_libraries(example ${PROJECT_NAME})

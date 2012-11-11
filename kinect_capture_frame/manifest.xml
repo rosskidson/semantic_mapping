@@ -1,0 +1,26 @@
+<package>
+  <description brief="kinect_capture_frame">
+
+     kinect_capture_frame
+
+    Captures a single pointcloud and image from openni drivers
+    There are two interfaces provided:
+      kinect_capture_frame - writes .pcd and .png files to file.
+      kinect_capture_frame_service - returns pointcloud and image 
+         sensor messages when called
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kinect_capture_frame</url>
+  <depend package="roscpp"/>
+  <depend package="sensor_msgs"/>
+  <depend package="pcl"/>
+  <depend package="image_transport"/>
+  <depend package="cv_bridge"/>
+  <depend package="opencv2"/>
+
+</package>
+
+

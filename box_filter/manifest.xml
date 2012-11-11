@@ -1,0 +1,19 @@
+<package>
+  <description brief="box_filter">
+
+     box_filter
+      Provides box_filter as a rosservice for removing
+      background data from the registered model
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/box_filter</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

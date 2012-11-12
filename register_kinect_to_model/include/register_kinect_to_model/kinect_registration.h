@@ -8,7 +8,6 @@
 #ifndef KINECT_REGISTRATION_H_
 #define KINECT_REGISTRATION_H_
 
-#include "register_kinect_to_model/registerKinectToModel.h"
 #include "ros/ros.h"
 
 #include <opencv2/core/core.hpp>
@@ -21,8 +20,7 @@ class KinectRegistration
     virtual ~KinectRegistration ();
 
   private:
-    bool registerKinectToModel (register_kinect_to_model::registerKinectToModel::Request &req,
-        register_kinect_to_model::registerKinectToModel::Response &res);
+    bool registerKinectToModel ();
 
     uint findMatchingImage (const cv::Mat query_image, const std::vector<cv::Mat>& images);
 

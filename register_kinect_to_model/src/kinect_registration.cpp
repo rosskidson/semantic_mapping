@@ -16,8 +16,6 @@
 #include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "misc.cpp"
-
 static const std::string FEATURE_EXTRACTOR = "SIFT";
 static const std::string FEATURE_DESCRIPTOR = "SIFT";
 static const std::string DESCRIPTOR_MATCHER = "Bruteforce";
@@ -29,9 +27,6 @@ static const bool SAVE_FEATURES_IMAGE = true;
 KinectRegistration::KinectRegistration () :
   nh_ ("~"), image_counter_ (0)
 {
-  service_ = nh_.advertiseService ("register_kinect_to_model",
-      &KinectRegistration::registerKinectToModel, this);
-  ROS_INFO("register kinect service up and running");
 }
 
 KinectRegistration::~KinectRegistration ()
@@ -162,31 +157,18 @@ uint KinectRegistration::findMatchingImage (const cv::Mat query_image,
   return winner_idx;
 }
 
-bool KinectRegistration::registerKinectToModel (register_kinect_to_model::registerKinectToModel::Request& req,
-    register_kinect_to_model::registerKinectToModel::Response& res)
+bool KinectRegistration::registerKinectToModel ()
 {
   std::vector<cv::Mat> images;
   std::vector<Eigen::Matrix4f> transforms;
   cv::Mat kinect_img = cv::imread (
     "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
 
-  // convert sensor msg images to cv mats
-  for(std::vector<sensor_msgs::Image>::iterator itr = req.registration_images.begin();
-      itr != req.registration_images.end(); itr++)
-    images.push_back(convertSensorMsgToCV(*itr));
-  //convert geometry msg trafos to eigen mats
-
-  for(std::vector<geometry_msgs::Transform>::iterator itr = req.registration_transforms.begin();
-      itr != req.registration_transforms.end(); itr++)
-    transforms.push_back(convertTFToMatrix4f(*itr));
-
   uint best_image = findMatchingImage (kinect_img, images);
 
   ICPWrapper icp;
   PointCloudPtr kinect_cloud (new PointCloud);
   PointCloudPtr model_cloud (new PointCloud);
-  pcl::fromROSMsg(req.kinect_cloud, *kinect_cloud);
-  pcl::fromROSMsg(req.model, *model_cloud);
   Eigen::Matrix4f resulting_transform = icp.performICP(kinect_cloud, model_cloud,transforms[best_image]);
 
   return true;

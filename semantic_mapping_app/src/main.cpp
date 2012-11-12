@@ -31,8 +31,8 @@ int main (int argc, char** argv)
 
   client = nh.serviceClient<mesh_io::loadModelFromFile> ("/mesh_io/load_model_from_file");
   mesh_io::loadModelFromFile load_model_srv;
-  ///work/kidson/meshes/cabinet_scan_2/mesh_1.ply
-  load_model_srv.request.filename = "/media/burg/work/meshes/chair_2/nontextured/chair2.ply";
+  ////media/burg/work/meshes/chair_2/nontextured/chair2.ply
+  load_model_srv.request.filename = "/work/kidson/meshes/cabinet_scan_2/mesh_1.ply";
   ROS_INFO("Importing mesh to pointcloud....");
   if (!client.call (load_model_srv))
   {
@@ -40,16 +40,16 @@ int main (int argc, char** argv)
     return 1;
   }
 
-  client = nh.serviceClient<box_filter::boxFilter> ("box_filter/box_filter");
+  client = nh.serviceClient<box_filter::boxFilter> ("/box_filter/box_filter");
   box_filter::boxFilter box_filter_srv;
   box_filter_srv.request.input_cloud = load_model_srv.response.pointcloud;
   geometry_msgs::Vector3 min_point, max_point;
-  min_point.x = 0.0;
-  min_point.y = 0.0;
-  min_point.z = 0.0;
-  max_point.x = 1.4;
-  max_point.y = 1.4;
-  max_point.z = 1.4;
+  min_point.x = 1.0;
+  min_point.y = 1.0;
+  min_point.z = 0.6;
+  max_point.x = 2.0;
+  max_point.y = 2.7;
+  max_point.z = 1.2;
   box_filter_srv.request.input_min_point = min_point;
   box_filter_srv.request.input_max_point = max_point;
   ROS_INFO("box filter operation....");
@@ -59,7 +59,6 @@ int main (int argc, char** argv)
     return 1;
   }
   visualizer.visualizeCloud(box_filter_srv.response.output);
-  return 1;
 
   client = nh.serviceClient<mesh_io::loadImagesFromDir> ("/mesh_io/load_images_from_dir");
   mesh_io::loadImagesFromDir load_images_srv;

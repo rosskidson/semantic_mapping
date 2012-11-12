@@ -12,7 +12,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 // pcl typedefs
-typedef pcl::PointXYZRGB PointType;
+typedef pcl::PointXYZ PointType;
 typedef pcl::PointXYZRGBNormal PointNormal;
 
 typedef pcl::PointCloud<PointType> PointCloud;
@@ -24,13 +24,7 @@ typedef PointCloudNormals::Ptr PointCloudNormalsPtr;
 typedef PointCloudNormals::ConstPtr PointCloudNormalsConstPtr;
 
 #include "ros/ros.h"
-#include "mesh_io/loadModelFromFile.h"
-#include "mesh_io/loadImagesFromDir.h"
-#include "mesh_io/loadTransformationsFromDir.h"
-#include "mesh_io/loadPointcloudsFromDir.h"
-
-#include "geometry_msgs/Transform.h"
-
+#include <opencv2/core/core.hpp>
 
 class MeshConverter
 {
@@ -42,31 +36,21 @@ class MeshConverter
 
     void convertMeshToPcd ();
 
-    pcl::PointCloud<pcl::PointXYZ>::ConstPtr loadMeshFromFile (std::string filename);
+    PointCloudConstPtr loadMeshFromFile (std::string filename);
 
     PointCloudConstPtr loadPointcloudFromFile (std::string filename);
 
   private:
-    ros::ServiceServer service_, service_images_, service_transforms_, service_pointclouds_;
-
     Eigen::Matrix4f extractTransformationFromFile (std::string filename);
 
-    bool loadModelFromFileService (mesh_io::loadModelFromFile::Request &req,
-        mesh_io::loadModelFromFile::Response &res);
+    void loadImagesFromDir (std::string directory, std::vector<cv::Mat>& images);
 
-    bool loadImagesFromDirService (mesh_io::loadImagesFromDir::Request &req,
-        mesh_io::loadImagesFromDir::Response &res);
+    void loadTransformationsFromDir (std::string directory, std::vector<Eigen::Matrix4f>& transforms);
 
-    bool loadPointcloudsFromDirService (mesh_io::loadPointcloudsFromDir::Request &req,
-        mesh_io::loadPointcloudsFromDir::Response &res);
-
-    bool loadTransformationsFromDirService (mesh_io::loadTransformationsFromDir::Request &req,
-        mesh_io::loadTransformationsFromDir::Response &res);
+    void loadPointcloudsFromDir (std::string directory, std::vector<pcl::PointCloud<pcl::PointXYZ> >& pointclouds);
 
     void getFileListWithExtension(const std::string& input_dir, const std::string& input_ext,
         std::set<std::string>& file_list);
-
-    geometry_msgs::Transform convertMatrix4fToTF(const Eigen::Matrix4f& eigen_mat);
 };
 
 #endif /* MESH_CONVERTER_H_ */

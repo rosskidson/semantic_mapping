@@ -9,18 +9,15 @@
 
 //ros
 #include "ros/ros.h"
-#include "tf_conversions/tf_eigen.h"
 //pcl
 #include <pcl/io/ply_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/ros/conversions.h>
 
-// opencv -> ROS -> opencv
-#include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/image_encodings.h>
 //opencv
 #include <opencv2/highgui/highgui.hpp>
+
 //file reading stuff
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -30,15 +27,6 @@
 MeshConverter::MeshConverter ()
 {
   ros::NodeHandle n ("~");
-  service_ = n.advertiseService ("load_model_from_file", &MeshConverter::loadModelFromFileService,
-      this);
-  service_images_ = n.advertiseService ("load_images_from_dir",
-      &MeshConverter::loadImagesFromDirService, this);
-  service_transforms_ = n.advertiseService ("load_transforms_from_dir",
-      &MeshConverter::loadTransformationsFromDirService, this);
-  service_pointclouds_ = n.advertiseService ("load_pointclouds_from_dir",
-      &MeshConverter::loadPointcloudsFromDirService, this);
-  ROS_INFO("mesh_io services up and running");
 }
 
 MeshConverter::~MeshConverter ()
@@ -56,19 +44,9 @@ void MeshConverter::convertMeshToPcd ()
   //placeholder
 }
 
-bool MeshConverter::loadModelFromFileService (mesh_io::loadModelFromFile::Request &req,
-    mesh_io::loadModelFromFile::Response &res)
+PointCloudConstPtr MeshConverter::loadMeshFromFile (std::string filename)
 {
-  if (req.filename.substr (req.filename.length () - 3, req.filename.length ()) == "pcd")
-    pcl::toROSMsg (* (loadPointcloudFromFile (req.filename)), res.pointcloud);
-  else
-    pcl::toROSMsg (* (loadMeshFromFile (req.filename)), res.pointcloud);
-  return true;
-}
-
-pcl::PointCloud<pcl::PointXYZ>::ConstPtr MeshConverter::loadMeshFromFile (std::string filename)
-{
-  pcl::PointCloud<pcl::PointXYZ>::Ptr input (new pcl::PointCloud<pcl::PointXYZ> ());
+  PointCloudPtr input (new PointCloud);
   pcl::PolygonMesh mesh;
   pcl::io::loadPolygonFile (filename, mesh);
   pcl::fromROSMsg (mesh.cloud, *input);
@@ -78,7 +56,7 @@ pcl::PointCloud<pcl::PointXYZ>::ConstPtr MeshConverter::loadMeshFromFile (std::s
 PointCloudConstPtr MeshConverter::loadPointcloudFromFile (std::string filename)
 {
   pcl::PCDReader reader;
-  PointCloudPtr input (new PointCloud ());
+  PointCloudPtr input (new PointCloud);
   reader.read (filename, *input);
   return input;
 }
@@ -106,43 +84,23 @@ void MeshConverter::getFileListWithExtension (const std::string& input_dir,
 }
 }
 
-bool MeshConverter::loadImagesFromDirService (mesh_io::loadImagesFromDir::Request &req,
-    mesh_io::loadImagesFromDir::Response &res)
+void MeshConverter::loadImagesFromDir (std::string directory, std::vector<cv::Mat>& images)
 {
   std::set<std::string> file_list;
-  getFileListWithExtension (req.directory_name, ".png", file_list);
+  getFileListWithExtension (directory, ".png", file_list);
   for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
   {
     cv::Mat cv_image = cv::imread (*itr, CV_LOAD_IMAGE_COLOR);
-    cv_bridge::CvImage img_msg;
-    //out_msg.header   =
-    img_msg.encoding = sensor_msgs::image_encodings::RGB8;
-    img_msg.image = cv_image;
-    res.images.push_back (*img_msg.toImageMsg ());
+    images.push_back(cv_image);
   }
-  return true;
 }
 
-geometry_msgs::Transform MeshConverter::convertMatrix4fToTF(const Eigen::Matrix4f& eigen_mat)
-{
-  geometry_msgs::Transform transform_msg;
-  Eigen::Matrix4d md(eigen_mat.cast<double>());
-  Eigen::Affine3d affine(md);
-  tf::Transform transform;
-  tf::TransformEigenToTF(affine, transform);
-  tf::transformTFToMsg(transform, transform_msg);
-  return transform_msg;
-}
-
-bool MeshConverter::loadTransformationsFromDirService (
-    mesh_io::loadTransformationsFromDir::Request &req,
-    mesh_io::loadTransformationsFromDir::Response &res)
+void MeshConverter::loadTransformationsFromDir (std::string directory, std::vector<Eigen::Matrix4f>& transforms)
 {
   std::set<std::string> file_list;
-  getFileListWithExtension (req.directory_name, ".txt", file_list);
+  getFileListWithExtension (directory, ".txt", file_list);
   for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
-    res.transformations.push_back (convertMatrix4fToTF(extractTransformationFromFile (*itr)));
-  return true;
+    transforms.push_back (extractTransformationFromFile (*itr));
 }
 
 // the following file formatting expects output from pcl_kinfu_largeScale
@@ -167,19 +125,15 @@ Eigen::Matrix4f MeshConverter::extractTransformationFromFile (std::string filena
   return trafo;
 }
 
-bool MeshConverter::loadPointcloudsFromDirService (mesh_io::loadPointcloudsFromDir::Request &req,
-    mesh_io::loadPointcloudsFromDir::Response &res)
+void MeshConverter::loadPointcloudsFromDir (std::string directory, std::vector<PointCloud>& pointclouds)
 {
   std::set<std::string> file_list;
   pcl::PCDReader reader;
   PointCloud temp_pointcloud;
-  sensor_msgs::PointCloud2 temp_msg;
-  getFileListWithExtension (req.directory_name, ".pcd", file_list);
+  getFileListWithExtension (directory, ".pcd", file_list);
   for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)
   {
     reader.read (*itr, temp_pointcloud);
-    pcl::toROSMsg (temp_pointcloud, temp_msg);
-    res.pointclouds.push_back (temp_msg);
+    pointclouds.push_back (temp_pointcloud);
   }
-  return true;
 }

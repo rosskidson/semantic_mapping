@@ -1,0 +1,16 @@
+<package>
+  <description brief="align_principle_axis">
+
+     align_principle_axis
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/align_principle_axis</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+
+</package>
+
+

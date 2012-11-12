@@ -7,6 +7,7 @@
 
 #include "../include/register_kinect_to_model/kinect_registration.h"
 #include "register_kinect_to_model/icp_wrapper.h"
+#include "register_kinect_to_model/pcl_typedefs.h"
 
 #include <Eigen/Core>
 
@@ -165,15 +166,28 @@ bool KinectRegistration::registerKinectToModel (register_kinect_to_model::regist
     register_kinect_to_model::registerKinectToModel::Response& res)
 {
   std::vector<cv::Mat> images;
+  std::vector<Eigen::Matrix4f> transforms;
   cv::Mat kinect_img = cv::imread (
     "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
+
+  // convert sensor msg images to cv mats
   for(std::vector<sensor_msgs::Image>::iterator itr = req.registration_images.begin();
       itr != req.registration_images.end(); itr++)
     images.push_back(convertSensorMsgToCV(*itr));
+  //convert geometry msg trafos to eigen mats
+
+  for(std::vector<geometry_msgs::Transform>::iterator itr = req.registration_transforms.begin();
+      itr != req.registration_transforms.end(); itr++)
+    transforms.push_back(convertTFToMatrix4f(*itr));
 
   uint best_image = findMatchingImage (kinect_img, images);
 
   ICPWrapper icp;
-  //icp.performICP()
+  PointCloudPtr kinect_cloud (new PointCloud);
+  PointCloudPtr model_cloud (new PointCloud);
+  pcl::fromROSMsg(req.kinect_cloud, *kinect_cloud);
+  pcl::fromROSMsg(req.model, *model_cloud);
+  Eigen::Matrix4f resulting_transform = icp.performICP(kinect_cloud, model_cloud,transforms[best_image]);
+
   return true;
 }

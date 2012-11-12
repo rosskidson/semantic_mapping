@@ -8,18 +8,9 @@
 #ifndef ICP_WRAPPER_H_
 #define ICP_WRAPPER_H_
 
-#include <pcl/point_types.h>
-#include <pcl/registration/icp.h>
 
-// pcl typedefs
-typedef pcl::PointXYZRGB PointType;
-typedef pcl::PointCloud<PointType> PointCloud;
-typedef PointCloud::Ptr PointCloudPtr;
-typedef PointCloud::ConstPtr PointCloudConstPtr;
-typedef pcl::PointXYZRGBNormal PointNormal;
-typedef pcl::PointCloud<PointNormal> PointCloudNormals;
-typedef PointCloudNormals::Ptr PointCloudNormalsPtr;
-typedef PointCloudNormals::ConstPtr PointCloudNormalsConstPtr;
+#include <pcl/registration/icp.h>
+#include "register_kinect_to_model/pcl_typedefs.h"
 
 class ICPWrapper
 {

@@ -28,9 +28,9 @@ include_directories(${VTK_INCLUDE_DIRS})
 #MESSAGE(${VTK_INCLUDE_DIRS})
 
 #common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
+rosbuild_add_library(mesh_io src/mesh_converter.cpp src/mesh_io.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(mesh_io src/main.cpp src/mesh_converter.cpp)
+#rosbuild_add_executable(mesh_io src/main.cpp src/mesh_converter.cpp)
 target_link_libraries(mesh_io boost_filesystem boost_system)

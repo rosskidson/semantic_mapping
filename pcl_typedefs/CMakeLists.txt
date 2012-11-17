@@ -21,22 +21,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-# VTK ####################
-find_package(VTK REQUIRED)
-include_directories(${VTK_INCLUDE_DIRS})
-MESSAGE("vtk lib--------------------")
-MESSAGE(${VTK_LIBRARY_DIRS})
-#SET(VTK_LIBRARIES vtkalglib vtkCharts vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGeovis vtkGraphics vtkHybrid vtkImaging vtkInfovis vtkIO vtkmetaio vtkParallel vtkproj4 vtkQtChart vtkRendering vtksqlite vtksys vtkverdict vtkViews vtkVolumeRendering vtkWidgets)
-SET(VTK_LIBRARIES vtkCommon vtkFiltering)
-
-rosbuild_find_ros_package(mesh_io)
-link_directories(${mesh_io_PACKAGE_PATH}/lib)
-
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(main src/main.cpp src/visualization.cpp)
-rosbuild_link_boost(main thread)
-target_link_libraries(main ${VTK_LIBRARIES} mesh_io)
+#rosbuild_add_executable(example examples/example.cpp)
+#target_link_libraries(example ${PROJECT_NAME})

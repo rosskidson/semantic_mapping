@@ -10,6 +10,8 @@
 // get a kinect frame service
 #include "kinect_capture_frame/kinectSnapshot.h"
 
+#include "mesh_io/mesh_converter.h"
+
 #include "semantic_mapping_app/visualization.h"
 
 int main (int argc, char** argv)
@@ -17,6 +19,8 @@ int main (int argc, char** argv)
   ros::init (argc, argv, "semantic_mapping_controller");
   ros::NodeHandle nh;
   Visualization visualizer;
+
+  // import mesh
 
   ros::ServiceClient client;
   client = nh.serviceClient<kinect_capture_frame::kinectSnapshot> ("kinect_snapshot_service");

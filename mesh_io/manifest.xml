@@ -15,7 +15,12 @@
   <depend package="cv_bridge"/>
   <depend package="tf"/>
   <depend package="tf_conversions"/>
+  <depend package="pcl_typedefs"/>
   <rosdep name="vtk"/>
+
+  <export>
+      <cpp cflags="-I${prefix}/include"/>
+  </export>  
 
 </package>
 

@@ -6,13 +6,20 @@
  */
 
 #include <ros/ros.h>
+#include "pcl_typedefs/pcl_typedefs.h"
 
 // get a kinect frame service
 #include "kinect_capture_frame/kinectSnapshot.h"
 
-#include "mesh_io/mesh_converter.h"
+#include "mesh_io/mesh_io.h"
+
+#include "box_filter/box_filter.h"
 
 #include "semantic_mapping_app/visualization.h"
+
+#include "semantic_mapping_app/parameter_server.h"
+
+#include <Eigen/Core>
 
 int main (int argc, char** argv)
 {
@@ -21,27 +28,32 @@ int main (int argc, char** argv)
   Visualization visualizer;
 
   // import mesh
+  MeshIO io_obj;
+
+  ROS_INFO("Importing mesh to pointcloud model...");
+  PointCloudConstPtr raw_import;
+  raw_import = io_obj.loadMeshFromFile (ParameterServer::instance ()->get<std::string> (
+      "mesh_input_filename"));
+
+  ROS_INFO("Applying boxfilter to cloud...");
+  PointCloudPtr model (new PointCloud);
+  Eigen::Vector4f min_point (1.0, 1.0, 0.6, 1);
+  Eigen::Vector4f max_point (2.0, 2.7, 1.2, 1);
+  box_filter::filterCloud (raw_import, min_point, max_point, model);
+
+  visualizer.visualizeCloud(model);
 
   ros::ServiceClient client;
   client = nh.serviceClient<kinect_capture_frame::kinectSnapshot> ("kinect_snapshot_service");
   kinect_capture_frame::kinectSnapshot get_kinect_frame_srv;
   ROS_INFO("getting snapshot from kinect");
-  if(!client.call(get_kinect_frame_srv))
+  if (!client.call (get_kinect_frame_srv))
   {
     ROS_INFO("A service failed");
     return 1;
   }
 
 
-//  min_point.x = 1.0;
-//  min_point.y = 1.0;
-//  min_point.z = 0.6;
-//  max_point.x = 2.0;
-//  max_point.y = 2.7;
-//  max_point.z = 1.2;
-
-
-  //visualizer.visualizeCloud(load_model.response.pointcloud);
 
   return 0;
 }

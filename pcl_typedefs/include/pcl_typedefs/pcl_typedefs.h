@@ -1,6 +1,8 @@
 #ifndef PCL_TYPEDEFS_H_
 #define PCL_TYPEDEFS_H_
 
+#include <pcl/point_types.h>
+
 typedef pcl::PointXYZ PointType;
 typedef pcl::PointXYZRGBNormal PointNormal;
 

@@ -32,11 +32,16 @@ SET(VTK_LIBRARIES vtkCommon vtkFiltering)
 rosbuild_find_ros_package(mesh_io)
 link_directories(${mesh_io_PACKAGE_PATH}/lib)
 
+rosbuild_find_ros_package(box_filter)
+link_directories(${box_filter_PACKAGE_PATH}/lib)
+
+set(SEMANTIC_MAPPING_LIBRARIES mesh_io box_filter)
+
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(main src/main.cpp src/visualization.cpp)
+rosbuild_add_executable(main src/main.cpp src/visualization.cpp src/parameter_server.cpp)
 rosbuild_link_boost(main thread)
-target_link_libraries(main ${VTK_LIBRARIES} mesh_io)
+target_link_libraries(main ${VTK_LIBRARIES} ${SEMANTIC_MAPPING_LIBRARIES})

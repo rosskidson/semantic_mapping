@@ -12,12 +12,15 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
 
+#include "pcl_typedefs/pcl_typedefs.h"
+
 class Visualization
 {
   public:
     Visualization ();
     virtual ~Visualization ();
     void visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg);
+    void visualizeCloud (PointCloudPtr cloud_ptr);
     void visualizeImage(const sensor_msgs::Image& image_msg);
 
 };

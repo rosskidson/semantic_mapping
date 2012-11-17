@@ -45,6 +45,11 @@ void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_m
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(pointcloud_msg,*cloud_ptr);
 
+  visualizeCloud(cloud_ptr);
+}
+
+void Visualization::visualizeCloud (PointCloudPtr cloud_ptr)
+{
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addPointCloud<pcl::PointXYZ> (cloud_ptr, "imported cloud");

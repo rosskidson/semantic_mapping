@@ -12,6 +12,11 @@
   <url>http://ros.org/wiki/box_filter</url>
   <depend package="roscpp"/>
   <depend package="pcl"/>
+  <depend package="pcl_typedefs"/>
+
+  <export>
+      <cpp cflags="-I${prefix}/include"/>
+  </export>  
 
 </package>
 

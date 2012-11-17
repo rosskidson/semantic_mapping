@@ -5,9 +5,9 @@
  *      Author: kidson
  */
 
-#include "../include/register_kinect_to_model/kinect_registration.h"
+#include "register_kinect_to_model/kinect_registration.h"
 #include "register_kinect_to_model/icp_wrapper.h"
-#include "register_kinect_to_model/pcl_typedefs.h"
+#include "pcl_typedefs/pcl_typedefs.h"
 
 #include <Eigen/Core>
 
@@ -15,6 +15,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/nonfree/features2d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include <ros/console.h>
 
 static const std::string FEATURE_EXTRACTOR = "SIFT";
 static const std::string FEATURE_DESCRIPTOR = "SIFT";
@@ -24,8 +26,7 @@ static const bool SHOW_BEST_MATCHES = false;
 
 static const bool SAVE_FEATURES_IMAGE = true;
 
-KinectRegistration::KinectRegistration () :
-  nh_ ("~"), image_counter_ (0)
+KinectRegistration::KinectRegistration ()
 {
 }
 
@@ -157,19 +158,13 @@ uint KinectRegistration::findMatchingImage (const cv::Mat query_image,
   return winner_idx;
 }
 
-bool KinectRegistration::registerKinectToModel ()
+Eigen::Matrix4f KinectRegistration::registerKinectToModel (const PointCloudConstPtr model_cloud_ptr, const PointCloudConstPtr kinect_cloud_ptr,
+    cv::Mat kinect_image, std::vector<cv::Mat>& images, std::vector<Eigen::Matrix4f>& transforms )
 {
-  std::vector<cv::Mat> images;
-  std::vector<Eigen::Matrix4f> transforms;
-  cv::Mat kinect_img = cv::imread (
-    "/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png", CV_LOAD_IMAGE_COLOR);
-
-  uint best_image = findMatchingImage (kinect_img, images);
+  uint best_image = findMatchingImage (kinect_image, images);
 
   ICPWrapper icp;
-  PointCloudPtr kinect_cloud (new PointCloud);
-  PointCloudPtr model_cloud (new PointCloud);
-  Eigen::Matrix4f resulting_transform = icp.performICP(kinect_cloud, model_cloud,transforms[best_image]);
+  Eigen::Matrix4f resulting_transform = icp.performICP(kinect_cloud_ptr, model_cloud_ptr,transforms[best_image]);
 
-  return true;
+  return resulting_transform;
 }

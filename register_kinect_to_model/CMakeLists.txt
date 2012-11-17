@@ -22,9 +22,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
+rosbuild_add_library(register_kinect src/kinect_registration.cpp src/icp_wrapper)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(register_kinect src/main.cpp src/kinect_registration.cpp src/icp_wrapper)
+#rosbuild_add_executable(register_kinect src/main.cpp src/kinect_registration.cpp src/icp_wrapper)
 #target_link_libraries(register_kinect)

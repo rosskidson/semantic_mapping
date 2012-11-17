@@ -8,13 +8,10 @@
 #ifndef MESHIO_H_
 #define MESHIO_H_
 
-//pcl
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 // pcl typedefs
 
+#include <set>
 #include "pcl_typedefs/pcl_typedefs.h"
-#include "ros/ros.h"
 #include <opencv2/core/core.hpp>
 
 class MeshIO
@@ -23,18 +20,20 @@ class MeshIO
     MeshIO ();
     virtual ~MeshIO ();
 
-    PointCloudConstPtr loadMeshFromFile (std::string filename);
+    PointCloudPtr loadMeshFromFile (std::string filename);
 
-    PointCloudConstPtr loadPointcloudFromFile (std::string filename);
+    PointCloudPtr loadPointcloudFromFile (std::string filename);
 
-  private:
-    Eigen::Matrix4f extractTransformationFromFile (std::string filename);
+    cv::Mat loadImageFromFile(std::string filename);
 
     void loadImagesFromDir (std::string directory, std::vector<cv::Mat>& images);
 
     void loadTransformationsFromDir (std::string directory, std::vector<Eigen::Matrix4f>& transforms);
 
-    void loadPointcloudsFromDir (std::string directory, std::vector<pcl::PointCloud<pcl::PointXYZ> >& pointclouds);
+    void loadPointcloudsFromDir (std::string directory, std::vector<PointCloud>& pointclouds);
+
+  private:
+    Eigen::Matrix4f extractTransformationFromFile (std::string filename);
 
     void getFileListWithExtension(const std::string& input_dir, const std::string& input_ext,
         std::set<std::string>& file_list);

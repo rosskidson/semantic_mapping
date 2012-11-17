@@ -13,6 +13,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/register_kinect_to_model</url>
   <depend package="pcl"/>
+  <depend package="pcl_typedefs"/>
   <depend package="opencv2"/>
   <depend package="image_transport"/>
   <depend package="roscpp"/>
@@ -21,6 +22,10 @@
   <depend package="geometry_msgs"/>
   <depend package="rosservice"/>
   <depend package="tf_conversions"/>  
+
+  <export>
+      <cpp cflags="-I${prefix}/include"/>
+  </export>  
 
 </package>
 

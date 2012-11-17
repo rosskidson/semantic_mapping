@@ -35,7 +35,10 @@ link_directories(${mesh_io_PACKAGE_PATH}/lib)
 rosbuild_find_ros_package(box_filter)
 link_directories(${box_filter_PACKAGE_PATH}/lib)
 
-set(SEMANTIC_MAPPING_LIBRARIES mesh_io box_filter)
+rosbuild_find_ros_package(register_kinect_to_model)
+link_directories(${register_kinect_to_model_PACKAGE_PATH}/lib)
+
+set(SEMANTIC_MAPPING_LIBRARIES mesh_io box_filter register_kinect)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

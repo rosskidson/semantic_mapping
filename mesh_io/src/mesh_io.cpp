@@ -33,7 +33,7 @@ MeshIO::~MeshIO ()
 {
 }
 
-PointCloudConstPtr MeshIO::loadMeshFromFile (std::string filename)
+PointCloudPtr MeshIO::loadMeshFromFile (std::string filename)
 {
   PointCloudPtr input (new PointCloud);
   pcl::PolygonMesh mesh;
@@ -42,12 +42,17 @@ PointCloudConstPtr MeshIO::loadMeshFromFile (std::string filename)
   return input;
 }
 
-PointCloudConstPtr MeshIO::loadPointcloudFromFile (std::string filename)
+PointCloudPtr MeshIO::loadPointcloudFromFile (std::string filename)
 {
   pcl::PCDReader reader;
   PointCloudPtr input (new PointCloud);
   reader.read (filename, *input);
   return input;
+}
+
+cv::Mat MeshIO::loadImageFromFile(std::string filename)
+{
+  return cv::imread (filename, CV_LOAD_IMAGE_COLOR);
 }
 /*
  * Iterate through a directory and get all the paths with a certain extension

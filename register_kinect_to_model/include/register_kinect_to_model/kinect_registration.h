@@ -8,10 +8,10 @@
 #ifndef KINECT_REGISTRATION_H_
 #define KINECT_REGISTRATION_H_
 
-#include "ros/ros.h"
-
 #include <opencv2/core/core.hpp>
 #include "opencv2/nonfree/features2d.hpp"
+#include "pcl_typedefs/pcl_typedefs.h"
+#include <Eigen/Core>
 
 class KinectRegistration
 {
@@ -19,9 +19,10 @@ class KinectRegistration
     KinectRegistration ();
     virtual ~KinectRegistration ();
 
-  private:
-    bool registerKinectToModel ();
+    Eigen::Matrix4f registerKinectToModel (const PointCloudConstPtr model_cloud_ptr, const PointCloudConstPtr kinect_cloud_ptr,
+        cv::Mat kinect_image, std::vector<cv::Mat>& images, std::vector<Eigen::Matrix4f>& transforms );
 
+  private:
     uint findMatchingImage (const cv::Mat query_image, const std::vector<cv::Mat>& images);
 
     void getFeatures (const cv::Mat& input_image,
@@ -30,8 +31,6 @@ class KinectRegistration
     void findMatches (const cv::Mat& source_descriptors,
         const cv::Mat& target_descriptors, std::vector<cv::DMatch>& matches);
 
-    ros::ServiceServer service_;
-    ros::NodeHandle nh_;
     int image_counter_;
 };
 

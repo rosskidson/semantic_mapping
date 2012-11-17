@@ -11,6 +11,7 @@
   <depend package="roscpp"/>
   <depend package="rosservice"/>
   <depend package="pcl"/>
+  <depend package="pcl_typedefs"/>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
   <depend package="tf"/>

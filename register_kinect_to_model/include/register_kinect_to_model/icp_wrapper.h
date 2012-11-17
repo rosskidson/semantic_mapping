@@ -10,7 +10,7 @@
 
 
 #include <pcl/registration/icp.h>
-#include "register_kinect_to_model/pcl_typedefs.h"
+#include "pcl_typedefs/pcl_typedefs.h"
 
 class ICPWrapper
 {

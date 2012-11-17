@@ -5,7 +5,7 @@
  *      Author: kidson
  */
 
-#include "../include/register_kinect_to_model/icp_wrapper.h"
+#include "register_kinect_to_model/icp_wrapper.h"
 #include <ros/console.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
@@ -26,6 +26,7 @@ ICPWrapper::~ICPWrapper ()
 Eigen::Matrix4f ICPWrapper::performICP (PointCloudConstPtr source_cloud_ptr,
     PointCloudConstPtr target_cloud_ptr, Eigen::Matrix4f initial_transform)
 {
+  ROS_INFO("Performing ICP...");
   PointCloud source_cloud_transformed;
   icp_.setInputCloud (source_cloud_ptr);
   icp_.setInputTarget (target_cloud_ptr);

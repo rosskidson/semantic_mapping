@@ -37,6 +37,7 @@ int main (int argc, char** argv)
   ROS_INFO("Importing mesh to pointcloud model...");
   PointCloudConstPtr raw_import;
   raw_import = io_obj.loadMeshFromFile (ps->get<std::string> ("mesh_input_filename"));
+  io_obj.savePointcloudToFile(raw_import, "raw_import.pcd");
 
   ROS_INFO("Applying boxfilter to cloud...");
   PointCloudPtr model_cloud_ptr (new PointCloud);
@@ -61,6 +62,8 @@ int main (int argc, char** argv)
   ROS_INFO("using kinect snapshot from file");
   kinect_image = io_obj.loadImageFromFile("/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png");
   kinect_cloud_ptr = io_obj.loadPointcloudFromFile("/work/kidson/meshes/cabinet_scan_3/frames_to_register/pointcloud_2.pcd");
+  io_obj.savePointcloudToFile(kinect_cloud_ptr, "kinect_cloud.pcd");
+  io_obj.savePointcloudToFile(model_cloud_ptr, "model_cloud.pcd");
 
   ROS_INFO("Registering Kinect to Model...");
   std::vector<cv::Mat> images;
@@ -70,6 +73,7 @@ int main (int argc, char** argv)
   KinectRegistration kinect_reg;
   Eigen::Matrix4f dildos;
   dildos = kinect_reg.registerKinectToModel(model_cloud_ptr,kinect_cloud_ptr,kinect_image,images,transformations);
+  ROS_INFO_STREAM("final trafo \n " << dildos);
 
   return 0;
 }

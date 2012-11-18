@@ -24,6 +24,8 @@ class MeshIO
 
     PointCloudPtr loadPointcloudFromFile (std::string filename);
 
+    void savePointcloudToFile (const PointCloudConstPtr input_cloud_ptr, std::string filename);
+
     cv::Mat loadImageFromFile(std::string filename);
 
     void loadImagesFromDir (std::string directory, std::vector<cv::Mat>& images);

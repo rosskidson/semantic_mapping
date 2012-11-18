@@ -50,6 +50,12 @@ PointCloudPtr MeshIO::loadPointcloudFromFile (std::string filename)
   return input;
 }
 
+void MeshIO::savePointcloudToFile (const PointCloudConstPtr input_cloud_ptr, std::string filename)
+{
+  pcl::PCDWriter writer;
+  writer.write(filename, *input_cloud_ptr);
+}
+
 cv::Mat MeshIO::loadImageFromFile(std::string filename)
 {
   return cv::imread (filename, CV_LOAD_IMAGE_COLOR);

@@ -20,8 +20,8 @@ ParameterServer* ParameterServer::instance() {
 }
 void ParameterServer::defaultConfig() {
   config["mesh_input_filename"]                             = std::string("/work/kidson/meshes/cabinet_scan_2/mesh_1.ply");
-  config["mesh_registration_images_directory"]              = std::string("/work/kidson/meshes/cabinet_scan_2/snap_shots_reduced");
-  config["mesh_registration_transformations_directory"]     = std::string("/work/kidson/meshes/cabinet_scan_2/snap_shots_reduced");
+  config["mesh_registration_images_directory"]              = std::string("/work/kidson/meshes/cabinet_scan_2/KinFuSnapshots");
+  config["mesh_registration_transformations_directory"]     = std::string("/work/kidson/meshes/cabinet_scan_2/KinFuSnapshots");
   //config["start_paused"]              = static_cast<bool> (true);
 }
 

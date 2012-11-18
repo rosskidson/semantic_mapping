@@ -20,6 +20,8 @@ class ICPWrapper
     Eigen::Matrix4f performICP (PointCloudConstPtr source_cloud_ptr,
         PointCloudConstPtr target_cloud_ptr, Eigen::Matrix4f initial_transform);
   private:
+    PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
+
     pcl::IterativeClosestPoint<PointType, PointType> icp_;
 };
 

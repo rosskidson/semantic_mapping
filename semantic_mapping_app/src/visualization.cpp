@@ -28,6 +28,8 @@
 // opencv
 #include <opencv2/highgui/highgui.hpp>
 
+#include <iostream>
+
 
 Visualization::Visualization ()
 {
@@ -50,11 +52,23 @@ void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_m
 
 void Visualization::visualizeCloud (PointCloudPtr cloud_ptr)
 {
+  std::vector<PointCloudPtr> cloud_ptr_vec;
+  cloud_ptr_vec.push_back(cloud_ptr);
+  visualizeCloud(cloud_ptr_vec);
+}
+
+void Visualization::visualizeCloud (std::vector<PointCloudPtr>& cloud_ptr_vec)
+{
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
-  viewer->addPointCloud<pcl::PointXYZ> (cloud_ptr, "imported cloud");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
-      "imported cloud");
+  for(std::vector<PointCloudPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
+  {
+    std::stringstream cloud_name;
+    cloud_name << "cloud "<< itr - cloud_ptr_vec.begin();
+    viewer->addPointCloud<PointType> (*itr, cloud_name.str());
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
+      cloud_name.str());
+  }
   viewer->addCoordinateSystem (1.0);
   viewer->initCameraParameters ();
   while (!viewer->wasStopped ())

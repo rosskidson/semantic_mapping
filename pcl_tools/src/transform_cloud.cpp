@@ -4,6 +4,8 @@
 #include <pcl/point_types.h>
 #include <pcl/common/transforms.h>
 
+typedef pcl::PointXYZ PointType;
+
 int main (int argc, char** argv)
 {
   if (argc != 3)
@@ -12,9 +14,10 @@ int main (int argc, char** argv)
     exit(0);
   }
   pcl::PCDReader reader;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudIn (new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudOut (new pcl::PointCloud<pcl::PointXYZRGB>);
-  Eigen::Matrix4f trafo;
+  pcl::PointCloud<PointType>::Ptr cloudIn (new pcl::PointCloud<PointType>);
+  pcl::PointCloud<PointType>::Ptr cloudOut (new pcl::PointCloud<PointType>);
+  pcl::PointCloud<PointType>::Ptr cloudOut_inv (new pcl::PointCloud<PointType>);
+  Eigen::Matrix4f trafo, trafo_inv;
   reader.read (argv[1], *cloudIn);
   std::ifstream myfile;
   myfile.open (argv[2]);
@@ -23,10 +26,15 @@ int main (int argc, char** argv)
     {
       myfile >> trafo (row, col);
     }
+  trafo_inv = trafo.inverse();
+  ROS_INFO_STREAM("transform to be used: \n" << trafo);
+
 
   transformPointCloud (*cloudIn, *cloudOut, trafo);
+  transformPointCloud (*cloudIn, *cloudOut_inv, trafo_inv);
 
   pcl::PCDWriter writer;
   writer.write ("output.pcd", *cloudOut, false);
+  writer.write ("output_inverse.pcd", *cloudOut_inv, false);
   return (0);
 }

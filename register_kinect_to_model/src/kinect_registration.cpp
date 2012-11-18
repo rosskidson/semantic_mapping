@@ -22,9 +22,9 @@ static const std::string FEATURE_EXTRACTOR = "SIFT";
 static const std::string FEATURE_DESCRIPTOR = "SIFT";
 static const std::string DESCRIPTOR_MATCHER = "Bruteforce";
 static const int OUTLIER_REMOVAL_FACTOR = 9; //smaller = remove more outliers
-static const bool SHOW_BEST_MATCHES = false;
+static const bool SHOW_BEST_MATCHES = true;
 
-static const bool SAVE_FEATURES_IMAGE = true;
+static const bool SAVE_FEATURES_IMAGE = false;
 
 KinectRegistration::KinectRegistration ()
 {
@@ -125,6 +125,7 @@ uint KinectRegistration::findMatchingImage (const cv::Mat query_image,
   uint winner_idx = 0;
   for (std::vector<cv::Mat>::const_iterator itr = images.begin (); itr != images.end (); itr++)
   {
+
     std::vector<cv::KeyPoint> temp_keypoints;
     cv::Mat temp_descriptors;
     std::vector<cv::DMatch> temp_match;
@@ -162,9 +163,10 @@ Eigen::Matrix4f KinectRegistration::registerKinectToModel (const PointCloudConst
     cv::Mat kinect_image, std::vector<cv::Mat>& images, std::vector<Eigen::Matrix4f>& transforms )
 {
   uint best_image = findMatchingImage (kinect_image, images);
+  ROS_INFO_STREAM("winner trafo: \n" << transforms[best_image]);
 
   ICPWrapper icp;
-  Eigen::Matrix4f resulting_transform = icp.performICP(kinect_cloud_ptr, model_cloud_ptr,transforms[best_image]);
+  Eigen::Matrix4f resulting_transform = icp.performICP(model_cloud_ptr, kinect_cloud_ptr, transforms[best_image].inverse());
 
   return resulting_transform;
 }

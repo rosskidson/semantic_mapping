@@ -25,6 +25,9 @@ class Visualization
     void visualizeImage(const sensor_msgs::Image& image_msg);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
 
+  private:
+    double vox_grid_size_;
+
 };
 
 #endif /* VISUALIZATION_H_ */

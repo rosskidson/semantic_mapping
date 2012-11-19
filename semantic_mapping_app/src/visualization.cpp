@@ -32,7 +32,7 @@
 #include <iostream>
 
 
-Visualization::Visualization ()
+Visualization::Visualization (): vox_grid_size_(0.05)
 {
   // TODO Auto-generated constructor stub
 
@@ -67,10 +67,20 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
     int cloud_num = itr - cloud_ptr_vec.begin();
     std::stringstream cloud_name;
     cloud_name << "cloud "<< itr - cloud_ptr_vec.begin();
-    //PointCloudConstPtr downsampled_ptr = downsampleCloud(*itr);
+
+    // downsample cloud if needed
+    PointCloudConstPtr downsampled_ptr;
+    if(vox_grid_size_ > 0.0)
+      downsampled_ptr = downsampleCloud(*itr);
+    else
+      downsampled_ptr = *itr;
+
+    // different colours for different clouds
     pcl::visualization::PointCloudColorHandlerCustom<PointType>
-      single_color(*itr, 255*(cloud_num % 2), 255*((cloud_num+1) % 2), 0);
-    viewer->addPointCloud<PointType> (*itr, single_color, cloud_name.str());
+      single_color(downsampled_ptr, 127*(cloud_num % 3), 127*((cloud_num+1) % 3), 127*((cloud_num+2) % 3));
+
+    //add the cloud
+    viewer->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
       cloud_name.str());
   }
@@ -101,7 +111,7 @@ void Visualization::visualizeImage(const sensor_msgs::Image& image_msg)
 
 PointCloudConstPtr Visualization::downsampleCloud (PointCloudConstPtr input)
 {
-  const double voxel_size = 0.01;
+  const double voxel_size = vox_grid_size_;
   PointCloudPtr cloud_filtered (new PointCloud);
   pcl::VoxelGrid<PointType> downsampler;
   downsampler.setInputCloud (input);

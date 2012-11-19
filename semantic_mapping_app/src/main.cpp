@@ -45,11 +45,15 @@ int main (int argc, char** argv)
   ROS_INFO("Performing principle axis alignment...");
   AxisAlignment axis_align;
   Eigen::Matrix4f guess, result;
-  guess = Eigen::Matrix4f::Identity(4,4);
+  guess = Eigen::Matrix4f::Zero(4,4);
+  guess(0,0) = 1.0;
+  guess(1,2) = 1.0;
+  guess(2,1) = -1.0;
+  guess(3,3) = 1.0;
   PointCloudPtr import_aligned_ptr (new PointCloud);
   axis_align.alignCloudPrincipleAxis(raw_import_ptr, guess, import_aligned_ptr, result);
 
-  vis_clouds.push_back(raw_import_ptr);
+  //vis_clouds.push_back(raw_import_ptr);
   vis_clouds.push_back(import_aligned_ptr);
   visualizer.visualizeCloud(vis_clouds);
 

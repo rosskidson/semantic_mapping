@@ -14,6 +14,7 @@
 //pcl
 #include <pcl/point_types.h>
 #include <pcl/ros/conversions.h>
+#include <pcl/filters/voxel_grid.h>
 //vtk
 #include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
@@ -50,22 +51,26 @@ void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_m
   visualizeCloud(cloud_ptr);
 }
 
-void Visualization::visualizeCloud (PointCloudPtr cloud_ptr)
+void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr)
 {
-  std::vector<PointCloudPtr> cloud_ptr_vec;
+  std::vector<PointCloudConstPtr> cloud_ptr_vec;
   cloud_ptr_vec.push_back(cloud_ptr);
   visualizeCloud(cloud_ptr_vec);
 }
 
-void Visualization::visualizeCloud (std::vector<PointCloudPtr>& cloud_ptr_vec)
+void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
 {
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
-  for(std::vector<PointCloudPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
+  for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
   {
+    int cloud_num = itr - cloud_ptr_vec.begin();
     std::stringstream cloud_name;
     cloud_name << "cloud "<< itr - cloud_ptr_vec.begin();
-    viewer->addPointCloud<PointType> (*itr, cloud_name.str());
+    //PointCloudConstPtr downsampled_ptr = downsampleCloud(*itr);
+    pcl::visualization::PointCloudColorHandlerCustom<PointType>
+      single_color(*itr, 255*(cloud_num % 2), 255*((cloud_num+1) % 2), 0);
+    viewer->addPointCloud<PointType> (*itr, single_color, cloud_name.str());
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
       cloud_name.str());
   }
@@ -92,4 +97,15 @@ void Visualization::visualizeImage(const sensor_msgs::Image& image_msg)
   }
   cv::imshow("abc", cv_ptr->image);
   cv::waitKey(0);
+}
+
+PointCloudConstPtr Visualization::downsampleCloud (PointCloudConstPtr input)
+{
+  const double voxel_size = 0.01;
+  PointCloudPtr cloud_filtered (new PointCloud);
+  pcl::VoxelGrid<PointType> downsampler;
+  downsampler.setInputCloud (input);
+  downsampler.setLeafSize (voxel_size, voxel_size, voxel_size);
+  downsampler.filter (*cloud_filtered);
+  return cloud_filtered;
 }

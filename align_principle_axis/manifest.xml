@@ -10,6 +10,11 @@
   <url>http://ros.org/wiki/align_principle_axis</url>
   <depend package="roscpp"/>
   <depend package="pcl"/>
+  <depend package="pcl_typedefs"/>
+
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+  </export>  
 
 </package>
 

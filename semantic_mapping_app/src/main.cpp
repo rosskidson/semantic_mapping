@@ -38,32 +38,35 @@ int main (int argc, char** argv)
   MeshIO io_obj;
 
   ROS_INFO("Importing mesh to pointcloud model...");
-  PointCloudConstPtr raw_import_ptr;
+  PointCloudPtr raw_import_ptr;
   raw_import_ptr = io_obj.loadMeshFromFile (ps->get<std::string> ("mesh_input_filename"));
   io_obj.savePointcloudToFile(raw_import_ptr, "raw_import.pcd");
 
   ROS_INFO("Performing principle axis alignment...");
   AxisAlignment axis_align;
-  Eigen::Matrix4f guess, result;
+  Eigen::Matrix4f guess, align_trafo, move_to_origin;
   guess = Eigen::Matrix4f::Zero(4,4);
   guess(0,0) = 1.0;
   guess(1,2) = 1.0;
   guess(2,1) = -1.0;
   guess(3,3) = 1.0;
-  PointCloudPtr import_aligned_ptr (new PointCloud);
-  axis_align.alignCloudPrincipleAxis(raw_import_ptr, guess, import_aligned_ptr, result);
+  //translation:
+  //guess(2,3) = 2.5;
+  PointCloudPtr model_aligned_ptr (new PointCloud);
+  axis_align.alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
 
-  //vis_clouds.push_back(raw_import_ptr);
-  vis_clouds.push_back(import_aligned_ptr);
-  visualizer.visualizeCloud(vis_clouds);
+  visualizer.visualizeCloud(model_aligned_ptr);
 
-//  ROS_INFO("Applying boxfilter to cloud...");
-//  PointCloudPtr model_cloud_ptr (new PointCloud);
-//  Eigen::Vector4f min_point (1.0, 1.0, 0.6, 1);
-//  Eigen::Vector4f max_point (2.0, 2.7, 1.2, 1);
-//  box_filter::filterCloud (raw_import, min_point, max_point, model_cloud_ptr);
-//
-//
+  ROS_INFO("Applying boxfilter to cloud...");
+  PointCloudPtr cabinet_cloud_ptr (new PointCloud);
+  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
+  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
+  box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
+
+  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
+  axis_align.moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
+  visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
+
 //  ros::ServiceClient client;
 //  client = nh.serviceClient<kinect_capture_frame::kinectSnapshot> ("kinect_snapshot_service");
 //  kinect_capture_frame::kinectSnapshot get_kinect_frame_srv;

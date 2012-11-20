@@ -2,8 +2,8 @@
  <node pkg="semantic_mapping_app" type="main" name="semantic_mapping_app" cwd="node" required="false" output="screen"> 
 
 
-    <param name="config/mesh_input_filename"            value="/work/kidson/meshes/cabinet_scan_2/mesh_1.ply" />
-
+    <!--<param name="config/mesh_input_filename"            value="/work/kidson/meshes/cabinet_scan_2/mesh_1.ply" /> -->
+	<param name="config/mesh_input_filename"            value="/media/burg/work/meshes/cabinet_scan_2/mesh_1.ply" />
 </node>
 
 </launch>

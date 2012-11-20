@@ -19,7 +19,10 @@ class AxisAlignment
     virtual ~AxisAlignment ();
 
     void alignCloudPrincipleAxis(const PointCloudConstPtr cloud_input, const Eigen::Matrix4f& inital_guess,
-        PointCloudPtr cloud_output, Eigen::Matrix4f transform_output);
+        const PointCloudPtr cloud_output, Eigen::Matrix4f& transform_output);
+
+    void moveModelToOrigin(const PointCloudConstPtr cloud_input_ptr, const PointCloudPtr cloud_output_ptr,
+        Eigen::Matrix4f& transform_output);
 };
 
 #endif /* AXIS_ALIGNMENT_H_ */

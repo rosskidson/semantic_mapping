@@ -32,7 +32,7 @@
 #include <iostream>
 
 
-Visualization::Visualization (): vox_grid_size_(0.05)
+Visualization::Visualization (): vox_grid_size_(0.02)
 {
   // TODO Auto-generated constructor stub
 

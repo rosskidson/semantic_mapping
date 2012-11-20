@@ -17,6 +17,9 @@
 #include "box_filter/box_filter.h"
 #include "register_kinect_to_model/kinect_registration.h"
 #include "align_principle_axis/axis_alignment.h"
+#include "align_principle_axis/floor_axis_alignment.h"
+
+#include <pluginlib/class_loader.h>
 
 #include "semantic_mapping_app/visualization.h"
 #include "semantic_mapping_app/parameter_server.h"
@@ -43,17 +46,29 @@ int main (int argc, char** argv)
   io_obj.savePointcloudToFile(raw_import_ptr, "raw_import.pcd");
 
   ROS_INFO("Performing principle axis alignment...");
-  AxisAlignment axis_align;
+  //align_principle_axis::FloorAxisAlignment axis_align;
+
+  pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader("align_principle_axis", "align_principle_axis::AxisAlignment");
+
+  align_principle_axis::AxisAlignment* axis_align = NULL;
+
+  try
+  {
+    axis_align = loader.createClassInstance("align_principle_axis/FloorAxisAlignment");
+  }
+  catch(pluginlib::PluginlibException& ex)
+  {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
+
   Eigen::Matrix4f guess, align_trafo, move_to_origin;
   guess = Eigen::Matrix4f::Zero(4,4);
   guess(0,0) = 1.0;
   guess(1,2) = 1.0;
   guess(2,1) = -1.0;
   guess(3,3) = 1.0;
-  //translation:
-  //guess(2,3) = 2.5;
   PointCloudPtr model_aligned_ptr (new PointCloud);
-  axis_align.alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
+  axis_align->alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
 
   visualizer.visualizeCloud(model_aligned_ptr);
 
@@ -63,8 +78,9 @@ int main (int argc, char** argv)
   Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
   box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
 
+  ROS_INFO("move model to origin...");
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-  axis_align.moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
+  axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
   visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
 
 //  ros::ServiceClient client;

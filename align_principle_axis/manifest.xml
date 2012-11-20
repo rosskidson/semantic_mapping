@@ -11,10 +11,13 @@
   <depend package="roscpp"/>
   <depend package="pcl"/>
   <depend package="pcl_typedefs"/>
+  <depend package="pluginlib"/>
 
   <export>
-      <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+      <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lfloor_axis_alignment"/>
+      <align_principle_axis plugin="${prefix}/axis_alignment_plugins.xml" />
   </export>  
+
 
 </package>
 

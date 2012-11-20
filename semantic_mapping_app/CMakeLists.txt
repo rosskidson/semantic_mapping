@@ -29,7 +29,7 @@ MESSAGE(${VTK_LIBRARY_DIRS})
 #SET(VTK_LIBRARIES vtkalglib vtkCharts vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGeovis vtkGraphics vtkHybrid vtkImaging vtkInfovis vtkIO vtkmetaio vtkParallel vtkproj4 vtkQtChart vtkRendering vtksqlite vtksys vtkverdict vtkViews vtkVolumeRendering vtkWidgets)
 SET(VTK_LIBRARIES vtkCommon vtkFiltering)
 
-set(SEMANTIC_MAPPING_LIBRARIES axis_alignment mesh_io box_filter register_kinect)
+set(SEMANTIC_MAPPING_LIBRARIES mesh_io box_filter register_kinect axis_alignment) #
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

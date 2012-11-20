@@ -12,17 +12,22 @@
 
 #include <Eigen/Core>
 
-class AxisAlignment
+namespace align_principle_axis
 {
-  public:
-    AxisAlignment ();
-    virtual ~AxisAlignment ();
+  class AxisAlignment
+  {
+    public:
+      AxisAlignment ();
+      virtual ~AxisAlignment ();
 
-    void alignCloudPrincipleAxis(const PointCloudConstPtr cloud_input, const Eigen::Matrix4f& inital_guess,
-        const PointCloudPtr cloud_output, Eigen::Matrix4f& transform_output);
+      virtual void alignCloudPrincipleAxis (const PointCloudConstPtr cloud_input,
+          const Eigen::Matrix4f& inital_guess,
+          const PointCloudPtr cloud_output, Eigen::Matrix4f& transform_output) = 0;
 
-    void moveModelToOrigin(const PointCloudConstPtr cloud_input_ptr, const PointCloudPtr cloud_output_ptr,
-        Eigen::Matrix4f& transform_output);
-};
+      /*virtual*/ void moveModelToOrigin (const PointCloudConstPtr cloud_input_ptr,
+          const PointCloudPtr cloud_output_ptr,
+          Eigen::Matrix4f& transform_output);
+  };
+}
 
 #endif /* AXIS_ALIGNMENT_H_ */

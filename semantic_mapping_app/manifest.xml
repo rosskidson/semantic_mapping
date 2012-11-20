@@ -17,6 +17,7 @@
   <depend package="rosservice"/>
   <depend package="sensor_msgs"/>
   <depend package="image_transport"/>
+  <depend package="pluginlib"/>
   <depend package="mesh_io"/>
   <depend package="kinect_capture_frame"/>
   <depend package="box_filter"/>

@@ -7,15 +7,15 @@
 
 #include "segment_planes_region_grow_plugin/plane_segmentation_region_grow.h"
 
-#include <pcl/features/normal_3d_omp.h>
-#include <pcl/features/normal_3d.h>
+#include <pcl17/features/normal_3d_omp.h>
+#include <pcl17/features/normal_3d.h>
 
 
 
-#include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/segmentation/region_growing.h>
+#include <pcl17/search/search.h>
+#include <pcl17/search/kdtree.h>
+#include <pcl17/filters/passthrough.h>
+#include <pcl17/segmentation/region_growing.h>
 
 #include <ros/console.h>
 
@@ -48,11 +48,11 @@ namespace segment_planes_region_grow_plugin
       PointCloudNormalsPtr cloud_normals)
   {
     // Create the normal estimation class, and pass the input dataset to it
-    pcl::NormalEstimationOMP<PointType, PointNormal> ne;
+    pcl17::NormalEstimationOMP<PointType, PointNormal> ne;
     ne.setNumberOfThreads(8);
     ne.setInputCloud (input_cloud_ptr);
 
-    pcl::search::KdTree<PointType>::Ptr normals_tree (new pcl::search::KdTree<PointType>);
+    pcl17::search::KdTree<PointType>::Ptr normals_tree (new pcl17::search::KdTree<PointType>);
     //ne.setKSearch(30);
     ne.setRadiusSearch(0.1);
     ne.setSearchMethod(normals_tree);
@@ -61,44 +61,44 @@ namespace segment_planes_region_grow_plugin
 
   void PlaneSegmentationRegionGrow::segmentPlanes (const PointCloudConstPtr model,
       const std::vector<PointCloudConstPtr>& plane_clouds, const std::vector<
-          pcl::ModelCoefficients::ConstPtr>& plane_coeffs)
+          pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
     ROS_INFO("region_grow");
     //calculate normals
     PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
     calculatePointCloudNormals(model,cloud_normals);
 
-    pcl::search::Search<pcl::PointXYZ>::Ptr tree = boost::shared_ptr<pcl::search::Search<pcl::PointXYZ> > (new pcl::search::KdTree<pcl::PointXYZ>);
-    pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
-    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
+    pcl17::search::Search<PointType>::Ptr tree = boost::shared_ptr<pcl17::search::Search<PointType> > (new pcl17::search::KdTree<PointType>);
+    PointCloudNormalsPtr normals (new PointCloudNormals);
+    pcl17::NormalEstimation<PointType, PointNormal> normal_estimator;
     normal_estimator.setSearchMethod (tree);
-    normal_estimator.setInputCloud (cloud);
+    normal_estimator.setInputCloud (model);
     normal_estimator.setKSearch (50);
     normal_estimator.compute (*normals);
 
-    pcl::IndicesPtr indices (new std::vector <int>);
-    pcl::PassThrough<pcl::PointXYZ> pass;
-    pass.setInputCloud (cloud);
+    pcl17::IndicesPtr indices (new std::vector <int>);
+    pcl17::PassThrough<PointType> pass;
+    pass.setInputCloud (model);
     pass.setFilterFieldName ("z");
     pass.setFilterLimits (0.0, 1.0);
     pass.filter (*indices);
 
-    pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
+    pcl17::RegionGrowing<PointType, PointNormal> reg;
     reg.setMinClusterSize (100);
     reg.setMaxClusterSize (10000);
     reg.setSearchMethod (tree);
     reg.setNumberOfNeighbours (30);
-    reg.setInputCloud (cloud);
+    reg.setInputCloud (model);
     //reg.setIndices (indices);
     reg.setInputNormals (normals);
     reg.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
     reg.setCurvatureThreshold (1.0);
 
-    std::vector <pcl::PointIndices> clusters;
+    std::vector <pcl17::PointIndices> clusters;
     reg.extract (clusters);
 
     std::cout << "Number of clusters is equal to " << clusters.size () << std::endl;
-    std::cout << "First cluster has " << clusters[0].indices.size () << " points." << endl;
+    std::cout << "First cluster has " << clusters[0].indices.size () << " points.\n";
     std::cout << "These are the indices of the points of the initial" <<
       std::endl << "cloud that belong to the first cluster:" << std::endl;
     int counter = 0;

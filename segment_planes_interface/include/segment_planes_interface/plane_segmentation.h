@@ -10,19 +10,7 @@
 
 #include <pcl_typedefs/pcl_typedefs.h>
 
-//#include <pcl/point_types.h>
-//typedef pcl::PointXYZ PointType;
-//typedef pcl::PointNormal PointNormal;
-//
-//typedef pcl::PointCloud<PointType> PointCloud;
-//typedef PointCloud::Ptr PointCloudPtr;
-//typedef PointCloud::ConstPtr PointCloudConstPtr;
-//
-//typedef pcl::PointCloud<PointNormal> PointCloudNormals;
-//typedef PointCloudNormals::Ptr PointCloudNormalsPtr;
-//typedef PointCloudNormals::ConstPtr PointCloudNormalsConstPtr;
-
-#include <pcl/ModelCoefficients.h>
+#include <pcl17/ModelCoefficients.h>
 
 namespace segment_planes_interface
 {
@@ -34,7 +22,7 @@ namespace segment_planes_interface
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
           const std::vector<PointCloudConstPtr>& plane_clouds,
-          const std::vector<pcl::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
+          const std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
 
   };
 }

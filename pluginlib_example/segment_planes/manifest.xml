@@ -10,7 +10,7 @@
   <url>http://ros.org/wiki/segment_planes</url>
   <depend package="roscpp"/>
   <depend package="pluginlib"/>
-  <depend package="pcl"/>
+  <depend package="pcl17"/>
   <depend package="segmentation_interface"/>
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsegment_planes" />

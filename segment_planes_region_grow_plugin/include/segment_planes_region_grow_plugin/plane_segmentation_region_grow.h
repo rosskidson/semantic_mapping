@@ -20,7 +20,7 @@ namespace segment_planes_region_grow_plugin
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
           const std::vector<PointCloudConstPtr>& plane_clouds,
-          const std::vector<pcl::ModelCoefficients::ConstPtr>& plane_coeffs);
+          const std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
 
   };
 }

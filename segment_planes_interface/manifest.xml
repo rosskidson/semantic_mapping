@@ -1,0 +1,21 @@
+<package>
+  <description brief="segment_planes_interface">
+
+     segment_planes_interface
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/segment_planes_interface</url>
+  <depend package="roscpp"/>
+  <depend package="pcl"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="pluginlib"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" />
+  </export>
+
+</package>
+
+

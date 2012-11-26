@@ -4,7 +4,7 @@
 #include <pcl/point_types.h>
 
 typedef pcl::PointXYZ PointType;
-typedef pcl::PointXYZRGBNormal PointNormal;
+typedef pcl::PointNormal PointNormal;
 
 typedef pcl::PointCloud<PointType> PointCloud;
 typedef PointCloud::Ptr PointCloudPtr;

@@ -1,0 +1,7 @@
+<library path="lib/libsegment_planes_region_grow_plugin">
+  <class name="segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow" type="segment_planes_region_grow_plugin::PlaneSegmentationRegionGrow" base_class_type="segment_planes_interface::PlaneSegmentation">
+  <description>
+    This plugin performs plane segmentation using region growing from pcl
+  </description>
+  </class>
+</library>

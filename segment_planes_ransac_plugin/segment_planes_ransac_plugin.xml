@@ -1,0 +1,7 @@
+<library path="lib/libsegment_planes_ransac_plugin">
+  <class name="segment_planes_ransac_plugin/PlaneSegmentationRANSAC" type="segment_planes_ransac_plugin::PlaneSegmentationRANSAC" base_class_type="segment_planes_interface::PlaneSegmentation">
+  <description>
+    This plugin performs plane segmentation using ransac from pcl
+  </description>
+  </class>
+</library>

@@ -17,7 +17,7 @@
 #include "box_filter/box_filter.h"
 #include "register_kinect_to_model/kinect_registration.h"
 #include "align_principle_axis/axis_alignment.h"
-#include "align_principle_axis/floor_axis_alignment.h"
+#include "segment_planes_interface/plane_segmentation.h"
 
 #include <pluginlib/class_loader.h>
 
@@ -28,6 +28,9 @@
 #include "message_conversions.cpp"
 
 #include <Eigen/Core>
+
+#include <pcl/features/normal_3d.h>
+#include <pcl/filters/voxel_grid.h>
 
 int main (int argc, char** argv)
 {
@@ -48,13 +51,13 @@ int main (int argc, char** argv)
   ROS_INFO("Performing principle axis alignment...");
   //align_principle_axis::FloorAxisAlignment axis_align;
 
-  pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader("align_principle_axis", "align_principle_axis::AxisAlignment");
+  pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader_axis("align_principle_axis", "align_principle_axis::AxisAlignment");
 
   align_principle_axis::AxisAlignment* axis_align = NULL;
 
   try
   {
-    axis_align = loader.createClassInstance("align_principle_axis/FloorAxisAlignment");
+    axis_align = loader_axis.createClassInstance("align_principle_axis/FloorAxisAlignment");
   }
   catch(pluginlib::PluginlibException& ex)
   {
@@ -70,7 +73,7 @@ int main (int argc, char** argv)
   PointCloudPtr model_aligned_ptr (new PointCloud);
   axis_align->alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
 
-  visualizer.visualizeCloud(model_aligned_ptr);
+  //visualizer.visualizeCloud(model_aligned_ptr);
 
   ROS_INFO("Applying boxfilter to cloud...");
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
@@ -82,6 +85,50 @@ int main (int argc, char** argv)
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
   axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
   visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
+
+
+  ROS_INFO("segment planes...");
+  //align_principle_axis::FloorAxisAlignment axis_align;
+
+  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
+
+  segment_planes_interface::PlaneSegmentation* plane_segmenter = NULL;
+
+  try
+  {
+    plane_segmenter = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
+  }
+  catch(pluginlib::PluginlibException& ex)
+  {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
+  std::vector<PointCloudConstPtr> dfg;
+  std::vector<pcl::ModelCoefficients::ConstPtr> hij;
+
+  PointCloudPtr temp (new PointCloud);
+  double leaf_size = 0.01;
+  pcl::VoxelGrid<PointType> sor;
+  sor.setInputCloud (cabinet_centered_cloud_ptr);
+  sor.setLeafSize (leaf_size, leaf_size, leaf_size);
+  sor.filter (*temp);
+
+  plane_segmenter->segmentPlanes(temp, dfg,hij);
+//
+//  PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
+//  pcl::NormalEstimation<PointType, PointNormal> ne;
+//  //ne.setNumberOfThreads(4);
+//  ne.setInputCloud (temp);
+//
+//  pcl::search::KdTree<PointType>::Ptr normals_tree (new pcl::search::KdTree<PointType>);
+//  //ne.setKSearch(30);
+//  ne.setRadiusSearch(0.1);
+//  ne.setSearchMethod(normals_tree);
+//  ne.compute (*cloud_normals);
+//
+//  std::vector<PointCloudConstPtr> dfg;
+//  std::vector<pcl::ModelCoefficients::ConstPtr> hij;
+//
+//  plane_segmenter->segmentPlanes(temp,cloud_normals, dfg,hij);
 
 //  ros::ServiceClient client;
 //  client = nh.serviceClient<kinect_capture_frame::kinectSnapshot> ("kinect_snapshot_service");

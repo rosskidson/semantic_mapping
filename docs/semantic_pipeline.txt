@@ -13,6 +13,8 @@ when user inspects the registerted model it shall have a side image widget for i
 
 3. Principle axis identification/alignment.
  3.1 Is the alignmnet to walls/ceiling correct?
+      Extract largest planes
+ 3.2 - allow user to label planes (either wall/floor/ceiling) gui task - dejan
      Allow user input of 90 degree rotations
      
 4. Segmentation of Planes

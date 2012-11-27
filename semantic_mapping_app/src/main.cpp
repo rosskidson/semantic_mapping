@@ -46,6 +46,7 @@ int main (int argc, char** argv)
   PointCloudPtr raw_import_ptr;
   raw_import_ptr = io_obj.loadMeshFromFile (ps->get<std::string> ("mesh_input_filename"));
   io_obj.savePointcloudToFile(raw_import_ptr, "raw_import.pcd");
+    visualizer.visualizeCloud(raw_import_ptr);
 
   ROS_INFO("Performing principle axis alignment...");
   //align_principle_axis::FloorAxisAlignment axis_align;
@@ -72,7 +73,7 @@ int main (int argc, char** argv)
   PointCloudPtr model_aligned_ptr (new PointCloud);
   axis_align->alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
 
-  //visualizer.visualizeCloud(model_aligned_ptr);
+  visualizer.visualizeCloud(model_aligned_ptr);
 
   ROS_INFO("Applying boxfilter to cloud...");
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);

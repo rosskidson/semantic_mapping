@@ -10,7 +10,7 @@
   <url>http://ros.org/wiki/mesh_io</url>
   <depend package="roscpp"/>
   <depend package="rosservice"/>
-  <depend package="pcl"/>
+  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>

@@ -10,10 +10,10 @@
 //ros
 #include "ros/ros.h"
 //pcl
-#include <pcl/io/ply_io.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_lib_io.h>
-#include <pcl/ros/conversions.h>
+#include <pcl17/io/ply_io.h>
+#include <pcl17/io/pcd_io.h>
+#include <pcl17/io/vtk_lib_io.h>
+#include <pcl17/ros/conversions.h>
 
 //opencv
 #include <opencv2/highgui/highgui.hpp>

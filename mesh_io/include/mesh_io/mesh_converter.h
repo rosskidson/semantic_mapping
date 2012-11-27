@@ -9,8 +9,8 @@
 #define MESH_CONVERTER_H_
 
 //pcl
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
+#include <pcl17/io/pcd_io.h>
+#include <pcl17/point_types.h>
 // pcl typedefs
 
 #include "pcl_typedefs/pcl_typedefs.h"

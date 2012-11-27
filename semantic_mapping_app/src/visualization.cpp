@@ -45,7 +45,7 @@ Visualization::~Visualization ()
 
 void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg)
 {
-  pcl17::PointCloud<pcl17::PointXYZ>::Ptr cloud_ptr (new pcl17::PointCloud<pcl17::PointXYZ>);
+  PointCloudPtr cloud_ptr (new PointCloud);
   pcl17::fromROSMsg(pointcloud_msg,*cloud_ptr);
 
   visualizeCloud(cloud_ptr);

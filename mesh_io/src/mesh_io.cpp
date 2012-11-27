@@ -36,9 +36,11 @@ MeshIO::~MeshIO ()
 PointCloudPtr MeshIO::loadMeshFromFile (std::string filename)
 {
   PointCloudPtr input (new PointCloud);
+  pcl17::PointCloud<pcl17::PointXYZRGB>::Ptr temp (new pcl17::PointCloud<pcl17::PointXYZRGB>);
   pcl17::PolygonMesh mesh;
   pcl17::io::loadPolygonFile (filename, mesh);
-  pcl17::fromROSMsg (mesh.cloud, *input);
+  pcl17::fromROSMsg (mesh.cloud, *temp);
+  *input = *temp;
   return input;
 }
 

@@ -3,7 +3,7 @@
 
 #include <pcl17/point_types.h>
 
-typedef pcl17::PointXYZ PointType;
+typedef pcl17::PointXYZRGB PointType;
 typedef pcl17::PointNormal PointNormal;
 
 typedef pcl17::PointCloud<PointType> PointCloud;

@@ -21,6 +21,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# eIGEN ####################
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
 #common commands for building c++ executables and libraries
 rosbuild_add_library(segment_planes_region_grow_plugin src/plane_segmentation_region_grow.cpp)
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

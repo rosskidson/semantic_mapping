@@ -12,7 +12,6 @@
 
 // includes from this stack
 #include "pcl_typedefs/pcl_typedefs.h"
-#include "pcl_typedefs/pcl_typedefs.h"
 #include "mesh_io/mesh_io.h"
 #include "box_filter/box_filter.h"
 #include "register_kinect_to_model/kinect_registration.h"
@@ -29,8 +28,8 @@
 
 #include <Eigen/Core>
 
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/voxel_grid.h>
+//#include <pcl17/features/normal_3d.h>
+//#include <pcl17/filters/voxel_grid.h>
 
 int main (int argc, char** argv)
 {
@@ -103,30 +102,30 @@ int main (int argc, char** argv)
     ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
   }
   std::vector<PointCloudConstPtr> dfg;
-  std::vector<pcl::ModelCoefficients::ConstPtr> hij;
+  std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
 
-  PointCloudPtr temp (new PointCloud);
-  double leaf_size = 0.01;
-  pcl::VoxelGrid<PointType> sor;
-  sor.setInputCloud (cabinet_centered_cloud_ptr);
-  sor.setLeafSize (leaf_size, leaf_size, leaf_size);
-  sor.filter (*temp);
+//  PointCloudPtr temp (new PointCloud);
+//  double leaf_size = 0.01;
+//  pcl17::VoxelGrid<PointType> sor;
+//  sor.setInputCloud (cabinet_centered_cloud_ptr);
+//  sor.setLeafSize (leaf_size, leaf_size, leaf_size);
+//  sor.filter (*temp);
 
-  plane_segmenter->segmentPlanes(temp, dfg,hij);
+  plane_segmenter->segmentPlanes(cabinet_centered_cloud_ptr, dfg,hij);
 //
 //  PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
-//  pcl::NormalEstimation<PointType, PointNormal> ne;
+//  pcl17::NormalEstimation<PointType, PointNormal> ne;
 //  //ne.setNumberOfThreads(4);
 //  ne.setInputCloud (temp);
 //
-//  pcl::search::KdTree<PointType>::Ptr normals_tree (new pcl::search::KdTree<PointType>);
+//  pcl17::search::KdTree<PointType>::Ptr normals_tree (new pcl17::search::KdTree<PointType>);
 //  //ne.setKSearch(30);
 //  ne.setRadiusSearch(0.1);
 //  ne.setSearchMethod(normals_tree);
 //  ne.compute (*cloud_normals);
 //
 //  std::vector<PointCloudConstPtr> dfg;
-//  std::vector<pcl::ModelCoefficients::ConstPtr> hij;
+//  std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
 //
 //  plane_segmenter->segmentPlanes(temp,cloud_normals, dfg,hij);
 

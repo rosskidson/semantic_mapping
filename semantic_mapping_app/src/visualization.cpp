@@ -12,15 +12,15 @@
 #include <ros/console.h>
 
 //pcl
-#include <pcl/point_types.h>
-#include <pcl/ros/conversions.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl17/point_types.h>
+#include <pcl17/ros/conversions.h>
+#include <pcl17/filters/voxel_grid.h>
 //vtk
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/console/parse.h>
+#include <pcl17/common/common_headers.h>
+#include <pcl17/features/normal_3d.h>
+#include <pcl17/visualization/pcl_visualizer.h>
+#include <pcl17/console/parse.h>
 
 // opencv -> ROS -> opencv
 #include <cv_bridge/cv_bridge.h>
@@ -45,8 +45,8 @@ Visualization::~Visualization ()
 
 void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg(pointcloud_msg,*cloud_ptr);
+  pcl17::PointCloud<pcl17::PointXYZ>::Ptr cloud_ptr (new pcl17::PointCloud<pcl17::PointXYZ>);
+  pcl17::fromROSMsg(pointcloud_msg,*cloud_ptr);
 
   visualizeCloud(cloud_ptr);
 }
@@ -60,7 +60,7 @@ void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr)
 
 void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer (new pcl17::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
   {
@@ -76,12 +76,12 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
       downsampled_ptr = *itr;
 
     // different colours for different clouds
-    pcl::visualization::PointCloudColorHandlerCustom<PointType>
+    pcl17::visualization::PointCloudColorHandlerCustom<PointType>
       single_color(downsampled_ptr, 127*(cloud_num % 3), 127*((cloud_num+1) % 3), 127*((cloud_num+2) % 3));
 
     //add the cloud
     viewer->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1,
+    viewer->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1,
       cloud_name.str());
   }
   viewer->addCoordinateSystem (1.0);
@@ -113,7 +113,7 @@ PointCloudConstPtr Visualization::downsampleCloud (PointCloudConstPtr input)
 {
   const double voxel_size = vox_grid_size_;
   PointCloudPtr cloud_filtered (new PointCloud);
-  pcl::VoxelGrid<PointType> downsampler;
+  pcl17::VoxelGrid<PointType> downsampler;
   downsampler.setInputCloud (input);
   downsampler.setLeafSize (voxel_size, voxel_size, voxel_size);
   downsampler.filter (*cloud_filtered);

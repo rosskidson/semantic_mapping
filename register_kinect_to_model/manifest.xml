@@ -12,7 +12,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/register_kinect_to_model</url>
-  <depend package="pcl"/>
+  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="opencv2"/>
   <depend package="image_transport"/>

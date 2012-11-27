@@ -9,7 +9,7 @@
 #define ICP_WRAPPER_H_
 
 
-#include <pcl/registration/icp.h>
+#include <pcl17/registration/icp.h>
 #include "pcl_typedefs/pcl_typedefs.h"
 
 class ICPWrapper
@@ -22,7 +22,7 @@ class ICPWrapper
   private:
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
 
-    pcl::IterativeClosestPoint<PointType, PointType> icp_;
+    pcl17::IterativeClosestPoint<PointType, PointType> icp_;
 };
 
 #endif /* ICP_WRAPPER_H_ */

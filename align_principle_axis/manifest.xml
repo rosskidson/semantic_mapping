@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/align_principle_axis</url>
   <depend package="roscpp"/>
-  <depend package="pcl"/>
+  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="pluginlib"/>
 

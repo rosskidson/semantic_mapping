@@ -21,6 +21,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# eIGEN ####################
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
 #common commands for building c++ executables and libraries
 rosbuild_add_library(axis_alignment src/axis_alignment.cpp)
 rosbuild_add_library(floor_axis_alignment src/floor_axis_alignment.cpp)

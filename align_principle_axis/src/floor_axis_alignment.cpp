@@ -6,12 +6,12 @@
  */
 
 #include "align_principle_axis/floor_axis_alignment.h"
-#include <pcl/ModelCoefficients.h>
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/common/transforms.h>
+#include <pcl17/ModelCoefficients.h>
+#include <pcl17/sample_consensus/method_types.h>
+#include <pcl17/sample_consensus/model_types.h>
+#include <pcl17/segmentation/sac_segmentation.h>
+#include <pcl17/filters/extract_indices.h>
+#include <pcl17/common/transforms.h>
 
 #include <pluginlib/class_list_macros.h>
 
@@ -40,12 +40,12 @@ namespace align_principle_axis
 
     //assume the model is approx correct, i.e. z is height
     // find the largest plane perpendicular to z axis and use this to align cloud
-    pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-    pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
-    pcl::SACSegmentation<PointType> seg;
+    pcl17::ModelCoefficients::Ptr coefficients (new pcl17::ModelCoefficients);
+    pcl17::PointIndices::Ptr inliers (new pcl17::PointIndices);
+    pcl17::SACSegmentation<PointType> seg;
     seg.setOptimizeCoefficients (true);
-    seg.setModelType (pcl::SACMODEL_PARALLEL_PLANE);
-    seg.setMethodType (pcl::SAC_RANSAC);
+    seg.setModelType (pcl17::SACMODEL_PARALLEL_PLANE);
+    seg.setMethodType (pcl17::SAC_RANSAC);
     seg.setDistanceThreshold (0.05);
 
     seg.setAxis (Eigen::Vector3f (0, 0, 1));
@@ -55,7 +55,7 @@ namespace align_principle_axis
 
     if (inliers->indices.size () == 0)
     {
-      PCL_ERROR("Could not estimate a planar model for the given dataset.");
+      PCL17_ERROR("Could not estimate a planar model for the given dataset.");
     }
 
     std::cerr << "Model coefficients: " << coefficients->values[0] << " " << coefficients->values[1]
@@ -72,7 +72,7 @@ namespace align_principle_axis
     transform_output.block<3, 3> (0, 0) = angle_axis.toRotationMatrix ().inverse ();
     transformPointCloud (*rotated_cloud, *output_cloud_ptr, transform_output);
 
-//  pcl::ExtractIndices<PointType> eifilter;
+//  pcl17::ExtractIndices<PointType> eifilter;
 //   eifilter.setInputCloud (rotated_cloud);
 //   eifilter.setIndices (inliers);
 //   eifilter.filter (*output_cloud_ptr);

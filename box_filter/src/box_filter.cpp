@@ -6,7 +6,7 @@
  */
 
 #include "box_filter/box_filter.h"
-#include <pcl/filters/crop_box.h>
+#include <pcl17/filters/crop_box.h>
 
 namespace box_filter
 {
@@ -15,7 +15,7 @@ namespace box_filter
       const Eigen::Vector4f& max_point, const PointCloudPtr output_cloud_ptr)
   {
     // apply filter
-    pcl::CropBox<PointType> box_filter;
+    pcl17::CropBox<PointType> box_filter;
     box_filter.setInputCloud (input_cloud_ptr);
     box_filter.setMin (min_point);
     box_filter.setMax (max_point);

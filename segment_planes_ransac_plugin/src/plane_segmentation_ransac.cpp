@@ -7,9 +7,9 @@
 
 #include "segment_planes_ransac_plugin/plane_segmentation_ransac.h"
 
-#include "pcl/segmentation/organized_multi_plane_segmentation.h"
-#include <pcl/features/normal_3d_omp.h>
-#include <pcl/features/normal_3d.h>
+#include "pcl17/segmentation/organized_multi_plane_segmentation.h"
+#include <pcl17/features/normal_3d_omp.h>
+#include <pcl17/features/normal_3d.h>
 
 #include <ros/console.h>
 
@@ -42,11 +42,11 @@ namespace segment_planes_ransac_plugin
       PointCloudNormalsPtr cloud_normals)
   {
     // Create the normal estimation class, and pass the input dataset to it
-    pcl::NormalEstimation<PointType, PointNormal> ne;
+    pcl17::NormalEstimation<PointType, PointNormal> ne;
     //ne.setNumberOfThreads(4);
     ne.setInputCloud (input_cloud_ptr);
 
-    pcl::search::KdTree<PointType>::Ptr normals_tree (new pcl::search::KdTree<PointType>);
+    pcl17::search::KdTree<PointType>::Ptr normals_tree (new pcl17::search::KdTree<PointType>);
     //ne.setKSearch(30);
     ne.setRadiusSearch(0.1);
     ne.setSearchMethod(normals_tree);
@@ -55,23 +55,23 @@ namespace segment_planes_ransac_plugin
 
   void PlaneSegmentationRANSAC::segmentPlanes (const PointCloudConstPtr model,
       const std::vector<PointCloudConstPtr>& plane_clouds, const std::vector<
-          pcl::ModelCoefficients::ConstPtr>& plane_coeffs)
+          pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
     //calculate normals
     PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
     calculatePointCloudNormals(model,cloud_normals);
 
-    pcl::OrganizedMultiPlaneSegmentation<PointType, PointNormal, pcl::Label> mps;
-    //pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals;
+    pcl17::OrganizedMultiPlaneSegmentation<PointType, PointNormal, pcl17::Label> mps;
+    //pcl17::PointCloud<pcl17::PointNormal>::Ptr cloud_normals;
 
     ROS_INFO("Segmenting planes");
     mps.setMinInliers (20000);
     mps.setMaximumCurvature(0.02);
     mps.setInputNormals (cloud_normals);
     mps.setInputCloud (model);
-    std::vector<pcl::PlanarRegion<PointType> > regions;
-    std::vector<pcl::PointIndices> regionPoints;
-    std::vector< pcl::ModelCoefficients > planes_coeff;
+    std::vector<pcl17::PlanarRegion<PointType> > regions;
+    std::vector<pcl17::PointIndices> regionPoints;
+    std::vector< pcl17::ModelCoefficients > planes_coeff;
     mps.segment(planes_coeff, regionPoints);
     ROS_INFO_STREAM("Number of regions:" << regionPoints.size());
 

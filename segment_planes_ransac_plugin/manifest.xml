@@ -9,8 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/segment_planes_ransac_plugin</url>
   <depend package="roscpp"/>
-<!--  <depend package="pcl"/> -->
-<!--  <depend package="pcl_typedefs"/>-->
+  <depend package="pcl17"/> 
+  <depend package="pcl_typedefs"/>
   <depend package="pluginlib"/>
   <depend package="segment_planes_interface"/>
   <export>

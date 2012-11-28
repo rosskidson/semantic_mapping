@@ -45,12 +45,8 @@ int main (int argc, char** argv)
   ROS_INFO("Importing mesh to pointcloud model...");
   PointCloudPtr raw_import_ptr;
   raw_import_ptr = io_obj.loadMeshFromFile (ps->get<std::string> ("mesh_input_filename"));
-  io_obj.savePointcloudToFile(raw_import_ptr, "raw_import.pcd");
-    visualizer.visualizeCloud(raw_import_ptr);
 
   ROS_INFO("Performing principle axis alignment...");
-  //align_principle_axis::FloorAxisAlignment axis_align;
-
   pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader_axis("align_principle_axis", "align_principle_axis::AxisAlignment");
 
   align_principle_axis::AxisAlignment* axis_align = NULL;
@@ -73,21 +69,16 @@ int main (int argc, char** argv)
   PointCloudPtr model_aligned_ptr (new PointCloud);
   axis_align->alignCloudPrincipleAxis(raw_import_ptr, guess, model_aligned_ptr, align_trafo);
 
-  visualizer.visualizeCloud(model_aligned_ptr);
+  ROS_INFO("Applying boxfilter to cloud...");
+  PointCloudPtr cabinet_cloud_ptr (new PointCloud);
+  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
+  Eigen::Vector4f max_point (1.85, 1.4, -1.2, 1);
+  box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
 
-//  ROS_INFO("Applying boxfilter to cloud...");
-//  PointCloudPtr cabinet_cloud_ptr (new PointCloud);
-////  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
-////  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
-//  Eigen::Vector4f min_point (0.9, 0.6, -3.0, 1);
-//  Eigen::Vector4f max_point (2.0, 1.4, -1.0, 1);
-//  box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
-
-//  ROS_INFO("move model to origin...");
-//  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-//  //axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
-//  visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
-
+  ROS_INFO("move model to origin...");
+  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
+  axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
+  visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
 
 //  ROS_INFO("segment planes...");
 //  //align_principle_axis::FloorAxisAlignment axis_align;

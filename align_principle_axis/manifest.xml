@@ -12,6 +12,8 @@
   <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="pluginlib"/>
+  
+  <depend package="visualizer"/>
 
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lfloor_axis_alignment"/>

@@ -11,7 +11,6 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/semantic_mapping_app</url>
   <depend package="roscpp"/>
-  <depend package="pcl"/>
   <depend package="pcl_typedefs"/>
   <depend package="std_msgs"/>
   <depend package="rosservice"/>

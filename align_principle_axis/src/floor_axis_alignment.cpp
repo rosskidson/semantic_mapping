@@ -15,6 +15,8 @@
 
 #include <pluginlib/class_list_macros.h>
 
+#include <visualizer/visualization.h>
+
 //Declare the plane segmentation as a segmentation class
 PLUGINLIB_DECLARE_CLASS(align_principle_axis, FloorAxisAlignment, align_principle_axis::FloorAxisAlignment, align_principle_axis::AxisAlignment)
 
@@ -35,8 +37,12 @@ namespace align_principle_axis
       const Eigen::Matrix4f& inital_guess, const PointCloudPtr output_cloud_ptr,
       Eigen::Matrix4f& transform_output)
   {
+//        Visualization visualizer;
+
     PointCloudPtr rotated_cloud_ptr (new PointCloud);
     transformPointCloud (*input_cloud_ptr, *rotated_cloud_ptr, inital_guess);
+//    std::vector<PointCloudConstPtr> vis_cloud_ptrs;
+//    vis_cloud_ptrs.push_back(rotated_cloud_ptr);
     //transformPointCloud (*input_cloud_ptr, *output_cloud_ptr, inital_guess);
 
     //assume the model is approx correct, i.e. z is height
@@ -45,12 +51,14 @@ namespace align_principle_axis
     pcl17::PointIndices::Ptr inliers (new pcl17::PointIndices);
     pcl17::SACSegmentation<PointType> seg;
     seg.setOptimizeCoefficients (true);
-    seg.setModelType (pcl17::SACMODEL_PARALLEL_PLANE);
+    seg.setModelType (pcl17::SACMODEL_PERPENDICULAR_PLANE);
     seg.setMethodType (pcl17::SAC_RANSAC);
-    seg.setDistanceThreshold (0.05);
+    seg.setDistanceThreshold (0.01);
+    seg.setMaxIterations(400);
+    //seg.setProbability(0.1);
 
     seg.setAxis (Eigen::Vector3f (0, 0, 1));
-    seg.setEpsAngle (10.0 * (M_PI / 180));//radians
+    seg.setEpsAngle (30.0 * (M_PI / 180));//radians
     seg.setInputCloud (rotated_cloud_ptr);
     seg.segment (*inliers, *coefficients);
 
@@ -73,9 +81,11 @@ namespace align_principle_axis
     transform_output.block<3, 3> (0, 0) = angle_axis.toRotationMatrix ().inverse ();
     transformPointCloud (*rotated_cloud_ptr, *output_cloud_ptr, transform_output);
 
-  pcl17::ExtractIndices<PointType> eifilter;
-   eifilter.setInputCloud (rotated_cloud_ptr);
-   eifilter.setIndices (inliers);
-   eifilter.filter (*output_cloud_ptr);
+//  pcl17::ExtractIndices<PointType> eifilter;
+//   eifilter.setInputCloud (rotated_cloud_ptr);
+//   eifilter.setIndices (inliers);
+//   eifilter.filter (*output_cloud_ptr);
+//   vis_cloud_ptrs.push_back(output_cloud_ptr);
+//   visualizer.visualizeCloud(vis_cloud_ptrs);
   }
 }

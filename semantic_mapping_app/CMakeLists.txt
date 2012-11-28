@@ -33,7 +33,7 @@ set(SEMANTIC_MAPPING_LIBRARIES
   mesh_io                   #to import model
   box_filter                #cut the area of interest out of imported model
   register_kinect           #registers kinect to the model
-  axis_alignment            #plugin interface (some implementation exists in base class)
+ # axis_alignment            #plugin interface (some implementation exists in base class)
   ) 
 
 #common commands for building c++ executables and libraries

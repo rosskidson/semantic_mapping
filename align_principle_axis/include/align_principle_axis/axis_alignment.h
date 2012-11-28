@@ -30,4 +30,6 @@ namespace align_principle_axis
   };
 }
 
+#include "../../src/axis_alignment.cpp"
+
 #endif /* AXIS_ALIGNMENT_H_ */

@@ -85,36 +85,36 @@ int main (int argc, char** argv)
 
   ROS_INFO("move model to origin...");
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-  axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
+  //axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
   visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
 
 
-  ROS_INFO("segment planes...");
-  //align_principle_axis::FloorAxisAlignment axis_align;
+//  ROS_INFO("segment planes...");
+//  //align_principle_axis::FloorAxisAlignment axis_align;
 
-  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
+//  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
 
-  segment_planes_interface::PlaneSegmentation* plane_segmenter = NULL;
+//  segment_planes_interface::PlaneSegmentation* plane_segmenter = NULL;
 
-  try
-  {
-    plane_segmenter = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
-  }
-  catch(pluginlib::PluginlibException& ex)
-  {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
-  std::vector<PointCloudConstPtr> dfg;
-  std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
+//  try
+//  {
+//    plane_segmenter = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
+//  }
+//  catch(pluginlib::PluginlibException& ex)
+//  {
+//    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+//  }
+//  std::vector<PointCloudConstPtr> dfg;
+//  std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
 
-//  PointCloudPtr temp (new PointCloud);
-//  double leaf_size = 0.01;
-//  pcl17::VoxelGrid<PointType> sor;
-//  sor.setInputCloud (cabinet_centered_cloud_ptr);
-//  sor.setLeafSize (leaf_size, leaf_size, leaf_size);
-//  sor.filter (*temp);
+////  PointCloudPtr temp (new PointCloud);
+////  double leaf_size = 0.01;
+////  pcl17::VoxelGrid<PointType> sor;
+////  sor.setInputCloud (cabinet_centered_cloud_ptr);
+////  sor.setLeafSize (leaf_size, leaf_size, leaf_size);
+////  sor.filter (*temp);
 
-  plane_segmenter->segmentPlanes(cabinet_centered_cloud_ptr, dfg,hij);
+//  plane_segmenter->segmentPlanes(cabinet_centered_cloud_ptr, dfg,hij);
 //
 //  PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
 //  pcl17::NormalEstimation<PointType, PointNormal> ne;

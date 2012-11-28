@@ -3,6 +3,9 @@
 .pydevproject
 .cproject
 
+#qtcreator files
+*.user
+
 #c++ and ros crap
 bin
 build

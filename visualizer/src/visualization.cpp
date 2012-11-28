@@ -5,7 +5,7 @@
  *      Author: kidson
  */
 
-#include "../include/semantic_mapping_app/visualization.h"
+#include "visualizer/visualization.h"
 
 // ros
 #include <sensor_msgs/PointCloud2.h>

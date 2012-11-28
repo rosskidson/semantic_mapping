@@ -17,10 +17,10 @@
 #include "register_kinect_to_model/kinect_registration.h"
 #include "align_principle_axis/axis_alignment.h"
 #include "segment_planes_interface/plane_segmentation.h"
+#include "visualizer/visualization.h"
 
 #include <pluginlib/class_loader.h>
 
-#include "semantic_mapping_app/visualization.h"
 #include "semantic_mapping_app/parameter_server.h"
 
 //convert sensor msgs
@@ -75,18 +75,18 @@ int main (int argc, char** argv)
 
   visualizer.visualizeCloud(model_aligned_ptr);
 
-  ROS_INFO("Applying boxfilter to cloud...");
-  PointCloudPtr cabinet_cloud_ptr (new PointCloud);
-//  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
-//  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
-  Eigen::Vector4f min_point (0.9, 0.6, -3.0, 1);
-  Eigen::Vector4f max_point (2.0, 1.4, -1.0, 1);
-  box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
+//  ROS_INFO("Applying boxfilter to cloud...");
+//  PointCloudPtr cabinet_cloud_ptr (new PointCloud);
+////  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
+////  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
+//  Eigen::Vector4f min_point (0.9, 0.6, -3.0, 1);
+//  Eigen::Vector4f max_point (2.0, 1.4, -1.0, 1);
+//  box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
 
-  ROS_INFO("move model to origin...");
-  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-  //axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
-  visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
+//  ROS_INFO("move model to origin...");
+//  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
+//  //axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_to_origin);
+//  visualizer.visualizeCloud(cabinet_centered_cloud_ptr);
 
 
 //  ROS_INFO("segment planes...");

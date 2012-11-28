@@ -24,6 +24,7 @@
   <depend package="register_kinect_to_model"/>
   <depend package="align_principle_axis"/>
   <depend package="segment_planes_interface"/>
+  <depend package="visualizer"/>
 
 </package>
 

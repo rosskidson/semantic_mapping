@@ -1,0 +1,24 @@
+<package>
+  <description brief="visualizer">
+
+     visualizer
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/visualizer</url>
+  <depend package="roscpp"/>
+  <depend package="pcl17"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="cv_bridge"/>
+  <rosdep name="eigen"/>  
+
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+  </export>  
+
+</package>
+
+

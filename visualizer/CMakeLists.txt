@@ -16,26 +16,29 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+
+# eIGEN ####################
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
+# VTK ####################
+find_package(VTK REQUIRED)
+include_directories(${VTK_INCLUDE_DIRS})
+MESSAGE("vtk lib--------------------")
+MESSAGE(${VTK_LIBRARY_DIRS})
+#SET(VTK_LIBRARIES vtkalglib vtkCharts vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGeovis vtkGraphics vtkHybrid vtkImaging vtkInfovis vtkIO vtkmetaio vtkParallel vtkproj4 vtkQtChart vtkRendering vtksqlite vtksys vtkverdict vtkViews vtkVolumeRendering vtkWidgets)
+SET(VTK_LIBRARIES vtkCommon vtkFiltering boost_system)
+
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-
-
-set(SEMANTIC_MAPPING_LIBRARIES 
-  mesh_io                   #to import model
-  box_filter                #cut the area of interest out of imported model
-  register_kinect           #registers kinect to the model
-  visualizer
- # axis_alignment            #plugin interface (some implementation exists in base class)
-  ) 
-
 #common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(main src/main.cpp src/parameter_server.cpp)
-rosbuild_link_boost(main thread)
-target_link_libraries(main ${SEMANTIC_MAPPING_LIBRARIES})
+#rosbuild_add_executable(example examples/example.cpp)
+
+rosbuild_add_library(visualizer src/visualization.cpp)
+target_link_libraries(visualizer ${VTK_LIBRARIES})

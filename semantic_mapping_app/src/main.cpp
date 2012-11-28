@@ -77,8 +77,10 @@ int main (int argc, char** argv)
 
   ROS_INFO("Applying boxfilter to cloud...");
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
-  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
-  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
+//  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
+//  Eigen::Vector4f max_point (1.8, 1.4, -1.3, 1);
+  Eigen::Vector4f min_point (0.9, 0.6, -3.0, 1);
+  Eigen::Vector4f max_point (2.0, 1.4, -1.0, 1);
   box_filter::filterCloud (model_aligned_ptr, min_point, max_point, cabinet_cloud_ptr);
 
   ROS_INFO("move model to origin...");

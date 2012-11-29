@@ -36,6 +36,6 @@ set(SEMANTIC_MAPPING_LIBRARIES
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(main src/main.cpp src/parameter_server.cpp)
+rosbuild_add_executable(main src/main.cpp src/controller.cpp src/parameter_server.cpp)
 rosbuild_link_boost(main thread)
 target_link_libraries(main ${SEMANTIC_MAPPING_LIBRARIES})

@@ -16,9 +16,13 @@
 
 class Controller
 {
+  typedef std::pair<std::string, PointCloudConstPtr> NamedPointCloudPtr;
+
 public:
     Controller();
     virtual ~Controller();
+
+    void add_pointcloud(const std::string new_cloud_name, const PointCloudConstPtr new_cloud_ptr);
 
     void importScan();
     void alignToPrincipleAxis();
@@ -30,7 +34,7 @@ private:
     ros::NodeHandle nh_;
     Visualization visualizer_;
     MeshIO io_obj_;
-    std::map<std::string, PointCloudConstPtr> pointcloud_ptrs;
+    std::map<std::string, PointCloudConstPtr> pointcloud_ptrs_;
     Eigen::Matrix4f align_to_axis_, move_model_to_origin_;
 
 };

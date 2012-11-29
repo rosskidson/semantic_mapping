@@ -27,8 +27,6 @@
 
 #include <Eigen/Core>
 
-typedef std::pair<std::string, PointCloudConstPtr> NamedPointCloudPtr;
-
 Controller::Controller():
     nh_("~"), visualizer_()
 {
@@ -41,14 +39,24 @@ Controller::~Controller()
     //destructor
 }
 
+void Controller::add_pointcloud(const std::string new_cloud_name, const PointCloudConstPtr new_cloud_ptr)
+{
+  std::map<std::string,PointCloudConstPtr>::iterator existing_record = pointcloud_ptrs_.find(new_cloud_name);
+
+  if(existing_record != pointcloud_ptrs_.end())   //pointcloud exists, update
+    existing_record->second = new_cloud_ptr;
+  else
+    pointcloud_ptrs_.insert(NamedPointCloudPtr(new_cloud_name,new_cloud_ptr));
+}
+
 void Controller::importScan()
 {
   ROS_INFO("Importing mesh to pointcloud model...");
   PointCloudPtr raw_scan_pointcloud_ptr;
   raw_scan_pointcloud_ptr = io_obj_.loadMeshFromFile (ParameterServer::instance()->get<std::string>
                                             ("mesh_input_filename"));
-  pointcloud_ptrs.insert(NamedPointCloudPtr("raw_scan",raw_scan_pointcloud_ptr));
-  //visualizer_.visualizeCloud(pointcloud_ptrs["raw_scan"]);
+  add_pointcloud("raw_scan",raw_scan_pointcloud_ptr);
+  //visualizer_.visualizeCloud(pointcloud_ptrs_["raw_scan"]);
 }
 
 void Controller::alignToPrincipleAxis()
@@ -72,9 +80,9 @@ void Controller::alignToPrincipleAxis()
   guess(2,1) = -1.0;
   guess(3,3) = 1.0;
   PointCloudPtr aligned_scan_ptr (new PointCloud);
-  axis_align->alignCloudPrincipleAxis(pointcloud_ptrs["raw_scan"], guess, aligned_scan_ptr, align_to_axis_);
-  pointcloud_ptrs.insert(NamedPointCloudPtr("aligned_scan",aligned_scan_ptr));
-  //visualizer_.visualizeCloud(pointcloud_ptrs["aligned_scan"]);
+  axis_align->alignCloudPrincipleAxis(pointcloud_ptrs_["raw_scan"], guess, aligned_scan_ptr, align_to_axis_);
+  add_pointcloud("aligned_scan",aligned_scan_ptr);
+  //visualizer_.visualizeCloud(pointcloud_ptrs_["aligned_scan"]);
 }
 
 void Controller::extractROI()
@@ -95,13 +103,13 @@ void Controller::extractROI()
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
   Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
   Eigen::Vector4f max_point (1.85, 1.4, -1.2, 1);
-  box_filter::filterCloud (pointcloud_ptrs["aligned_scan"], min_point, max_point, cabinet_cloud_ptr);
+  box_filter::filterCloud (pointcloud_ptrs_["aligned_scan"], min_point, max_point, cabinet_cloud_ptr);
 
   ROS_INFO("move model to origin...");
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
   axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
-  pointcloud_ptrs.insert(NamedPointCloudPtr("model",cabinet_centered_cloud_ptr));
-  visualizer_.visualizeCloud(pointcloud_ptrs["model"]);
+  add_pointcloud("model",cabinet_centered_cloud_ptr);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
 }
 
 void Controller::segmentPlanes()
@@ -121,7 +129,7 @@ void Controller::segmentPlanes()
 
   std::vector<PointCloudConstPtr> dfg;
   std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
-  plane_segmenter->segmentPlanes(pointcloud_ptrs["model"], dfg,hij);
+  plane_segmenter->segmentPlanes(pointcloud_ptrs_["model"], dfg,hij);
 }
 
 void Controller::registerKinectToModel()
@@ -149,6 +157,6 @@ void Controller::registerKinectToModel()
   io_obj_.loadTransformationsFromDir(ParameterServer::instance()->get<std::string> ("mesh_registration_transformations_directory"),transformations);
   KinectRegistration kinect_reg;
   Eigen::Matrix4f dildos;
-  dildos = kinect_reg.registerKinectToModel(pointcloud_ptrs["model"],kinect_cloud_ptr,kinect_image,images,transformations);
+  dildos = kinect_reg.registerKinectToModel(pointcloud_ptrs_["model"],kinect_cloud_ptr,kinect_image,images,transformations);
   ROS_INFO_STREAM("final trafo \n " << dildos);
 }

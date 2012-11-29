@@ -28,7 +28,7 @@
 #include <Eigen/Core>
 
 Controller::Controller():
-    nh_("~"), visualizer_()
+  nh_("~"), visualizer_(), io_obj_()
 {
 
 }
@@ -109,7 +109,8 @@ void Controller::extractROI()
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
   axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
   add_pointcloud("model",cabinet_centered_cloud_ptr);
-  visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
+  //visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
+  //io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
 }
 
 void Controller::segmentPlanes()

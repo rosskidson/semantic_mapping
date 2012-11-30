@@ -26,4 +26,8 @@ namespace pcl_tools
   void filterCloud (const PointCloudConstPtr input_cloud_ptr, const Eigen::Vector4f& min_point,
       const Eigen::Vector4f& max_point, const PointCloudPtr output_cloud_ptr);
 
+  void moveModelToOrigin (const PointCloudConstPtr cloud_input_ptr,
+      const PointCloudPtr cloud_output_ptr,
+      Eigen::Matrix4f& transform_output);
+
 }

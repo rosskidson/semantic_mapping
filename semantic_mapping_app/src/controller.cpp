@@ -86,19 +86,7 @@ void Controller::alignToPrincipleAxis()
 
 void Controller::extractROI()
 {
-  //TODO:: REMOVE.  this is here because of base class functionality in axisalign. move to pcl_tools
-  pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader_axis("align_principle_axis", "align_principle_axis::AxisAlignment");
-  align_principle_axis::AxisAlignment* axis_align = NULL;
-  try
-  {
-    axis_align = loader_axis.createClassInstance("align_principle_axis/FloorAxisAlignment");
-  }
-  catch(pluginlib::PluginlibException& ex)
-  {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
-
-  ROS_INFO("Applying boxfilter to cloud...");
+  ROS_INFO("Applying boxfilter to cloud..");
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
   Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
   Eigen::Vector4f max_point (1.85, 1.4, -1.2, 1);
@@ -106,10 +94,10 @@ void Controller::extractROI()
 
   ROS_INFO("move model to origin...");
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-  axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
+  pcl_tools::moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
   add_pointcloud("model",cabinet_centered_cloud_ptr);
-  //visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
-  io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
+  visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
+  //io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
 }
 
 void Controller::segmentPlanes()

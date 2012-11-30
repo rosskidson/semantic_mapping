@@ -99,4 +99,29 @@ namespace pcl_tools
 
   }
 
+  void moveModelToOrigin (const PointCloudConstPtr cloud_input_ptr,
+      const PointCloudPtr cloud_output_ptr,
+      Eigen::Matrix4f& transform_output)
+  {
+    //find min in x,y and z.  Move this to Origin
+    float min_x, min_y, min_z;
+    min_x = min_y = min_z = std::numeric_limits<float>::max ();
+    for (std::vector<PointType, Eigen::aligned_allocator<PointType> >::const_iterator itr =
+        cloud_input_ptr->points.begin ();
+        itr != cloud_input_ptr->points.end (); itr++)
+    {
+      if (itr->x < min_x)
+        min_x = itr->x;
+      if (itr->y < min_y)
+        min_y = itr->y;
+      if (itr->z < min_z)
+        min_z = itr->z;
+    }
+    transform_output = Eigen::Matrix4f::Identity (4, 4);
+    transform_output (0, 3) = -min_x;
+    transform_output (1, 3) = -min_y;
+    transform_output (2, 3) = -min_z;
+    transformPointCloud (*cloud_input_ptr, *cloud_output_ptr, transform_output);
+  }
+
 }

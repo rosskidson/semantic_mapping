@@ -1,0 +1,24 @@
+<package>
+  <description brief="align_principle_axis_floor_plugin">
+
+     align_principle_axis_floor_plugin
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/align_principle_axis_floor_plugin</url>
+  <depend package="roscpp"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="pluginlib"/>
+  <depend package="pcl17"/>
+  <depend package="align_principle_axis_interface"/>
+  <depend package="visualizer"/>
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lfloor_axis_alignment" />
+      <align_principle_axis_interface plugin="${prefix}/align_principle_axis_floor_plugin.xml" />
+  </export>  
+
+</package>
+
+

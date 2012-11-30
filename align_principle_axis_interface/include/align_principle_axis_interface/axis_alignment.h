@@ -12,7 +12,7 @@
 
 #include <Eigen/Core>
 
-namespace align_principle_axis
+namespace align_principle_axis_interface
 {
   class AxisAlignment
   {

@@ -21,7 +21,7 @@
   <depend package="mesh_io"/>
   <depend package="kinect_capture_frame"/>
   <depend package="register_kinect_to_model"/>
-  <depend package="align_principle_axis"/>
+  <depend package="align_principle_axis_interface"/>
   <depend package="segment_planes_interface"/>
   <depend package="visualizer"/>
 

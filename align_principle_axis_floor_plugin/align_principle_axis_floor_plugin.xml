@@ -1,5 +1,5 @@
 <library path="lib/libfloor_axis_alignment">
-  <class name="align_principle_axis/FloorAxisAlignment" type="align_principle_axis::FloorAxisAlignment" base_class_type="align_principle_axis::AxisAlignment">
+  <class name="align_principle_axis_floor_plugin/FloorAxisAlignment" type="align_principle_axis_floor_plugin::FloorAxisAlignment" base_class_type="align_principle_axis_interface::AxisAlignment">
   <description>
   	plugin for axis alignment
   	aligns to the principle axes by finding a large plane close to the z plane and

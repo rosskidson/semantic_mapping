@@ -5,7 +5,7 @@
  *      Author: ross
  */
 
-#include "align_principle_axis/floor_axis_alignment.h"
+#include "align_principle_axis_floor_plugin/floor_axis_alignment.h"
 #include <pcl17/ModelCoefficients.h>
 #include <pcl17/sample_consensus/method_types.h>
 #include <pcl17/sample_consensus/model_types.h>
@@ -17,10 +17,15 @@
 
 #include <visualizer/visualization.h>
 
-//Declare the plane segmentation as a segmentation class
-PLUGINLIB_DECLARE_CLASS(align_principle_axis, FloorAxisAlignment, align_principle_axis::FloorAxisAlignment, align_principle_axis::AxisAlignment)
+//Declare the plugin
+//param_1: The namespace in which the  plugin will live
+//param_2: The name we wish to give to the plugin
+// loader.createClassInstance("param_1/param_2");
+//param_3: The fully-qualified type of the plugin class
+//param_4: The fully-qualified type of the base class
+PLUGINLIB_DECLARE_CLASS(align_principle_axis_floor_plugin, FloorAxisAlignment, align_principle_axis_floor_plugin::FloorAxisAlignment, align_principle_axis_interface::AxisAlignment)
 
-namespace align_principle_axis
+namespace align_principle_axis_floor_plugin
 {
   FloorAxisAlignment::FloorAxisAlignment ()
   {

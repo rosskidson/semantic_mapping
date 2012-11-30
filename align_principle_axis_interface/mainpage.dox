@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b align_principle_axis 
+\b align_principle_axis_interface 
 
 <!-- 
 Provide an overview of your package.

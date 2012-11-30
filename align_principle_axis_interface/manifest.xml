@@ -1,0 +1,20 @@
+<package>
+  <description brief="align_principle_axis_interface">
+
+     align_principle_axis_interface
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/align_principle_axis_interface</url>
+  <depend package="roscpp"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="pluginlib"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" />
+  </export>
+
+</package>
+
+

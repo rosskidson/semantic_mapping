@@ -8,12 +8,12 @@
 #ifndef FLOOR_AXIS_ALIGNMENT_H_
 #define FLOOR_AXIS_ALIGNMENT_H_
 
-#include "align_principle_axis/axis_alignment.h"
+#include "align_principle_axis_interface/axis_alignment.h"
 
-namespace align_principle_axis
+namespace align_principle_axis_floor_plugin
 {
 
-  class FloorAxisAlignment : public align_principle_axis::AxisAlignment
+  class FloorAxisAlignment : public align_principle_axis_interface::AxisAlignment
   {
     public:
       FloorAxisAlignment ();

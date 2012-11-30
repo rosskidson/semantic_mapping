@@ -14,7 +14,7 @@
 #include "pcl_tools/pcl_tools.h"
 #include "mesh_io/mesh_io.h"
 #include "register_kinect_to_model/kinect_registration.h"
-#include "align_principle_axis/axis_alignment.h"
+#include "align_principle_axis_interface/axis_alignment.h"
 #include "segment_planes_interface/plane_segmentation.h"
 #include "visualizer/visualization.h"
 
@@ -61,11 +61,11 @@ void Controller::importScan()
 void Controller::alignToPrincipleAxis()
 {
   ROS_INFO("Performing principle axis alignment...");
-  pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader_axis("align_principle_axis", "align_principle_axis::AxisAlignment");
-  align_principle_axis::AxisAlignment* axis_align = NULL;
+  pluginlib::ClassLoader<align_principle_axis_interface::AxisAlignment> loader_axis("align_principle_axis_interface", "align_principle_axis_interface::AxisAlignment");
+  align_principle_axis_interface::AxisAlignment* axis_align = NULL;
   try
   {
-    axis_align = loader_axis.createClassInstance("align_principle_axis/FloorAxisAlignment");
+    axis_align = loader_axis.createClassInstance("align_principle_axis_floor_plugin/FloorAxisAlignment");
   }
   catch(pluginlib::PluginlibException& ex)
   {

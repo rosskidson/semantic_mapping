@@ -23,4 +23,7 @@ namespace pcl_tools
 
   PointCloudPtr downsampleCloud(const PointCloudConstPtr input_cloud_ptr, const float leaf_size=0.01);
 
+  void filterCloud (const PointCloudConstPtr input_cloud_ptr, const Eigen::Vector4f& min_point,
+      const Eigen::Vector4f& max_point, const PointCloudPtr output_cloud_ptr);
+
 }

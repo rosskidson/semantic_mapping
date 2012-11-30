@@ -9,12 +9,16 @@
 
 #include <pcl_typedefs/pcl_typedefs.h>
 
+#include <Eigen/Core>
+
 //normal estimation
 #include <pcl17/kdtree/kdtree_flann.h>
 #include <pcl17/features/normal_3d.h>
 #include <pcl17/features/normal_3d_omp.h>
 //voxel grid filter
 #include <pcl17/filters/voxel_grid.h>
+//box filter
+#include <pcl17/filters/crop_box.h>
 // tranform cloud
 #include <pcl17/common/transforms.h>
 // conversions
@@ -81,6 +85,18 @@ namespace pcl_tools
     sor.setLeafSize (leaf_size, leaf_size, leaf_size);
     sor.filter (*output_cloud_ptr);
     return output_cloud_ptr;
+  }
+
+  void filterCloud (const PointCloudConstPtr input_cloud_ptr, const Eigen::Vector4f& min_point,
+      const Eigen::Vector4f& max_point, const PointCloudPtr output_cloud_ptr)
+  {
+    // apply filter
+    pcl17::CropBox<PointType> box_filter;
+    box_filter.setInputCloud (input_cloud_ptr);
+    box_filter.setMin (min_point);
+    box_filter.setMax (max_point);
+    box_filter.filter (*output_cloud_ptr);
+
   }
 
 }

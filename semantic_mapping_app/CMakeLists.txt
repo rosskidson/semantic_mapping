@@ -25,7 +25,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 set(SEMANTIC_MAPPING_LIBRARIES 
   mesh_io                   #to import model
-  box_filter                #cut the area of interest out of imported model
   register_kinect           #registers kinect to the model
   visualizer
   pcl_tools

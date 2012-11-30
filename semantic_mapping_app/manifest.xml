@@ -20,7 +20,6 @@
   <depend package="pluginlib"/>
   <depend package="mesh_io"/>
   <depend package="kinect_capture_frame"/>
-  <depend package="box_filter"/>
   <depend package="register_kinect_to_model"/>
   <depend package="align_principle_axis"/>
   <depend package="segment_planes_interface"/>

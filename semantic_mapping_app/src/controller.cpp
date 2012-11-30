@@ -13,7 +13,6 @@
 #include "pcl_typedefs/pcl_typedefs.h"
 #include "pcl_tools/pcl_tools.h"
 #include "mesh_io/mesh_io.h"
-#include "box_filter/box_filter.h"
 #include "register_kinect_to_model/kinect_registration.h"
 #include "align_principle_axis/axis_alignment.h"
 #include "segment_planes_interface/plane_segmentation.h"
@@ -87,7 +86,7 @@ void Controller::alignToPrincipleAxis()
 
 void Controller::extractROI()
 {
-  //TODO:: REMOVE.  this is here because of base class functionality in axisalign.  move to pcl_tools
+  //TODO:: REMOVE.  this is here because of base class functionality in axisalign. move to pcl_tools
   pluginlib::ClassLoader<align_principle_axis::AxisAlignment> loader_axis("align_principle_axis", "align_principle_axis::AxisAlignment");
   align_principle_axis::AxisAlignment* axis_align = NULL;
   try
@@ -103,14 +102,14 @@ void Controller::extractROI()
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
   Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
   Eigen::Vector4f max_point (1.85, 1.4, -1.2, 1);
-  box_filter::filterCloud (pointcloud_ptrs_["aligned_scan"], min_point, max_point, cabinet_cloud_ptr);
+  pcl_tools::filterCloud (pointcloud_ptrs_["aligned_scan"], min_point, max_point, cabinet_cloud_ptr);
 
   ROS_INFO("move model to origin...");
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
   axis_align->moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
   add_pointcloud("model",cabinet_centered_cloud_ptr);
   //visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
-  //io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
+  io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
 }
 
 void Controller::segmentPlanes()

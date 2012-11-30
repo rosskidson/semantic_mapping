@@ -28,6 +28,7 @@ set(SEMANTIC_MAPPING_LIBRARIES
   box_filter                #cut the area of interest out of imported model
   register_kinect           #registers kinect to the model
   visualizer
+  pcl_tools
  # axis_alignment            #plugin interface (some implementation exists in base class)
   ) 
 

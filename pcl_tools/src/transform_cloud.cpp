@@ -1,24 +1,22 @@
-#include <iostream>
-#include <ros/console.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/common/transforms.h>
+#include "pcl_tools/pcl_tools.h"
 
-typedef pcl::PointXYZ PointType;
+#include <iostream>
+#include <pcl17/io/pcd_io.h>
 
 int main (int argc, char** argv)
 {
   if (argc != 3)
   {
-    ROS_INFO_STREAM("please provide a pointcloud file followed by a text file containing a transformation matrix as arguments");
+    std::cerr << "please provide a pointcloud file followed by a text file containing a transformation matrix as arguments\n";
     exit(0);
   }
-  pcl::PCDReader reader;
-  pcl::PointCloud<PointType>::Ptr cloudIn (new pcl::PointCloud<PointType>);
-  pcl::PointCloud<PointType>::Ptr cloudOut (new pcl::PointCloud<PointType>);
-  pcl::PointCloud<PointType>::Ptr cloudOut_inv (new pcl::PointCloud<PointType>);
+  pcl17::PCDReader reader;
+  PointCloudPtr input_cloud_ptr (new PointCloud);
+  PointCloudPtr output_cloud_ptr (new PointCloud);
+  PointCloudPtr inv_cloud_ptr (new PointCloud);
+
   Eigen::Matrix4f trafo, trafo_inv;
-  reader.read (argv[1], *cloudIn);
+  reader.read (argv[1], *input_cloud_ptr);
   std::ifstream myfile;
   myfile.open (argv[2]);
   for (int row = 0; row < 4; row++)
@@ -27,14 +25,13 @@ int main (int argc, char** argv)
       myfile >> trafo (row, col);
     }
   trafo_inv = trafo.inverse();
-  ROS_INFO_STREAM("transform to be used: \n" << trafo);
 
+  std::cerr << "transform to be used: \n" << trafo;
+  pcl_tools::transformPointCloud(input_cloud_ptr, output_cloud_ptr, trafo);
+  pcl_tools::transformPointCloud(input_cloud_ptr, inv_cloud_ptr, trafo_inv);
 
-  transformPointCloud (*cloudIn, *cloudOut, trafo);
-  transformPointCloud (*cloudIn, *cloudOut_inv, trafo_inv);
-
-  pcl::PCDWriter writer;
-  writer.write ("output.pcd", *cloudOut, false);
-  writer.write ("output_inverse.pcd", *cloudOut_inv, false);
+  pcl17::PCDWriter writer;
+  writer.write ("output.pcd", *output_cloud_ptr, false);
+  writer.write ("output_inverse.pcd", *inv_cloud_ptr, false);
   return (0);
 }

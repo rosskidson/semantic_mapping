@@ -1,24 +1,8 @@
 #include <iostream>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/transformation_estimation_point_to_plane.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl17/io/pcd_io.h>
+#include <pcl17/filters/filter.h>
+#include "pcl_tools/pcl_tools.h"
 
-void normalEstimation (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointCloudIn, pcl::PointCloud<
-    pcl::PointXYZRGBNormal>::Ptr pointCloudOut)
-{
-  // Create the normal estimation class, and pass the input dataset to it
-  pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
-  ne.setInputCloud (pointCloudIn);
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB> ());
-  ne.setSearchMethod (tree);
-  ne.setRadiusSearch (0.05);
-  ne.compute (*pointCloudOut);
-  pcl::copyPointCloud (*pointCloudIn, *pointCloudOut);
-}
 
 int main (int argc, char** argv)
 {
@@ -27,20 +11,37 @@ int main (int argc, char** argv)
     std::cerr << "please provide filename as argument" << std::endl;
     exit(0);
   }
-  pcl::PCDReader reader;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr normals_cloud (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-  reader.read (argv[1], *input_cloud);
+  pcl17::PCDReader reader;
+  PointCloudPtr input_cloud_ptr (new PointCloud);
+  PointCloudPtr filtered_cloud_ptr (new PointCloud);
+  PointCloudNormalsPtr normals_cloud_ptr (new PointCloudNormals);
+  pcl17::PointCloud<pcl17::PointXYZRGBNormal>::Ptr output_cloud_ptr (new pcl17::PointCloud<pcl17::PointXYZRGBNormal>);
+
+  reader.read (argv[1], *input_cloud_ptr);
 
   std::vector<int> indices;
-  pcl::removeNaNFromPointCloud (*input_cloud, *filtered_cloud, indices);
+  pcl17::removeNaNFromPointCloud (*input_cloud_ptr, *filtered_cloud_ptr, indices);
 
   // calculate normals
   std::cout << "Calculating Normals..." << std::endl;
-  normalEstimation (filtered_cloud, normals_cloud);
+  pcl_tools::calculateNormalsOMP(filtered_cloud_ptr, normals_cloud_ptr);
+  for(int i = 0; i<filtered_cloud_ptr->points.size(); i++)
+  {
+    pcl17::PointXYZRGBNormal new_point;
+    new_point.x = filtered_cloud_ptr->points[i].x;
+    new_point.y = filtered_cloud_ptr->points[i].y;
+    new_point.z = filtered_cloud_ptr->points[i].z;
+    //new_point.rgb = filtered_cloud_ptr->points[i].rgb;
+    new_point.normal_x = normals_cloud_ptr->points[i].normal_x;
+    new_point.normal_y = normals_cloud_ptr->points[i].normal_y;
+    new_point.normal_z = normals_cloud_ptr->points[i].normal_z;
+    output_cloud_ptr->points.push_back(new_point);
+  }
 
-  pcl::PCDWriter writer;
-  writer.write ("output_normals.pcd", *normals_cloud, false);
+  output_cloud_ptr->width = output_cloud_ptr->points.size();
+  output_cloud_ptr->height = 1;
+
+  pcl17::PCDWriter writer;
+  writer.write ("output_normals.pcd", *output_cloud_ptr, false);
   return (0);
 }

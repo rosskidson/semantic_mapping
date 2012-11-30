@@ -21,12 +21,25 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# eIGEN ####################
+find_package(Eigen REQUIRED)
+include_directories(${Eigen_INCLUDE_DIRS})
+
 #common commands for building c++ executables and libraries
 rosbuild_add_library(pcl_tools src/pcl_tools.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
 rosbuild_add_executable(vox_filter src/vox_filter.cpp)
+rosbuild_link_boost(vox_filter system)
+target_link_libraries(vox_filter pcl_tools)
+
 rosbuild_add_executable(transform_cloud src/transform_cloud.cpp)
+rosbuild_link_boost(transform_cloud system)
+target_link_libraries(transform_cloud pcl_tools)
+
 rosbuild_add_executable(calculate_normals src/calculate_normals.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+rosbuild_link_boost(calculate_normals system)
+target_link_libraries(calculate_normals pcl_tools)
+
+
+

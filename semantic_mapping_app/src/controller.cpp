@@ -7,11 +7,11 @@
 
 #include "semantic_mapping_app/controller.h"
 #include "semantic_mapping_app/parameter_server.h"
-#include "message_conversions.cpp"
 
 // includes from this stack
 #include "kinect_capture_frame/kinectSnapshot.h"
 #include "pcl_typedefs/pcl_typedefs.h"
+#include "pcl_tools/pcl_tools.h"
 #include "mesh_io/mesh_io.h"
 #include "box_filter/box_filter.h"
 #include "register_kinect_to_model/kinect_registration.h"
@@ -144,8 +144,8 @@ void Controller::registerKinectToModel()
     ROS_INFO("kinect snapshot service failed");
     return;
   }
-  PointCloudPtr kinect_cloud_ptr = convertSensorMsgPointCloudToPCL(get_kinect_frame_srv.response.pointcloud);
-  cv::Mat kinect_image = convertSensorMsgToCV(get_kinect_frame_srv.response.image);
+  PointCloudPtr kinect_cloud_ptr = pcl_tools::convertSensorMsgPointCloudToPCL(get_kinect_frame_srv.response.pointcloud);
+  cv::Mat kinect_image = pcl_tools::convertSensorMsgToCV(get_kinect_frame_srv.response.image);
 
   ROS_INFO("using kinect snapshot from file");
   kinect_image = io_obj_.loadImageFromFile("/work/kidson/meshes/cabinet_scan_3/frames_to_register/image_2.png");

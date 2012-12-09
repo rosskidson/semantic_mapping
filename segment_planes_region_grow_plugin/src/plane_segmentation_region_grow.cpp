@@ -7,15 +7,12 @@
 
 #include "segment_planes_region_grow_plugin/plane_segmentation_region_grow.h"
 
-#include <pcl17/features/normal_3d_omp.h>
-#include <pcl17/features/normal_3d.h>
-
-
 
 #include <pcl17/search/search.h>
 #include <pcl17/search/kdtree.h>
-#include <pcl17/filters/passthrough.h>
 #include <pcl17/segmentation/region_growing.h>
+
+#include <pcl17/filters/extract_indices.h>
 
 #include <ros/console.h>
 
@@ -33,10 +30,14 @@ PLUGINLIB_DECLARE_CLASS(segment_planes_region_grow_plugin, PlaneSegmentationRegi
 namespace segment_planes_region_grow_plugin
 {
 
-  PlaneSegmentationRegionGrow::PlaneSegmentationRegionGrow ()
+  PlaneSegmentationRegionGrow::PlaneSegmentationRegionGrow ():
+    normals_ptr_(new pcl17::PointCloud<pcl17::Normal>),
+    nh_("~/plane_segmentation_region_grow"),
+    reconfig_srv_(nh_),
+    region_grow_()
   {
-    // TODO Auto-generated constructor stub
-
+    reconfig_callback_ = boost::bind (&PlaneSegmentationRegionGrow::reconfigCallback, this, _1, _2);
+    reconfig_srv_.setCallback (reconfig_callback_);
   }
 
   PlaneSegmentationRegionGrow::~PlaneSegmentationRegionGrow ()
@@ -44,68 +45,76 @@ namespace segment_planes_region_grow_plugin
     // TODO Auto-generated destructor stub
   }
 
-  void calculatePointCloudNormals (const PointCloudConstPtr input_cloud_ptr,
-      PointCloudNormalsPtr cloud_normals)
+  void PlaneSegmentationRegionGrow::reconfigCallback (segment_planes_region_grow_plugin::PlaneSegmentationConfig &config,
+      uint32_t level)
   {
-    // Create the normal estimation class, and pass the input dataset to it
-    pcl17::NormalEstimationOMP<PointType, PointNormal> ne;
-    ne.setNumberOfThreads(8);
-    ne.setInputCloud (input_cloud_ptr);
+    //  ROS_INFO("Reconfigure Request: %d %f %s %s %d",
+    //            config.int_param, config.double_param,
+    //            config.str_param.c_str(),
+    //            config.bool_param?"True":"False",
+    //            config.size);
 
-    pcl17::search::KdTree<PointType>::Ptr normals_tree (new pcl17::search::KdTree<PointType>);
-    //ne.setKSearch(30);
-    ne.setRadiusSearch(0.1);
-    ne.setSearchMethod(normals_tree);
-    ne.compute (*cloud_normals);
+    region_grow_.setCurvatureTestFlag(config.curvature_test_flag);
+    region_grow_.setCurvatureThreshold(config.curvature_threshold);
+    region_grow_.setMaxClusterSize(config.max_cluster_size);
+    region_grow_.setMinClusterSize(config.min_cluster_size);
+    region_grow_.setNumberOfNeighbours(config.number_of_neighbours);
+    region_grow_.setResidualTestFlag(config.residual_test_flag);
+    region_grow_.setResidualThreshold(config.residual_threshold);
+    region_grow_.setSmoothModeFlag(config.smooth_mode_flag);
+    region_grow_.setSmoothnessThreshold(config.smoothness_threshold);
+  }
+
+  void PlaneSegmentationRegionGrow::setNormals(const PointCloudNormalsConstPtr normals)
+  {
+    pcl17::copyPointCloud(*normals, *normals_ptr_);
   }
 
   void PlaneSegmentationRegionGrow::segmentPlanes (const PointCloudConstPtr model,
-      const std::vector<PointCloudConstPtr>& plane_clouds, const std::vector<
+      std::vector<PointCloudConstPtr>& plane_clouds, std::vector<
           pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
     ROS_INFO("region_grow");
     //calculate normals
-    PointCloudNormalsPtr cloud_normals (new PointCloudNormals);
-    calculatePointCloudNormals(model,cloud_normals);
+    if(!normals_ptr_)
+    {
+      ROS_WARN("normals for segmentPlanes object not set. Aborting");
+      return;
+    }
 
-    pcl17::search::Search<PointType>::Ptr tree = boost::shared_ptr<pcl17::search::Search<PointType> > (new pcl17::search::KdTree<PointType>);
-    PointCloudNormalsPtr normals (new PointCloudNormals);
-    pcl17::NormalEstimation<PointType, PointNormal> normal_estimator;
-    normal_estimator.setSearchMethod (tree);
-    normal_estimator.setInputCloud (model);
-    normal_estimator.setKSearch (50);
-    normal_estimator.compute (*normals);
+    // region growing only works for pointXYZ.  convert here
+    pcl17::PointCloud<pcl17::PointXYZ>::Ptr model_noRGB_ptr (new pcl17::PointCloud<pcl17::PointXYZ>);
+    pcl17::copyPointCloud(*model, *model_noRGB_ptr);
 
-    pcl17::IndicesPtr indices (new std::vector <int>);
-    pcl17::PassThrough<PointType> pass;
-    pass.setInputCloud (model);
-    pass.setFilterFieldName ("z");
-    pass.setFilterLimits (0.0, 1.0);
-    pass.filter (*indices);
+    pcl17::search::Search<pcl17::PointXYZ>::Ptr tree = boost::shared_ptr<pcl17::search::Search<pcl17::PointXYZ> > (new pcl17::search::KdTree<pcl17::PointXYZ>);
 
-    pcl17::RegionGrowing<PointType, PointNormal> reg;
-    reg.setMinClusterSize (100);
-    reg.setMaxClusterSize (10000);
-    reg.setSearchMethod (tree);
-    reg.setNumberOfNeighbours (30);
-    reg.setInputCloud (model);
-    //reg.setIndices (indices);
-    reg.setInputNormals (normals);
-    reg.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
-    reg.setCurvatureThreshold (1.0);
+    region_grow_.setMinClusterSize (100);
+    region_grow_.setMaxClusterSize (10000);
+    region_grow_.setSearchMethod (tree);
+    region_grow_.setNumberOfNeighbours (30);
+    region_grow_.setInputCloud (model_noRGB_ptr);
+    region_grow_.setInputNormals (normals_ptr_);
+    region_grow_.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
+    region_grow_.setCurvatureThreshold (1.0);
 
     std::vector <pcl17::PointIndices> clusters;
-    reg.extract (clusters);
+    region_grow_.extract ( clusters);
 
     std::cout << "Number of clusters is equal to " << clusters.size () << std::endl;
     std::cout << "First cluster has " << clusters[0].indices.size () << " points.\n";
     std::cout << "These are the indices of the points of the initial" <<
       std::endl << "cloud that belong to the first cluster:" << std::endl;
-    int counter = 0;
-    while (counter < 5 || counter > clusters[0].indices.size ())
+    for(std::vector<pcl17::PointIndices>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
     {
-      std::cout << clusters[0].indices[counter] << std::endl;
-      counter++;
+      pcl17::ExtractIndices<PointType> filter;
+      PointCloudPtr plane_ptr (new PointCloud);
+      filter.setInputCloud(model);
+      pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices);
+      for(std::vector<int>::iterator idx_itr = itr->indices.begin(); idx_itr != itr->indices.end(); idx_itr++)
+        indices_ptr->indices.push_back(*idx_itr);
+      filter.setIndices(indices_ptr);
+      filter.filter(*plane_ptr);
+      plane_clouds.push_back(plane_ptr);
     }
 
   }

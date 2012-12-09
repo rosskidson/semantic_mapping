@@ -21,8 +21,10 @@ namespace segment_planes_interface
       virtual ~PlaneSegmentation (){};
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
-          const std::vector<PointCloudConstPtr>& plane_clouds,
-          const std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
+          std::vector<PointCloudConstPtr>& plane_clouds,
+          std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
+
+      virtual void setNormals(const PointCloudNormalsConstPtr normals) = 0;
 
   };
 }

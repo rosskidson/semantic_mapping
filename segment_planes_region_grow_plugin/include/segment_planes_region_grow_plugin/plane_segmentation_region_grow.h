@@ -8,7 +8,13 @@
 #ifndef PLANESEGMENTATIONREGIONGROW_H_
 #define PLANESEGMENTATIONREGIONGROW_H_
 
+#include "ros/ros.h"
 #include <segment_planes_interface/plane_segmentation.h>
+
+#include <dynamic_reconfigure/server.h>
+#include "../../cfg/cpp/segment_planes_region_grow_plugin/PlaneSegmentationConfig.h"
+
+#include <pcl17/segmentation/region_growing.h>
 
 namespace segment_planes_region_grow_plugin
 {
@@ -19,8 +25,29 @@ namespace segment_planes_region_grow_plugin
       virtual ~PlaneSegmentationRegionGrow();
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
-          const std::vector<PointCloudConstPtr>& plane_clouds,
-          const std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
+          std::vector<PointCloudConstPtr>& plane_clouds,
+          std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
+
+      virtual void setNormals(const PointCloudNormalsConstPtr normals);
+
+    private:
+
+      void reconfigCallback (segment_planes_region_grow_plugin::PlaneSegmentationConfig &config,
+          uint32_t level);
+
+      pcl17::PointCloud<pcl17::Normal>::Ptr normals_ptr_;
+
+      ros::NodeHandle nh_;
+      dynamic_reconfigure::Server<segment_planes_region_grow_plugin::PlaneSegmentationConfig> reconfig_srv_;
+      dynamic_reconfigure::Server<segment_planes_region_grow_plugin::PlaneSegmentationConfig>::CallbackType
+          reconfig_callback_;
+
+      pcl17::RegionGrowing<pcl17::PointXYZ, pcl17::Normal> region_grow_;
+
+      bool curvature_test_flag_, residual_test_flag_, smooth_mode_flag_;
+      float curvature_threshold_, residual_threshold_, smoothness_threshold_;
+      int max_cluster_size_, min_cluster_size_, number_of_neighbours_;
+
 
   };
 }

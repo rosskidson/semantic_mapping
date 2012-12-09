@@ -9,6 +9,7 @@
 
 // ros
 #include <sensor_msgs/PointCloud2.h>
+#include <ros/ros.h>
 #include <ros/console.h>
 
 //pcl
@@ -31,11 +32,15 @@
 
 #include <iostream>
 
+boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
-Visualization::Visualization (): vox_grid_size_(0.02)
+Visualization::Visualization ():
+  vox_grid_size_(0.02)
 {
-  // TODO Auto-generated constructor stub
-
+  viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
+  viewer_->addCoordinateSystem (1.0);
+  viewer_->initCameraParameters ();
+  viewer_->setBackgroundColor (0, 0, 0);
 }
 
 Visualization::~Visualization ()
@@ -60,8 +65,7 @@ void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr)
 
 void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
 {
-  boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer (new pcl17::visualization::PCLVisualizer ("3D Viewer"));
-  viewer->setBackgroundColor (0, 0, 0);
+  viewer_->removeAllPointClouds();
   for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
   {
     int cloud_num = itr - cloud_ptr_vec.begin();
@@ -80,17 +84,19 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
       single_color(downsampled_ptr, 127*(cloud_num % 3), 127*((cloud_num+1) % 3), 127*((cloud_num+2) % 3));
 
     //add the cloud
-    viewer->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());
-    viewer->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1,
+    viewer_->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());
+    viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1,
       cloud_name.str());
   }
-  viewer->addCoordinateSystem (1.0);
-  viewer->initCameraParameters ();
-  while (!viewer->wasStopped ())
-  {
-    viewer->spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-  }
+
+//  while (!viewer_->wasStopped ())
+  this->spinOnce();
+}
+
+void Visualization::spinOnce()
+{
+  viewer_->spinOnce (100);
+  //boost::this_thread::sleep (boost::posix_time::microseconds (100000));
 }
 
 void Visualization::visualizeImage(const sensor_msgs::Image& image_msg)

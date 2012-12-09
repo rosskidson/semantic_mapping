@@ -24,6 +24,7 @@ class Visualization
     void visualizeCloud (PointCloudConstPtr cloud_ptr);
     void visualizeImage(const sensor_msgs::Image& image_msg);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
+    void spinOnce();
 
   private:
     double vox_grid_size_;

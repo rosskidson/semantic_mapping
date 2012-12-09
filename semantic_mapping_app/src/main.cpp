@@ -17,7 +17,15 @@ int main (int argc, char** argv)
   control_obj.importScan();
   control_obj.alignToPrincipleAxis();
   control_obj.extractROI();
-  //ros::spin();
+  control_obj.segmentPlanes();
+
+  ros::Rate loop_rate (1000);
+  while(ros::ok())
+  {
+    control_obj.spinVisualizer();
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
 
   return 0;
 }

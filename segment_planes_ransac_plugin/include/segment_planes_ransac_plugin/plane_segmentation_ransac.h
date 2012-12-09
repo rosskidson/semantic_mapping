@@ -19,8 +19,10 @@ namespace segment_planes_ransac_plugin
       virtual ~PlaneSegmentationRANSAC ();
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
-          const std::vector<PointCloudConstPtr>& plane_clouds,
-          const std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
+          std::vector<PointCloudConstPtr>& plane_clouds,
+          std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
+
+      virtual void setNormals(const PointCloudNormalsConstPtr normals);
 
   };
 }

@@ -27,15 +27,63 @@
 #include <Eigen/Core>
 
 Controller::Controller():
-  nh_("~"), visualizer_(), io_obj_()
+  nh_("~/controller"),
+  visualizer_(),
+  io_obj_(),
+  reconfig_srv_(nh_)
 {
+  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
+  try {
+    plane_segmenter_ = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
+  }
+  catch(pluginlib::PluginlibException& ex) {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
 
+  reconfig_callback_ = boost::bind (&Controller::reconfigCallback, this, _1, _2);
+  reconfig_srv_.setCallback (reconfig_callback_);
 }
 
 
 Controller::~Controller()
 {
     //destructor
+}
+
+void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &config,
+    uint32_t level)
+{
+  //  ROS_INFO("Reconfigure Request: %d %f %s %s %d",
+  //            config.int_param, config.double_param,
+  //            config.str_param.c_str(),
+  //            config.bool_param?"True":"False",
+  //            config.size);
+
+  if(config.import_scan)
+    this->importScan();
+  if(config.align_to_principle_axis)
+    this->alignToPrincipleAxis();
+  if(config.extract_ROI)
+    this->extractROI();
+  if(config.segment_planes)
+    this->segmentPlanes();
+  if(config.segment_fixtures)
+    this->segmentFixtures();
+  if(config.register_kinect_to_model)
+    this->registerKinectToModel();
+
+  config.import_scan = false;
+  config.align_to_principle_axis = false;
+  config.extract_ROI = false;
+  config.segment_planes = false;
+  config.segment_fixtures = false;
+  config.register_kinect_to_model = false;
+
+}
+
+void Controller::spinVisualizer()
+{
+  visualizer_.spinOnce();
 }
 
 void Controller::add_pointcloud(const std::string new_cloud_name, const PointCloudConstPtr new_cloud_ptr)
@@ -46,6 +94,31 @@ void Controller::add_pointcloud(const std::string new_cloud_name, const PointClo
     existing_record->second = new_cloud_ptr;
   else
     pointcloud_ptrs_.insert(NamedPointCloudPtr(new_cloud_name,new_cloud_ptr));
+}
+
+void Controller::add_pointcloud(const std::string new_cloud_name, const PointCloudNormalsConstPtr new_cloud_ptr)
+{
+  std::map<std::string,PointCloudNormalsConstPtr>::iterator existing_record = pointcloud_normals_ptrs_.find(new_cloud_name);
+
+  if(existing_record != pointcloud_normals_ptrs_.end())   //pointcloud exists, update
+    existing_record->second = new_cloud_ptr;
+  else
+    pointcloud_normals_ptrs_.insert(NamedPointCloudNormalsPtr(new_cloud_name,new_cloud_ptr));
+}
+
+void Controller::calculateNormals(const std::string cloud_name)
+{
+  ROS_INFO_STREAM("extracting normals for pointcloud " << cloud_name);
+  std::map<std::string,PointCloudConstPtr>::iterator existing_record = pointcloud_ptrs_.find(cloud_name);
+
+  if(existing_record != pointcloud_ptrs_.end())   //pointcloud exists, update
+  {
+    PointCloudNormalsPtr model_normals (new PointCloudNormals);
+    pcl_tools::calculateNormalsOMP(existing_record->second, model_normals);
+    add_pointcloud(cloud_name, model_normals);
+  }
+  else
+    ROS_WARN_STREAM("pointcloud " << cloud_name << " does not exist in pointcloud_ptrs_ storage ");
 }
 
 void Controller::importScan()
@@ -103,21 +176,21 @@ void Controller::extractROI()
 void Controller::segmentPlanes()
 {
   ROS_INFO("segment planes...");
-  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
-  segment_planes_interface::PlaneSegmentation* plane_segmenter = NULL;
+  add_pointcloud("model_downsample", pcl_tools::downsampleCloud(pointcloud_ptrs_["model"],0.005));
+  calculateNormals("model_downsample");
 
-  try
-  {
-    plane_segmenter = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
-  }
-  catch(pluginlib::PluginlibException& ex)
-  {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
+  std::vector<PointCloudConstPtr> plane_cloud_ptrs;
+  std::vector<pcl17::ModelCoefficients::ConstPtr> plane_models;
 
-  std::vector<PointCloudConstPtr> dfg;
-  std::vector<pcl17::ModelCoefficients::ConstPtr> hij;
-  plane_segmenter->segmentPlanes(pointcloud_ptrs_["model"], dfg,hij);
+  plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model_downsample"]);
+  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model_downsample"], plane_cloud_ptrs,plane_models);
+
+  visualizer_.visualizeCloud(plane_cloud_ptrs);
+}
+
+void Controller::segmentFixtures()
+{
+
 }
 
 void Controller::registerKinectToModel()

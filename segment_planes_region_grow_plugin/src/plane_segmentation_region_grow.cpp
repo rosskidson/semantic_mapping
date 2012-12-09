@@ -38,6 +38,8 @@ namespace segment_planes_region_grow_plugin
   {
     reconfig_callback_ = boost::bind (&PlaneSegmentationRegionGrow::reconfigCallback, this, _1, _2);
     reconfig_srv_.setCallback (reconfig_callback_);
+    pcl17::search::Search<pcl17::PointXYZ>::Ptr tree = boost::shared_ptr<pcl17::search::Search<pcl17::PointXYZ> > (new pcl17::search::KdTree<pcl17::PointXYZ>);
+    region_grow_.setSearchMethod (tree);
   }
 
   PlaneSegmentationRegionGrow::~PlaneSegmentationRegionGrow ()
@@ -62,7 +64,7 @@ namespace segment_planes_region_grow_plugin
     region_grow_.setResidualTestFlag(config.residual_test_flag);
     region_grow_.setResidualThreshold(config.residual_threshold);
     region_grow_.setSmoothModeFlag(config.smooth_mode_flag);
-    region_grow_.setSmoothnessThreshold(config.smoothness_threshold);
+    region_grow_.setSmoothnessThreshold(config.smoothness_threshold * (M_PI / 180));
   }
 
   void PlaneSegmentationRegionGrow::setNormals(const PointCloudNormalsConstPtr normals)
@@ -86,16 +88,8 @@ namespace segment_planes_region_grow_plugin
     pcl17::PointCloud<pcl17::PointXYZ>::Ptr model_noRGB_ptr (new pcl17::PointCloud<pcl17::PointXYZ>);
     pcl17::copyPointCloud(*model, *model_noRGB_ptr);
 
-    pcl17::search::Search<pcl17::PointXYZ>::Ptr tree = boost::shared_ptr<pcl17::search::Search<pcl17::PointXYZ> > (new pcl17::search::KdTree<pcl17::PointXYZ>);
-
-    region_grow_.setMinClusterSize (100);
-    region_grow_.setMaxClusterSize (10000);
-    region_grow_.setSearchMethod (tree);
-    region_grow_.setNumberOfNeighbours (30);
     region_grow_.setInputCloud (model_noRGB_ptr);
     region_grow_.setInputNormals (normals_ptr_);
-    region_grow_.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
-    region_grow_.setCurvatureThreshold (1.0);
 
     std::vector <pcl17::PointIndices> clusters;
     region_grow_.extract ( clusters);

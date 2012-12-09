@@ -35,7 +35,7 @@
 boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
 Visualization::Visualization ():
-  vox_grid_size_(0.02)
+  vox_grid_size_(0.01)
 {
   viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->addCoordinateSystem (1.0);
@@ -81,7 +81,7 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
 
     // different colours for different clouds
     pcl17::visualization::PointCloudColorHandlerCustom<PointType>
-      single_color(downsampled_ptr, 127*(cloud_num % 3), 127*((cloud_num+1) % 3), 127*((cloud_num+2) % 3));
+      single_color(downsampled_ptr, rand() % 255, rand() % 255, rand() % 255);
 
     //add the cloud
     viewer_->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());

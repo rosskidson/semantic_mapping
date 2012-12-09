@@ -128,7 +128,7 @@ void Controller::importScan()
   raw_scan_pointcloud_ptr = io_obj_.loadMeshFromFile (ParameterServer::instance()->get<std::string>
                                             ("mesh_input_filename"));
   add_pointcloud("raw_scan",raw_scan_pointcloud_ptr);
-  //visualizer_.visualizeCloud(pointcloud_ptrs_["raw_scan"]);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["raw_scan"]);
 }
 
 void Controller::alignToPrincipleAxis()
@@ -154,7 +154,7 @@ void Controller::alignToPrincipleAxis()
   PointCloudPtr aligned_scan_ptr (new PointCloud);
   axis_align->alignCloudPrincipleAxis(pointcloud_ptrs_["raw_scan"], guess, aligned_scan_ptr, align_to_axis_);
   add_pointcloud("aligned_scan",aligned_scan_ptr);
-  //visualizer_.visualizeCloud(pointcloud_ptrs_["aligned_scan"]);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["aligned_scan"]);
 }
 
 void Controller::extractROI()
@@ -185,7 +185,8 @@ void Controller::segmentPlanes()
   plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model_downsample"]);
   plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model_downsample"], plane_cloud_ptrs,plane_models);
 
-  visualizer_.visualizeCloud(plane_cloud_ptrs);
+  if(plane_cloud_ptrs.size() > 0)
+    visualizer_.visualizeCloud(plane_cloud_ptrs);
 }
 
 void Controller::segmentFixtures()

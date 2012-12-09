@@ -33,7 +33,7 @@ namespace pcl_tools
     normal_est.setInputCloud (input_cloud_ptr);
     pcl17::search::KdTree<PointType>::Ptr tree (new pcl17::search::KdTree<PointType> ());
     normal_est.setSearchMethod (tree);
-    normal_est.setRadiusSearch (0.05);
+    normal_est.setKSearch(50);
     normal_est.compute (*normals_ptr);
     //pcl::copyPointCloud (*pointCloudIn, *pointCloudOut);
   }
@@ -44,7 +44,7 @@ namespace pcl_tools
     normal_est.setInputCloud (input_cloud_ptr);
     pcl17::search::KdTree<PointType>::Ptr tree (new pcl17::search::KdTree<PointType> ());
     normal_est.setSearchMethod (tree);
-    normal_est.setRadiusSearch (0.05);
+    normal_est.setKSearch(50);
     normal_est.compute (*normals_ptr);
     //pcl::copyPointCloud (*pointCloudIn, *pointCloudOut);
   }

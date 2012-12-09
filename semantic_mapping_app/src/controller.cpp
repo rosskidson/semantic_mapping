@@ -65,6 +65,8 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
     this->alignToPrincipleAxis();
   if(config.extract_ROI)
     this->extractROI();
+  if(config.extract_normals_from_model)
+    this->extractNormalsFromModel();
   if(config.segment_planes)
     this->segmentPlanes();
   if(config.segment_fixtures)
@@ -75,6 +77,7 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   config.import_scan = false;
   config.align_to_principle_axis = false;
   config.extract_ROI = false;
+  config.extract_normals_from_model = false;
   config.segment_planes = false;
   config.segment_fixtures = false;
   config.register_kinect_to_model = false;
@@ -173,17 +176,24 @@ void Controller::extractROI()
   //io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
 }
 
+void Controller::extractNormalsFromModel()
+{
+  add_pointcloud("model_downsample", pcl_tools::downsampleCloud(pointcloud_ptrs_["model"],0.001));
+  calculateNormals("model");
+  calculateNormals("model_downsample");
+  visualizer_.visualizeCloudNormals(pointcloud_ptrs_["model"], pointcloud_normals_ptrs_["model"]);
+}
+
 void Controller::segmentPlanes()
 {
   ROS_INFO("segment planes...");
-  add_pointcloud("model_downsample", pcl_tools::downsampleCloud(pointcloud_ptrs_["model"],0.005));
-  calculateNormals("model_downsample");
-
+  if(pointcloud_normals_ptrs_.find("model") == pointcloud_normals_ptrs_.end())
+    extractNormalsFromModel();
   std::vector<PointCloudConstPtr> plane_cloud_ptrs;
   std::vector<pcl17::ModelCoefficients::ConstPtr> plane_models;
 
-  plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model_downsample"]);
-  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model_downsample"], plane_cloud_ptrs,plane_models);
+  plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model"]);
+  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model"], plane_cloud_ptrs,plane_models);
 
   if(plane_cloud_ptrs.size() > 0)
     visualizer_.visualizeCloud(plane_cloud_ptrs);

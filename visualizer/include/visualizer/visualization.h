@@ -22,6 +22,7 @@ class Visualization
     void visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg);
     void visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec);
     void visualizeCloud (PointCloudConstPtr cloud_ptr);
+    void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     void visualizeImage(const sensor_msgs::Image& image_msg);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
     void spinOnce();

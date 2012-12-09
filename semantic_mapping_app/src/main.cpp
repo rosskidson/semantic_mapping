@@ -14,10 +14,9 @@ int main (int argc, char** argv)
   ros::init (argc, argv, "semantic_mapping_controller");
 
   Controller control_obj;
-  control_obj.importScan();
-  control_obj.alignToPrincipleAxis();
-  control_obj.extractROI();
-  control_obj.segmentPlanes();
+//  control_obj.importScan();
+//  control_obj.alignToPrincipleAxis();
+//  control_obj.extractROI();
 
   ros::Rate loop_rate (1000);
   while(ros::ok())

@@ -35,7 +35,7 @@
 boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
 Visualization::Visualization ():
-  vox_grid_size_(0.01)
+  vox_grid_size_(0.0)
 {
   viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->addCoordinateSystem (1.0);
@@ -88,8 +88,15 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
     viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1,
       cloud_name.str());
   }
-
 //  while (!viewer_->wasStopped ())
+  this->spinOnce();
+}
+
+void Visualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
+{
+  viewer_->removeAllPointClouds();
+  viewer_->addPointCloudNormals<PointType, PointNormal>(cloud_ptr, cloud_normals_ptr, 20);
+  viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1);
   this->spinOnce();
 }
 

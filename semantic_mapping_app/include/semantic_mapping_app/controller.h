@@ -32,6 +32,7 @@ public:
     void importScan();
     void alignToPrincipleAxis();
     void extractROI();
+    void extractNormalsFromModel();
     void segmentPlanes();
     void registerKinectToModel();
     void segmentFixtures();

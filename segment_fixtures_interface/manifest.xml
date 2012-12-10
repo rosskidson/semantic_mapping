@@ -1,0 +1,21 @@
+<package>
+  <description brief="segment_fixtures_interface">
+
+     segment_fixtures_interface
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/segment_fixtures_interface</url>
+  <depend package="roscpp"/>
+  <depend package="pcl17"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="pluginlib"/>
+  <export>
+    <cpp cflags="-I${prefix}/include" />
+  </export>
+
+</package>
+
+

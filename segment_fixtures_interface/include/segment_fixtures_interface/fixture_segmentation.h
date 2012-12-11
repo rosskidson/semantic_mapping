@@ -10,6 +10,8 @@
 
 #include <pcl_typedefs/pcl_typedefs.h>
 
+#include <pcl17/ModelCoefficients.h>
+
 namespace segment_fixtures_interface
 {
   class FixtureSegmentation
@@ -18,10 +20,11 @@ namespace segment_fixtures_interface
       FixtureSegmentation (){};
       virtual ~FixtureSegmentation (){};
 
-      virtual void segmentFixtures(const PointCloudConstPtr model,
-          const std::vector<PointCloudConstPtr>& plane_cloud_ptrs,
-          const std::vector<pcl::ModelCoefficients> plane_coefficients,
-          std::vector<PointCloudConstPtr>& plane_clouds)=0;
+      virtual void segmentFixtures(const PointCloudConstPtr model) = 0;
+
+      virtual void setPlanes(std::vector<PointCloudConstPtr>& plane_clouds,
+            std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs){};
+
   };
 }
 

@@ -1,0 +1,24 @@
+<package>
+  <description brief="segment_fixtures_from_planes_plugin">
+
+     segment_fixtures_from_planes_plugin
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/segment_fixtures_from_planes_plugin</url>
+  <depend package="pcl17"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="roscpp"/>
+  <depend package="pluginlib"/>
+  <depend package="dynamic_reconfigure"/>
+  <depend package="segment_fixtures_interface"/>
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsegment_fixtures_from_planes_plugin" />
+      <segment_fixtures_interface plugin="${prefix}/segment_fixtures_from_planes_plugin.xml" />
+  </export>
+
+</package>
+
+

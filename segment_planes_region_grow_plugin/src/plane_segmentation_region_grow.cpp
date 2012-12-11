@@ -19,6 +19,12 @@
 //pluginlib
 #include <pluginlib/class_list_macros.h>
 
+#include <pcl17/sample_consensus/method_types.h>
+#include <pcl17/sample_consensus/model_types.h>
+#include <pcl17/segmentation/sac_segmentation.h>
+
+
+
 //Declare the plugin
 //param_1: The namespace in which the  plugin will live
 //param_2: The name we wish to give to the plugin
@@ -100,6 +106,7 @@ namespace segment_planes_region_grow_plugin
       std::endl << "cloud that belong to the first cluster:" << std::endl;
     for(std::vector<pcl17::PointIndices>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
     {
+      ///////////// get point cloud
       pcl17::ExtractIndices<PointType> filter;
       PointCloudPtr plane_ptr (new PointCloud);
       filter.setInputCloud(model);
@@ -109,6 +116,23 @@ namespace segment_planes_region_grow_plugin
       filter.setIndices(indices_ptr);
       filter.filter(*plane_ptr);
       plane_clouds.push_back(plane_ptr);
+
+
+      ////////////// get plane eq.
+      pcl17::ModelCoefficients::Ptr coefficients (new pcl17::ModelCoefficients);
+      pcl17::PointIndices::Ptr inliers (new pcl17::PointIndices);
+      pcl17::SACSegmentation<PointType> seg;
+      seg.setOptimizeCoefficients (true);
+      seg.setModelType (pcl17::SACMODEL_PLANE);
+      seg.setMethodType (pcl17::SAC_RANSAC);
+      seg.setDistanceThreshold (0.01);
+
+      seg.setInputCloud (model);
+      seg.setIndices(indices_ptr);
+      seg.segment (*inliers, *coefficients);
+
+      plane_coeffs.push_back(coefficients);
+
     }
 
   }

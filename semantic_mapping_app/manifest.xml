@@ -10,21 +10,30 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/semantic_mapping_app</url>
+
+<!-- standard ros dependencies -->
   <depend package="roscpp"/>
-  <depend package="pcl_typedefs"/>
-  <depend package="pcl_tools"/>
-  <depend package="std_msgs"/>
   <depend package="rosservice"/>
-  <depend package="sensor_msgs"/>
-  <depend package="image_transport"/>
   <depend package="pluginlib"/>
   <depend package="dynamic_reconfigure"/>
+
+<!-- messages -->
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="image_transport"/>
+
+<!-- packages from this stack -->
+  <depend package="pcl_typedefs"/>
+  <depend package="pcl_tools"/>
   <depend package="mesh_io"/>
   <depend package="kinect_capture_frame"/>
   <depend package="register_kinect_to_model"/>
+  <depend package="visualizer"/>
+
+<!-- pluginlib interfaces -->
   <depend package="align_principle_axis_interface"/>
   <depend package="segment_planes_interface"/>
-  <depend package="visualizer"/>
+  <depend package="segment_fixtures_interface"/>
 
 </package>
 

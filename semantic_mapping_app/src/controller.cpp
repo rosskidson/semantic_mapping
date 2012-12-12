@@ -14,9 +14,12 @@
 #include "pcl_tools/pcl_tools.h"
 #include "mesh_io/mesh_io.h"
 #include "register_kinect_to_model/kinect_registration.h"
+#include "visualizer/visualization.h"
+
+// pluginlib interfaces
 #include "align_principle_axis_interface/axis_alignment.h"
 #include "segment_planes_interface/plane_segmentation.h"
-#include "visualizer/visualization.h"
+#include "segment_fixtures_interface/fixture_segmentation.h"
 
 #include <ros/ros.h>
 #include <pluginlib/class_loader.h>
@@ -35,6 +38,14 @@ Controller::Controller():
   pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
   try {
     plane_segmenter_ = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
+  }
+  catch(pluginlib::PluginlibException& ex) {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
+
+  pluginlib::ClassLoader<segment_fixtures_interface::FixtureSegmentation> loader_fixtures("segment_fixtures_interface", "segment_fixtures_interface::FixtureSegmentation");
+  try {
+    fixture_segmenter_ = loader_fixtures.createClassInstance("segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes");
   }
   catch(pluginlib::PluginlibException& ex) {
     ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());

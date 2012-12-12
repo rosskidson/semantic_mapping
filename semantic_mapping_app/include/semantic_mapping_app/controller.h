@@ -18,6 +18,7 @@
 #include "../../cfg/cpp/semantic_mapping_app/ControllerConfig.h"
 
 #include "segment_planes_interface/plane_segmentation.h"
+#include "segment_fixtures_interface/fixture_segmentation.h"
 
 class Controller
 {
@@ -59,6 +60,7 @@ private:
 
     //plugin pointers
     segment_planes_interface::PlaneSegmentation* plane_segmenter_;
+    segment_fixtures_interface::FixtureSegmentation* fixture_segmenter_;
 
 };
 

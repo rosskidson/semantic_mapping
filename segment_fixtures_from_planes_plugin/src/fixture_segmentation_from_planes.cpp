@@ -5,6 +5,8 @@
  *      Author: ross kidson
  */
 
+#include <stdio.h>
+
 #include "segment_fixtures_from_planes_plugin/fixture_segmentation_from_planes.h"
 
 #include <pcl17/filters/project_inliers.h>
@@ -15,6 +17,9 @@
 #include <pcl17/filters/extract_indices.h>
 
 #include <ros/console.h>
+
+#include <visualizer/visualization.h>
+#include <pcl_tools/pcl_tools.h>
 
 //pluginlib
 #include <pluginlib/class_list_macros.h>
@@ -69,25 +74,52 @@ namespace segment_fixtures_from_planes_plugin
 
   }
 
-  void FixtureSegmentationFromPlanes::setPlanes(std::vector<PointCloudConstPtr>& plane_clouds,
+  void FixtureSegmentationFromPlanes::setPlanes(std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
                                                 std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
-    plane_clouds_ = plane_clouds;
+    plane_indices_ptrs_ = plane_indices_ptrs;
     plane_coeffs_ = plane_coeffs;
   }
 
-  void FixtureSegmentationFromPlanes::segmentFixtures(const PointCloudConstPtr model, std::vector<PointCloudConstPtr>& fixture_cloud_ptrs)
+  void FixtureSegmentationFromPlanes::segmentFixtures(const PointCloudConstPtr model, std::vector<pcl17::PointIndicesConstPtr>& fixture_indices_ptrs)
   {
     ROS_INFO("segment fixtures from planes");
-    for (uint plane_num = 0; plane_num < plane_clouds_.size(); plane_num++)
+
+    // first create a new model with the planes substracted
+    PointCloudPtr model_noplanes_ptr (new PointCloud);
+    pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices);
+    for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator plane_itr = plane_indices_ptrs_.begin(); plane_itr != plane_indices_ptrs_.end(); plane_itr++)
+      for(std::vector<int>::const_iterator itr = (**plane_itr).indices.begin(); itr != (**plane_itr).indices.end(); itr++)
+        indices_ptr->indices.push_back(*itr);
+    // remove duplicates
+    std::sort(indices_ptr->indices.begin(), indices_ptr->indices.end());
+    indices_ptr->indices.erase(std::unique(indices_ptr->indices.begin(), indices_ptr->indices.end()),indices_ptr->indices.end());
+
+    pcl17::ExtractIndices<PointType> extractor;
+    extractor.setNegative(true);
+    extractor.setIndices(indices_ptr);
+    extractor.setInputCloud(model);
+    extractor.filter(*model_noplanes_ptr);
+
+    Visualization vis;
+    vis.visualizeCloud(model_noplanes_ptr);
+
+    for (uint plane_num = 0; plane_num < plane_coeffs_.size(); plane_num++)
     {
-      ROS_INFO("Plane model: [%f, %f, %f, %f] with %d inliers.",
+      //little hack for now to get the planes I want.
+      if(plane_num !=6 && plane_num !=8 )
+        continue;
+      ROS_DEBUG("Plane model: [%f, %f, %f, %f] with %d inliers.",
                plane_coeffs_[plane_num]->values[0], plane_coeffs_[plane_num]->values[1],
-               plane_coeffs_[plane_num]->values[2], plane_coeffs_[plane_num]->values[3], plane_clouds_.size());
+               plane_coeffs_[plane_num]->values[2], plane_coeffs_[plane_num]->values[3], plane_indices_ptrs_[plane_num]->indices.size());
+
+      vis.visualizeCloud(model, plane_indices_ptrs_[plane_num]);
+      ros::Duration(1.0).sleep();
 
       //Project Points into a perfect plane
       PointCloudPtr cloud_projected(new PointCloud());
       projector_.setInputCloud(model);
+      projector_.setIndices(plane_indices_ptrs_[plane_num]);
       projector_.setModelCoefficients(plane_coeffs_[plane_num]);
       projector_.setModelType(pcl17::SACMODEL_PARALLEL_PLANE);
       projector_.filter(*cloud_projected);
@@ -96,7 +128,7 @@ namespace segment_fixtures_from_planes_plugin
       PointCloud::Ptr cloud_hull(new PointCloud());
       chull_.setInputCloud(cloud_projected);
       chull_.reconstruct(*cloud_hull);
-      ROS_INFO("Convex hull has: %d data points.", (int)cloud_hull->points.size ());
+      ROS_DEBUG("Convex hull has: %d data points.", (int)cloud_hull->points.size ());
       if ((int) cloud_hull->points.size() == 0)
       {
         ROS_WARN("Convex hull has: no points. Returning.");
@@ -106,7 +138,7 @@ namespace segment_fixtures_from_planes_plugin
       // Extract the handle clusters using a polygonal prism
       pcl17::PointIndices::Ptr handles_indices_ptr(new pcl17::PointIndices());
 
-      prism_.setInputCloud(model);
+      prism_.setInputCloud(model_noplanes_ptr);
       prism_.setInputPlanarHull(cloud_hull);
       prism_.segment(*handles_indices_ptr);
       ROS_INFO("Number of handle candidates: %d.", (int)handles_indices_ptr->indices.size ());
@@ -116,20 +148,21 @@ namespace segment_fixtures_from_planes_plugin
       //######### handle clustering code
       std::vector<pcl17::PointIndices> handle_clusters;
       fixture_cluster_.setSearchMethod(clusters_tree_ptr_);
-      fixture_cluster_.setInputCloud(model);
+      fixture_cluster_.setInputCloud(model_noplanes_ptr);
       fixture_cluster_.setIndices(handles_indices_ptr);
       fixture_cluster_.extract(handle_clusters);
 
+      std::vector<pcl17::PointIndicesConstPtr> debug;
       for(std::vector<pcl17::PointIndices>::const_iterator itr=handle_clusters.begin(); itr!= handle_clusters.end(); itr++)
       {
-        pcl17::ExtractIndices<PointType> filter;
-        PointCloudPtr fixture_ptr (new PointCloud);
-        filter.setInputCloud(model);
         pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices(*itr));
-        filter.setIndices(indices_ptr);
-        filter.filter(*fixture_ptr);
-        fixture_cloud_ptrs.push_back(fixture_ptr);
+        pcl17::PointIndicesPtr model_indices_ptr = pcl_tools::getIndicesFromPointCloud(model_noplanes_ptr, indices_ptr, model);
+        debug.push_back(model_indices_ptr);
+        fixture_indices_ptrs.push_back(model_indices_ptr);
       }
+
+      vis.visualizeCloud(model, debug);
+      ros::Duration(1.0).sleep();
     }
   }
 }

@@ -16,6 +16,7 @@
 #include <pcl17/point_types.h>
 #include <pcl17/ros/conversions.h>
 #include <pcl17/filters/voxel_grid.h>
+#include <pcl17/filters/extract_indices.h>
 //vtk
 #include <boost/thread/thread.hpp>
 #include <pcl17/common/common_headers.h>
@@ -32,15 +33,18 @@
 
 #include <iostream>
 
-boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
+static boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
 Visualization::Visualization ():
   vox_grid_size_(0.0)
 {
-  viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
-  viewer_->addCoordinateSystem (1.0);
-  viewer_->initCameraParameters ();
-  viewer_->setBackgroundColor (0, 0, 0);
+  if(!viewer_)    // instantiate viewer
+  {
+    viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
+    viewer_->addCoordinateSystem (1.0);
+    viewer_->initCameraParameters ();
+    viewer_->setBackgroundColor (0, 0, 0);
+  }
 }
 
 Visualization::~Visualization ()
@@ -90,6 +94,31 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
   }
 //  while (!viewer_->wasStopped ())
   this->spinOnce();
+}
+
+void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr)
+{
+  pcl17::ExtractIndices<PointType> extractor;
+  PointCloudPtr output_cloud_ptr (new PointCloud);
+  extractor.setIndices(cloud_indices_ptr);
+  extractor.setInputCloud(cloud_ptr);
+  extractor.filter(*output_cloud_ptr);
+  visualizeCloud(output_cloud_ptr);
+}
+
+void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs)
+{
+  std::vector<PointCloudConstPtr> clouds_to_visualize_ptrs;
+  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=cloud_indices_ptrs.begin(); itr!=cloud_indices_ptrs.end(); itr++)
+  {
+    pcl17::ExtractIndices<PointType> extractor;
+    PointCloudPtr output_cloud_ptr (new PointCloud);
+    extractor.setIndices(*itr);
+    extractor.setInputCloud(cloud_ptr);
+    extractor.filter(*output_cloud_ptr);
+    clouds_to_visualize_ptrs.push_back(output_cloud_ptr);
+  }
+  visualizeCloud(clouds_to_visualize_ptrs);
 }
 
 void Visualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)

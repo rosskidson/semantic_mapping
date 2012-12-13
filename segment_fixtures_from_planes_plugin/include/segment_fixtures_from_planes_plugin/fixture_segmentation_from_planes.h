@@ -30,16 +30,16 @@ namespace segment_fixtures_from_planes_plugin
       FixtureSegmentationFromPlanes();
       virtual ~FixtureSegmentationFromPlanes();
 
-      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<PointCloudConstPtr>& fixture_cloud_ptrs);
+      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<pcl17::PointIndicesConstPtr>& fixture_indices_ptrs);
 
-      virtual void setPlanes(std::vector<PointCloudConstPtr>& plane_clouds_,
+      virtual void setPlanes(std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
             std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs_);
 
     private:
 
       void reconfigCallback (segment_fixtures_from_planes_plugin::FixtureSegmentationConfig &config, uint32_t level);
 
-      std::vector<PointCloudConstPtr> plane_clouds_;
+      std::vector<pcl17::PointIndicesConstPtr> plane_indices_ptrs_;
       std::vector<pcl17::ModelCoefficients::ConstPtr> plane_coeffs_;
 
       ros::NodeHandle nh_;

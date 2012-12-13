@@ -21,6 +21,8 @@
 #include "segment_planes_interface/plane_segmentation.h"
 #include "segment_fixtures_interface/fixture_segmentation.h"
 
+#include <pcl17/filters/extract_indices.h>
+
 #include <ros/ros.h>
 #include <pluginlib/class_loader.h>
 
@@ -29,28 +31,21 @@
 
 #include <Eigen/Core>
 
+const static std::string segment_planes_plugin = "segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow";
+const static std::string segment_fixtures_plugin = "segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes";
+
 Controller::Controller():
   nh_("~/controller"),
   visualizer_(),
   io_obj_(),
-  reconfig_srv_(nh_)
+  reconfig_srv_(nh_),
+  plane_segmenter_ptr_(),
+  fixture_segmenter_ptr_(),
+  loader_planes_("segment_planes_interface", "segment_planes_interface::PlaneSegmentation"),
+  loader_fixtures_("segment_fixtures_interface", "segment_fixtures_interface::FixtureSegmentation")
 {
-  pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes("segment_planes_interface", "segment_planes_interface::PlaneSegmentation");
-  try {
-    plane_segmenter_ = loader_planes.createClassInstance("segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow");
-  }
-  catch(pluginlib::PluginlibException& ex) {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
-
-  pluginlib::ClassLoader<segment_fixtures_interface::FixtureSegmentation> loader_fixtures("segment_fixtures_interface", "segment_fixtures_interface::FixtureSegmentation");
-  try {
-    fixture_segmenter_ = loader_fixtures.createClassInstance("segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes");
-  }
-  catch(pluginlib::PluginlibException& ex) {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
-
+  loadSegmentPlanesPlugin(segment_planes_plugin);
+  loadSegmentFixturesPlugin(segment_fixtures_plugin);
   reconfig_callback_ = boost::bind (&Controller::reconfigCallback, this, _1, _2);
   reconfig_srv_.setCallback (reconfig_callback_);
 }
@@ -59,6 +54,32 @@ Controller::Controller():
 Controller::~Controller()
 {
     //destructor
+}
+
+void Controller::loadSegmentPlanesPlugin(std::string plugin_name)
+{
+  if(plane_segmenter_ptr_ != NULL)
+    plane_segmenter_ptr_.reset();
+  ROS_INFO("create plane segment obj");
+  try {
+    plane_segmenter_ptr_ = loader_planes_.createInstance(plugin_name);
+  }
+  catch(pluginlib::PluginlibException& ex) {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
+}
+
+void Controller::loadSegmentFixturesPlugin(std::string plugin_name)
+{
+  if(fixture_segmenter_ptr_ != NULL)
+    fixture_segmenter_ptr_.reset();
+  ROS_INFO("create fix segment obj");
+  try {
+    fixture_segmenter_ptr_ = loader_fixtures_.createInstance(plugin_name);
+  }
+  catch(pluginlib::PluginlibException& ex) {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
 }
 
 void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &config,
@@ -85,6 +106,12 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   if(config.register_kinect_to_model)
     this->registerKinectToModel();
 
+  if(config.reload_plane_segmenter)
+    this->loadSegmentPlanesPlugin(segment_planes_plugin);
+
+  if(config.reload_fixture_segmenter)
+    this->loadSegmentFixturesPlugin(segment_fixtures_plugin);
+
   config.import_scan = false;
   config.align_to_principle_axis = false;
   config.extract_ROI = false;
@@ -92,6 +119,9 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   config.segment_planes = false;
   config.segment_fixtures = false;
   config.register_kinect_to_model = false;
+
+  config.reload_plane_segmenter = false;
+  config.reload_fixture_segmenter = false;
 
 }
 
@@ -202,26 +232,25 @@ void Controller::segmentPlanes()
     extractNormalsFromModel();
 
 
-  plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model"]);
-  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model"], plane_cloud_ptrs_,plane_models_);
+  plane_segmenter_ptr_->setNormals(pointcloud_normals_ptrs_["model"]);
+  plane_segmenter_ptr_->segmentPlanes(pointcloud_ptrs_["model"], plane_indices_ptrs_,plane_models_);
 
-  if(plane_cloud_ptrs_.size() > 0)
-    visualizer_.visualizeCloud(plane_cloud_ptrs_);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], plane_indices_ptrs_);
 }
 
 void Controller::segmentFixtures()
 {
-  ROS_INFO("segment planes...");
-  if(pointcloud_normals_ptrs_.find("model") == pointcloud_normals_ptrs_.end())
-    extractNormalsFromModel();
+  ROS_INFO("segment fixtures...");
+  if(plane_models_.size() == 0)
+  {
+    ROS_INFO("No planes available for fixture extraction, please first run plane extraction");
+    return;
+  }
 
-  std::vector<PointCloudConstPtr> fixture_cloud_ptrs;
+  fixture_segmenter_ptr_->setPlanes(plane_indices_ptrs_, plane_models_);
+  fixture_segmenter_ptr_->segmentFixtures(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 
-  fixture_segmenter_->setPlanes(plane_cloud_ptrs_, plane_models_);
-  fixture_segmenter_->segmentFixtures(pointcloud_ptrs_["model"], fixture_cloud_ptrs);
-
-  if(fixture_cloud_ptrs.size() > 0)
-    visualizer_.visualizeCloud(fixture_cloud_ptrs);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 }
 
 void Controller::registerKinectToModel()

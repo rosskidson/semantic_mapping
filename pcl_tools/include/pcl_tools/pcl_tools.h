@@ -30,4 +30,11 @@ namespace pcl_tools
       const PointCloudPtr cloud_output_ptr,
       Eigen::Matrix4f& transform_output);
 
+  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& input_cloud_ptr,
+                                                  const pcl17::PointIndicesConstPtr& input_indices_ptr,
+                                                  const PointCloudConstPtr& search_cloud_ptr);
+
+  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& source_cloud,
+                                                  const PointCloudConstPtr& search_cloud_ptr);
+
 }

@@ -12,8 +12,6 @@
 #include <pcl17/search/kdtree.h>
 #include <pcl17/segmentation/region_growing.h>
 
-#include <pcl17/filters/extract_indices.h>
-
 #include <ros/console.h>
 
 //pluginlib
@@ -75,12 +73,12 @@ namespace segment_planes_region_grow_plugin
 
   void PlaneSegmentationRegionGrow::setNormals(const PointCloudNormalsConstPtr normals)
   {
-    normals_ptr_ = normals
-    //pcl17::copyPointCloud(*normals, *normals_ptr_);
+    //normals_ptr_ = normals
+    pcl17::copyPointCloud(*normals, *normals_ptr_);  // normals_ptr must be of type <pointxyz, normal>  copyPointCloud
   }
 
   void PlaneSegmentationRegionGrow::segmentPlanes (const PointCloudConstPtr model,
-      std::vector<PointCloudConstPtr>& plane_clouds, std::vector<
+      std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs, std::vector<
           pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
     ROS_INFO("region_grow");
@@ -108,16 +106,8 @@ namespace segment_planes_region_grow_plugin
     for(std::vector<pcl17::PointIndices>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
     {
       ///////////// get point cloud
-      pcl17::ExtractIndices<PointType> filter;
-      PointCloudPtr plane_ptr (new PointCloud);
-      filter.setInputCloud(model);
-      pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices);
-      for(std::vector<int>::iterator idx_itr = itr->indices.begin(); idx_itr != itr->indices.end(); idx_itr++)
-        indices_ptr->indices.push_back(*idx_itr);
-      filter.setIndices(indices_ptr);
-      filter.filter(*plane_ptr);
-      plane_clouds.push_back(plane_ptr);
-
+      pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices(*itr));
+      plane_indices_ptrs.push_back(indices_ptr);
 
       ////////////// get plane eq.
       pcl17::ModelCoefficients::Ptr coefficients (new pcl17::ModelCoefficients);

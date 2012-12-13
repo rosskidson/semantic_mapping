@@ -20,9 +20,9 @@ namespace segment_fixtures_interface
       FixtureSegmentation (){};
       virtual ~FixtureSegmentation (){};
 
-      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<PointCloudConstPtr>& fixture_cloud_ptrs) = 0;
+      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<pcl17::PointIndicesConstPtr>& fixture_indices_ptrs) = 0;
 
-      virtual void setPlanes(std::vector<PointCloudConstPtr>& plane_clouds,
+      virtual void setPlanes(std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
             std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs){};
 
   };

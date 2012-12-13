@@ -25,7 +25,7 @@ namespace segment_planes_region_grow_plugin
       virtual ~PlaneSegmentationRegionGrow();
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
-          std::vector<PointCloudConstPtr>& plane_clouds,
+          std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
           std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs);
 
       virtual void setNormals(const PointCloudNormalsConstPtr normals);

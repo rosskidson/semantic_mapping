@@ -21,6 +21,11 @@
 #include <pcl17/filters/crop_box.h>
 // tranform cloud
 #include <pcl17/common/transforms.h>
+// extract indices
+#include <pcl17/filters/extract_indices.h>
+// kdtree
+#include <pcl17/kdtree/kdtree_flann.h>
+
 // conversions
 #include "cv_bridge/cv_bridge.h"
 #include "pcl17/ros/conversions.h"
@@ -52,6 +57,35 @@ namespace pcl_tools
   void transformPointCloud(PointCloudConstPtr input_cloud_ptr, PointCloudPtr output_cloud_ptr, const Eigen::Matrix4f& transform )
   {
    transformPointCloud (*input_cloud_ptr, *output_cloud_ptr, transform);
+  }
+
+  // searches for points from a given point cloud in another pointcloud to convert a pointcloud to indices
+  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& input_cloud_ptr,
+                                                  const pcl17::PointIndicesConstPtr& input_indices_ptr,
+                                                  const PointCloudConstPtr& search_cloud_ptr)
+  {
+    PointCloudPtr source_cloud (new PointCloud);
+    pcl17::ExtractIndices<PointType> extractor;
+    extractor.setIndices(input_indices_ptr);
+    extractor.setInputCloud(input_cloud_ptr);
+    extractor.filter(*source_cloud);
+    return getIndicesFromPointCloud(source_cloud, search_cloud_ptr);
+  }
+
+  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& source_cloud,
+                                                  const PointCloudConstPtr& search_cloud_ptr)
+  {
+    pcl17::PointIndicesPtr output_indices_ptr (new pcl17::PointIndices);
+    pcl17::KdTreeFLANN<PointType> kdtreeNN;
+    std::vector<int> pointIdxNKNSearch(1);
+    std::vector<float> pointNKNSquaredDistance(1);
+    kdtreeNN.setInputCloud(search_cloud_ptr);
+    for(uint j = 0; j < source_cloud->points.size(); j++)
+    {
+      kdtreeNN.nearestKSearch(source_cloud->points[j], 1, pointIdxNKNSearch, pointNKNSquaredDistance);
+      output_indices_ptr->indices.push_back(pointIdxNKNSearch[0]);
+    }
+    return output_indices_ptr;
   }
 
   // sensor_msg::Image -> cv::Mat

@@ -75,7 +75,8 @@ namespace segment_planes_region_grow_plugin
 
   void PlaneSegmentationRegionGrow::setNormals(const PointCloudNormalsConstPtr normals)
   {
-    pcl17::copyPointCloud(*normals, *normals_ptr_);
+    normals_ptr_ = normals
+    //pcl17::copyPointCloud(*normals, *normals_ptr_);
   }
 
   void PlaneSegmentationRegionGrow::segmentPlanes (const PointCloudConstPtr model,

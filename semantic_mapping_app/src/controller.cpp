@@ -200,19 +200,28 @@ void Controller::segmentPlanes()
   ROS_INFO("segment planes...");
   if(pointcloud_normals_ptrs_.find("model") == pointcloud_normals_ptrs_.end())
     extractNormalsFromModel();
-  std::vector<PointCloudConstPtr> plane_cloud_ptrs;
-  std::vector<pcl17::ModelCoefficients::ConstPtr> plane_models;
+
 
   plane_segmenter_->setNormals(pointcloud_normals_ptrs_["model"]);
-  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model"], plane_cloud_ptrs,plane_models);
+  plane_segmenter_->segmentPlanes(pointcloud_ptrs_["model"], plane_cloud_ptrs_,plane_models_);
 
-  if(plane_cloud_ptrs.size() > 0)
-    visualizer_.visualizeCloud(plane_cloud_ptrs);
+  if(plane_cloud_ptrs_.size() > 0)
+    visualizer_.visualizeCloud(plane_cloud_ptrs_);
 }
 
 void Controller::segmentFixtures()
 {
+  ROS_INFO("segment planes...");
+  if(pointcloud_normals_ptrs_.find("model") == pointcloud_normals_ptrs_.end())
+    extractNormalsFromModel();
 
+  std::vector<PointCloudConstPtr> fixture_cloud_ptrs;
+
+  fixture_segmenter_->setPlanes(plane_cloud_ptrs_, plane_models_);
+  fixture_segmenter_->segmentFixtures(pointcloud_ptrs_["model"], fixture_cloud_ptrs);
+
+  if(fixture_cloud_ptrs.size() > 0)
+    visualizer_.visualizeCloud(fixture_cloud_ptrs);
 }
 
 void Controller::registerKinectToModel()

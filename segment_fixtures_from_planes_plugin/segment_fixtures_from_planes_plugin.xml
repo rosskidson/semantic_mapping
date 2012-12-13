@@ -1,4 +1,4 @@
-<library path="lib/libsegment_fixture_from_planes_plugin">
+<library path="lib/libsegment_fixtures_from_planes_plugin">
   <class name="segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes" type="segment_fixtures_from_planes_plugin::FixtureSegmentationFromPlanes" base_class_type="segment_fixtures_interface::FixtureSegmentation">
   <description>
     This plugin performs plane segmentation using region growing from pcl

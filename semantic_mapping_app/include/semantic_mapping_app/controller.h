@@ -50,8 +50,13 @@ private:
     ros::NodeHandle nh_;
     Visualization visualizer_;
     MeshIO io_obj_;
+
+    // data storage
     std::map<std::string, PointCloudConstPtr> pointcloud_ptrs_;
     std::map<std::string, PointCloudNormalsConstPtr> pointcloud_normals_ptrs_;
+    std::vector<PointCloudConstPtr> plane_cloud_ptrs_;
+    std::vector<pcl17::ModelCoefficients::ConstPtr> plane_models_;
+
     Eigen::Matrix4f align_to_axis_, move_model_to_origin_;
 
     dynamic_reconfigure::Server<semantic_mapping_app::ControllerConfig> reconfig_srv_;

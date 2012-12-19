@@ -6,7 +6,6 @@
  */
 
 #include "semantic_mapping_app/controller.h"
-#include "semantic_mapping_app/parameter_server.h"
 
 // includes from this stack
 #include "kinect_capture_frame/kinectSnapshot.h"
@@ -124,6 +123,10 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
 
   move_model_to_origin_.block<3,1>(0,3) = -Eigen::Vector3f(config.ROI_origin_x, config.ROI_origin_y, config.ROI_origin_z);
   ROI_size_ = Eigen::Vector4f(config.ROI_size_x, config.ROI_size_y, config.ROI_size_z, 1);
+
+  mesh_filename_ = config.mesh_filename;
+  mesh_registration_images_directory_ = config.mesh_registration_images_directory;
+  mesh_registration_transformations_directory_ = config.mesh_registration_transformations_directory;
 }
 
 void Controller::spinVisualizer()
@@ -170,8 +173,7 @@ void Controller::importScan()
 {
   ROS_INFO("Importing mesh to pointcloud model...");
   PointCloudPtr raw_scan_pointcloud_ptr;
-  raw_scan_pointcloud_ptr = io_obj_.loadMeshFromFile (ParameterServer::instance()->get<std::string>
-                                            ("mesh_input_filename"));
+  raw_scan_pointcloud_ptr = io_obj_.loadMeshFromFile (mesh_filename_);
   add_pointcloud("raw_scan",raw_scan_pointcloud_ptr);
   visualizer_.visualizeCloud(pointcloud_ptrs_["raw_scan"]);
 }
@@ -273,8 +275,8 @@ void Controller::registerKinectToModel()
   ROS_INFO("Registering Kinect to Model...");
   std::vector<cv::Mat> images;
   std::vector<Eigen::Matrix4f> transformations;
-  io_obj_.loadImagesFromDir(ParameterServer::instance()->get<std::string> ("mesh_registration_images_directory"),images);
-  io_obj_.loadTransformationsFromDir(ParameterServer::instance()->get<std::string> ("mesh_registration_transformations_directory"),transformations);
+  io_obj_.loadImagesFromDir(mesh_registration_images_directory_,images);
+  io_obj_.loadTransformationsFromDir(mesh_registration_transformations_directory_,transformations);
   KinectRegistration kinect_reg;
   Eigen::Matrix4f dildos;
   dildos = kinect_reg.registerKinectToModel(pointcloud_ptrs_["model"],kinect_cloud_ptr,kinect_image,images,transformations);

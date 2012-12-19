@@ -64,9 +64,7 @@ private:
 
     Eigen::Matrix4f align_to_axis_, move_model_to_origin_;
     Eigen::Vector4f ROI_size_;
-
-    //(0.9, 0.8, 0.0, 1);
-    //(0.95, 0.6, 1.8, 1);
+    std::string mesh_filename_, mesh_registration_images_directory_, mesh_registration_transformations_directory_;
 
     dynamic_reconfigure::Server<semantic_mapping_app::ControllerConfig> reconfig_srv_;
     dynamic_reconfigure::Server<semantic_mapping_app::ControllerConfig>::CallbackType

@@ -44,6 +44,8 @@ Controller::Controller():
   loader_planes_("segment_planes_interface", "segment_planes_interface::PlaneSegmentation"),
   loader_fixtures_("segment_fixtures_interface", "segment_fixtures_interface::FixtureSegmentation")
 {
+  move_model_to_origin_ = Eigen::Matrix4f::Identity (4, 4);
+  ROI_size_ = Eigen::Vector4f(0,0,0,1);
   loadSegmentPlanesPlugin(segment_planes_plugin);
   loadSegmentFixturesPlugin(segment_fixtures_plugin);
   reconfig_callback_ = boost::bind (&Controller::reconfigCallback, this, _1, _2);
@@ -105,10 +107,8 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
     this->segmentFixtures();
   if(config.register_kinect_to_model)
     this->registerKinectToModel();
-
   if(config.reload_plane_segmenter)
     this->loadSegmentPlanesPlugin(segment_planes_plugin);
-
   if(config.reload_fixture_segmenter)
     this->loadSegmentFixturesPlugin(segment_fixtures_plugin);
 
@@ -119,10 +119,11 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   config.segment_planes = false;
   config.segment_fixtures = false;
   config.register_kinect_to_model = false;
-
   config.reload_plane_segmenter = false;
   config.reload_fixture_segmenter = false;
 
+  move_model_to_origin_.block<3,1>(0,3) = -Eigen::Vector3f(config.ROI_origin_x, config.ROI_origin_y, config.ROI_origin_z);
+  ROI_size_ = Eigen::Vector4f(config.ROI_size_x, config.ROI_size_y, config.ROI_size_z, 1);
 }
 
 void Controller::spinVisualizer()
@@ -203,18 +204,16 @@ void Controller::alignToPrincipleAxis()
 
 void Controller::extractROI()
 {
-  ROS_INFO("Applying boxfilter to cloud..");
   PointCloudPtr cabinet_cloud_ptr (new PointCloud);
-  Eigen::Vector4f min_point (0.9, 0.8, -3.0, 1);
-  Eigen::Vector4f max_point (1.85, 1.4, -1.2, 1);
-  pcl_tools::filterCloud (pointcloud_ptrs_["aligned_scan"], min_point, max_point, cabinet_cloud_ptr);
+  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
 
   ROS_INFO("move model to origin...");
-  PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
-  pcl_tools::moveModelToOrigin(cabinet_cloud_ptr, cabinet_centered_cloud_ptr, move_model_to_origin_);
-  add_pointcloud("model",cabinet_centered_cloud_ptr);
+  pcl_tools::transformPointCloud(pointcloud_ptrs_["aligned_scan"],cabinet_centered_cloud_ptr, move_model_to_origin_);
+  ROS_INFO("Applying boxfilter to cloud..");
+  pcl_tools::filterCloud (cabinet_centered_cloud_ptr, Eigen::Vector4f(0,0,0,1), ROI_size_, cabinet_cloud_ptr);
+
+  add_pointcloud("model",cabinet_cloud_ptr);
   visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
-  //io_obj_.savePointcloudToFile(pointcloud_ptrs_["model"],"cabinet_model.pcd");
 }
 
 void Controller::extractNormalsFromModel()

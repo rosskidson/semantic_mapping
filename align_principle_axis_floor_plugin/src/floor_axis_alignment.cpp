@@ -84,6 +84,9 @@ namespace align_principle_axis_floor_plugin
     Eigen::AngleAxis<float> angle_axis (rotate, axis_to_rotate_about);
     transform_output = Eigen::Matrix4f::Identity (4, 4);
     transform_output.block<3, 3> (0, 0) = angle_axis.toRotationMatrix ().inverse ();
+
+    // apply translation to bring the floor to z = 0
+    transform_output(2, 3) = coefficients->values[3];
     transformPointCloud (*rotated_cloud_ptr, *output_cloud_ptr, transform_output);
 
 //  pcl17::ExtractIndices<PointType> eifilter;

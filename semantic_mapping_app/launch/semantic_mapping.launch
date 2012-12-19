@@ -4,6 +4,14 @@
 
     <param name="config/mesh_input_filename"            value="/work/kidson/meshes/cabinet_scan_2/mesh_1.ply" /> 
 <!--	<param name="config/mesh_input_filename"            value="/media/burg/work/meshes/cabinet_scan_2/mesh_1.ply" />-->
+
+    <param name="controller/ROI_origin_x" value="0.9"/>
+    <param name="controller/ROI_origin_y" value="0.8"/>
+    <param name="controller/ROI_origin_z" value="-0.01"/>
+    <param name="controller/ROI_size_x" value="0.95"/>
+    <param name="controller/ROI_size_y" value="0.6"/>
+    <param name="controller/ROI_size_z" value="1.8"/>
+
 </node>
 
 </launch>

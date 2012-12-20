@@ -19,6 +19,7 @@
 
 #include "segment_planes_interface/plane_segmentation.h"
 #include "segment_fixtures_interface/fixture_segmentation.h"
+#include "align_principle_axis_interface/axis_alignment.h"
 
 #include <pluginlib/class_loader.h>
 
@@ -44,6 +45,7 @@ private:
 
     void loadSegmentPlanesPlugin(std::string plugin_name);
     void loadSegmentFixturesPlugin(std::string plugin_name);
+    void loadAlignAxisPlugin(std::string plugin_name);
 
     void add_pointcloud(const std::string new_cloud_name, const PointCloudConstPtr new_cloud_ptr);
     void add_pointcloud(const std::string new_cloud_name, const PointCloudNormalsConstPtr new_cloud_ptr);
@@ -73,6 +75,7 @@ private:
     //plugin pointers
     boost::shared_ptr<segment_planes_interface::PlaneSegmentation> plane_segmenter_ptr_;
     boost::shared_ptr<segment_fixtures_interface::FixtureSegmentation> fixture_segmenter_ptr_;
+    boost::shared_ptr<align_principle_axis_interface::AxisAlignment> axis_align_ptr_;
 
     pluginlib::ClassLoader<segment_planes_interface::PlaneSegmentation> loader_planes_;
     pluginlib::ClassLoader<segment_fixtures_interface::FixtureSegmentation> loader_fixtures_;

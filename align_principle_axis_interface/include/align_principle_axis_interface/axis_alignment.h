@@ -21,7 +21,6 @@ namespace align_principle_axis_interface
       virtual ~AxisAlignment (){}
 
       virtual void alignCloudPrincipleAxis (const PointCloudConstPtr cloud_input,
-          const Eigen::Matrix4f& inital_guess,
           const PointCloudPtr cloud_output, Eigen::Matrix4f& transform_output) = 0;
   };
 }

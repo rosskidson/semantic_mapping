@@ -17,6 +17,11 @@
 
 #include <visualizer/visualization.h>
 
+#include <Eigen/Geometry>
+
+#include <dynamic_reconfigure/server.h>
+#include "../../cfg/cpp/align_principle_axis_floor_plugin/FloorAxisAlignmentConfig.h"
+
 //Declare the plugin
 //param_1: The namespace in which the  plugin will live
 //param_2: The name we wish to give to the plugin
@@ -27,10 +32,11 @@ PLUGINLIB_DECLARE_CLASS(align_principle_axis_floor_plugin, FloorAxisAlignment, a
 
 namespace align_principle_axis_floor_plugin
 {
-  FloorAxisAlignment::FloorAxisAlignment ()
+  FloorAxisAlignment::FloorAxisAlignment ():
+    nh_("~/floor_axis_alignment"),
+    reconfig_srv_(nh_)
   {
-    // TODO Auto-generated constructor stub
-
+    reconfig_srv_.setCallback (boost::bind (&FloorAxisAlignment::reconfigCallback, this, _1, _2));
   }
 
   FloorAxisAlignment::~FloorAxisAlignment ()
@@ -38,12 +44,37 @@ namespace align_principle_axis_floor_plugin
     // TODO Auto-generated destructor stub
   }
 
+  void FloorAxisAlignment::reconfigCallback (align_principle_axis_floor_plugin::FloorAxisAlignmentConfig &config, uint32_t level)
+  {
+    //  ROS_INFO("Reconfigure Request: %d %f %s %s %d",
+    //            config.int_param, config.double_param,
+    //            config.str_param.c_str(),
+    //            config.bool_param?"True":"False",
+    //            config.size);
+
+   if(config.axis_to_rotate_about == 0)
+       axis_ = Eigen::Vector3f::UnitX();
+   else if(config.axis_to_rotate_about == 1)
+     axis_ = Eigen::Vector3f::UnitY();
+   else if(config.axis_to_rotate_about == 2)
+     axis_ = Eigen::Vector3f::UnitZ();
+
+   angle_ = config.angle * (M_PI/180.0);
+
+  }
+
   void FloorAxisAlignment::alignCloudPrincipleAxis (const PointCloudConstPtr input_cloud_ptr,
-      const Eigen::Matrix4f& inital_guess, const PointCloudPtr output_cloud_ptr,
+      const PointCloudPtr output_cloud_ptr,
       Eigen::Matrix4f& transform_output)
   {
 //        Visualization visualizer;
-
+    Eigen::Matrix4f inital_guess;
+    inital_guess.block<3,3>(0,0) = Eigen::AngleAxisf(angle_, axis_).toRotationMatrix();
+//    inital_guess = Eigen::Matrix4f::Zero(4,4);
+//    inital_guess(0,0) = 1.0;
+//    inital_guess(1,2) = 1.0;
+//    inital_guess(2,1) = -1.0;
+//    inital_guess(3,3) = 1.0;
     PointCloudPtr rotated_cloud_ptr (new PointCloud);
     transformPointCloud (*input_cloud_ptr, *rotated_cloud_ptr, inital_guess);
 //    std::vector<PointCloudConstPtr> vis_cloud_ptrs;

@@ -10,6 +10,9 @@
 
 #include "align_principle_axis_interface/axis_alignment.h"
 
+#include <dynamic_reconfigure/server.h>
+#include "../../cfg/cpp/align_principle_axis_floor_plugin/FloorAxisAlignmentConfig.h"
+
 namespace align_principle_axis_floor_plugin
 {
 
@@ -20,8 +23,20 @@ namespace align_principle_axis_floor_plugin
       virtual ~FloorAxisAlignment ();
 
       virtual void alignCloudPrincipleAxis (const PointCloudConstPtr input_cloud_ptr,
-          const Eigen::Matrix4f& inital_guess, const PointCloudPtr output_cloud_ptr,
+          const PointCloudPtr output_cloud_ptr,
           Eigen::Matrix4f& transform_output);
+
+  private:
+
+      void reconfigCallback (align_principle_axis_floor_plugin::FloorAxisAlignmentConfig &config, uint32_t level);
+
+      ros::NodeHandle nh_;
+      dynamic_reconfigure::Server<align_principle_axis_floor_plugin::FloorAxisAlignmentConfig> reconfig_srv_;
+
+      // local params
+      Eigen::Vector3f axis_;
+      double angle_;
+
   };
 
 }

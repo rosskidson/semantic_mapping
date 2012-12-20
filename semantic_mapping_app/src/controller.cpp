@@ -30,8 +30,9 @@
 
 #include <Eigen/Core>
 
-const static std::string segment_planes_plugin = "segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow";
-const static std::string segment_fixtures_plugin = "segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes";
+const static std::string segment_planes_plugin_name = "segment_planes_region_grow_plugin/PlaneSegmentationRegionGrow";
+const static std::string segment_fixtures_plugin_name = "segment_fixtures_from_planes_plugin/FixtureSegmentationFromPlanes";
+const static std::string align_axis_plugin_name = "align_principle_axis_floor_plugin/FloorAxisAlignment";
 
 Controller::Controller():
   nh_("~/controller"),
@@ -40,13 +41,15 @@ Controller::Controller():
   reconfig_srv_(nh_),
   plane_segmenter_ptr_(),
   fixture_segmenter_ptr_(),
+  axis_align_ptr_(),
   loader_planes_("segment_planes_interface", "segment_planes_interface::PlaneSegmentation"),
   loader_fixtures_("segment_fixtures_interface", "segment_fixtures_interface::FixtureSegmentation")
 {
   move_model_to_origin_ = Eigen::Matrix4f::Identity (4, 4);
   ROI_size_ = Eigen::Vector4f(0,0,0,1);
-  loadSegmentPlanesPlugin(segment_planes_plugin);
-  loadSegmentFixturesPlugin(segment_fixtures_plugin);
+  loadSegmentPlanesPlugin(segment_planes_plugin_name);
+  loadSegmentFixturesPlugin(segment_fixtures_plugin_name);
+  loadAlignAxisPlugin(align_axis_plugin_name);
   reconfig_callback_ = boost::bind (&Controller::reconfigCallback, this, _1, _2);
   reconfig_srv_.setCallback (reconfig_callback_);
 }
@@ -83,6 +86,17 @@ void Controller::loadSegmentFixturesPlugin(std::string plugin_name)
   }
 }
 
+void Controller::loadAlignAxisPlugin(std::string plugin_name)
+{
+  pluginlib::ClassLoader<align_principle_axis_interface::AxisAlignment> loader_axis("align_principle_axis_interface", "align_principle_axis_interface::AxisAlignment");
+  try  {
+    axis_align_ptr_ = loader_axis.createInstance(plugin_name);
+  }
+  catch(pluginlib::PluginlibException& ex)  {
+    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
+  }
+}
+
 void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &config,
     uint32_t level)
 {
@@ -107,9 +121,9 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   if(config.register_kinect_to_model)
     this->registerKinectToModel();
   if(config.reload_plane_segmenter)
-    this->loadSegmentPlanesPlugin(segment_planes_plugin);
+    this->loadSegmentPlanesPlugin(segment_planes_plugin_name);
   if(config.reload_fixture_segmenter)
-    this->loadSegmentFixturesPlugin(segment_fixtures_plugin);
+    this->loadSegmentFixturesPlugin(segment_fixtures_plugin_name);
 
   config.import_scan = false;
   config.align_to_principle_axis = false;
@@ -181,25 +195,9 @@ void Controller::importScan()
 void Controller::alignToPrincipleAxis()
 {
   ROS_INFO("Performing principle axis alignment...");
-  pluginlib::ClassLoader<align_principle_axis_interface::AxisAlignment> loader_axis("align_principle_axis_interface", "align_principle_axis_interface::AxisAlignment");
-  align_principle_axis_interface::AxisAlignment* axis_align = NULL;
-  try
-  {
-    axis_align = loader_axis.createClassInstance("align_principle_axis_floor_plugin/FloorAxisAlignment");
-  }
-  catch(pluginlib::PluginlibException& ex)
-  {
-    ROS_ERROR("The plugin failed to load for some reason. Error: %s", ex.what());
-  }
 
-  Eigen::Matrix4f guess;
-  guess = Eigen::Matrix4f::Zero(4,4);
-  guess(0,0) = 1.0;
-  guess(1,2) = 1.0;
-  guess(2,1) = -1.0;
-  guess(3,3) = 1.0;
   PointCloudPtr aligned_scan_ptr (new PointCloud);
-  axis_align->alignCloudPrincipleAxis(pointcloud_ptrs_["raw_scan"], guess, aligned_scan_ptr, align_to_axis_);
+  axis_align_ptr_->alignCloudPrincipleAxis(pointcloud_ptrs_["raw_scan"], aligned_scan_ptr, align_to_axis_);
   add_pointcloud("aligned_scan",aligned_scan_ptr);
   visualizer_.visualizeCloud(pointcloud_ptrs_["aligned_scan"]);
 }

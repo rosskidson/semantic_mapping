@@ -40,6 +40,7 @@ public:
     void segmentPlanes();
     void registerKinectToModel();
     void segmentFixtures();
+    void displayAllSegmentedFeatures();
 
 private:
 

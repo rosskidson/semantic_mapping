@@ -118,6 +118,8 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
     this->segmentPlanes();
   if(config.segment_fixtures)
     this->segmentFixtures();
+  if(config.display_all_segmented_features)
+    this->displayAllSegmentedFeatures();
   if(config.register_kinect_to_model)
     this->registerKinectToModel();
   if(config.reload_plane_segmenter)
@@ -134,6 +136,7 @@ void Controller::reconfigCallback (semantic_mapping_app::ControllerConfig &confi
   config.register_kinect_to_model = false;
   config.reload_plane_segmenter = false;
   config.reload_fixture_segmenter = false;
+  config.display_all_segmented_features = false;
 
   move_model_to_origin_.block<3,1>(0,3) = -Eigen::Vector3f(config.ROI_origin_x, config.ROI_origin_y, config.ROI_origin_z);
   ROI_size_ = Eigen::Vector4f(config.ROI_size_x, config.ROI_size_y, config.ROI_size_z, 1);
@@ -250,6 +253,15 @@ void Controller::segmentFixtures()
   fixture_segmenter_ptr_->segmentFixtures(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 
   visualizer_.visualizeCloud(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
+}
+
+void Controller::displayAllSegmentedFeatures()
+{
+  std::vector<pcl17::PointIndicesConstPtr> feature_indices_ptrs;
+  feature_indices_ptrs = plane_indices_ptrs_;
+  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=fixture_indices_ptrs_.begin(); itr!=fixture_indices_ptrs_.end();itr++)
+    feature_indices_ptrs.push_back(*itr);
+  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], feature_indices_ptrs);
 }
 
 void Controller::registerKinectToModel()

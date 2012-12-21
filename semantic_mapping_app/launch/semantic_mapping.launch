@@ -14,6 +14,9 @@
     <param name="controller/ROI_size_y" value="0.6"/>
     <param name="controller/ROI_size_z" value="1.8"/>
 
+    <param name="floor_axis_alignment/angle" value="-90" />
+    <param name="floor_axis_alignment/axis_to_rotate_about" value="0" />
+
 </node>
 
 </launch>

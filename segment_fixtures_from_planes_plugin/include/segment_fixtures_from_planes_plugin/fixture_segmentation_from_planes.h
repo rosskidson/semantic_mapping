@@ -47,6 +47,7 @@ namespace segment_fixtures_from_planes_plugin
       dynamic_reconfigure::Server<segment_fixtures_from_planes_plugin::FixtureSegmentationConfig>::CallbackType reconfig_callback_;
 
       int min_handle_candidates_points_;
+      float plane_scale_down_factor_;
 
       pcl17::ProjectInliers<PointType> projector_; // project points from planes onto a perfect plane
       pcl17::ConvexHull<PointType> chull_;

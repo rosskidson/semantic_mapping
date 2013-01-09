@@ -15,6 +15,7 @@
 #include <pcl17/surface/convex_hull.h>
 #include <pcl17/search/kdtree.h>
 #include <pcl17/filters/extract_indices.h>
+#include <pcl17/common/centroid.h>
 
 #include <ros/console.h>
 
@@ -71,6 +72,7 @@ namespace segment_fixtures_from_planes_plugin
     fixture_cluster_.setMinClusterSize(config.min_fixture_cluster_size);
 
     min_handle_candidates_points_ = config.min_fixture_points;
+    plane_scale_down_factor_ = config.plane_scale_down_factor;
 
   }
 
@@ -104,17 +106,15 @@ namespace segment_fixtures_from_planes_plugin
     Visualization vis;
     vis.visualizeCloud(model_noplanes_ptr);
 
+    extractor.setNegative(false);
     for (uint plane_num = 0; plane_num < plane_coeffs_.size(); plane_num++)
     {
       //little hack for now to get the planes I want.
-      if(plane_num !=6 && plane_num !=8 )
-        continue;
+//      if(plane_num !=6 && plane_num !=8 )
+//        continue;
       ROS_DEBUG("Plane model: [%f, %f, %f, %f] with %d inliers.",
                plane_coeffs_[plane_num]->values[0], plane_coeffs_[plane_num]->values[1],
                plane_coeffs_[plane_num]->values[2], plane_coeffs_[plane_num]->values[3], plane_indices_ptrs_[plane_num]->indices.size());
-
-      vis.visualizeCloud(model, plane_indices_ptrs_[plane_num]);
-      ros::Duration(1.0).sleep();
 
       //Project Points into a perfect plane
       PointCloudPtr cloud_projected(new PointCloud());
@@ -128,6 +128,34 @@ namespace segment_fixtures_from_planes_plugin
       PointCloud::Ptr cloud_hull(new PointCloud());
       chull_.setInputCloud(cloud_projected);
       chull_.reconstruct(*cloud_hull);
+
+      //move hull pointcloud to center
+      PointCloud::Ptr centered_cloud_hull(new PointCloud());
+      Eigen::Vector4d hull_centroid_vec;
+      pcl17::compute3DCentroid(*cloud_hull, hull_centroid_vec);
+      Eigen::Matrix4f hull_centroid_mat = Eigen::Matrix4f::Identity();
+      for(int i=0; i<4; i++)
+        hull_centroid_mat(i,3) = -hull_centroid_vec(i);
+      pcl_tools::transformPointCloud(cloud_hull, centered_cloud_hull, hull_centroid_mat);
+      // scale it down
+      PointCloud::Ptr resized_cloud_hull(new PointCloud());
+      pcl_tools::transformPointCloud(centered_cloud_hull, resized_cloud_hull, plane_scale_down_factor_* Eigen::Matrix4f::Identity());
+      //move it back
+      for(int i=0; i<4; i++)
+        hull_centroid_mat(i,3) = hull_centroid_vec(i);
+      pcl_tools::transformPointCloud(resized_cloud_hull, cloud_hull, hull_centroid_mat);
+
+      PointCloudPtr temp (new PointCloud());
+      extractor.setIndices(plane_indices_ptrs_[plane_num]);
+      extractor.filter(*temp);
+
+//      vis.visualizeCloud(temp);
+//      ros::Duration(0.5).sleep();
+//      vis.visualizeCloud(cloud_hull);
+//      ros::Duration(0.5).sleep();
+//      std::vector<PointCloudConstPtr> vis_clouds;
+//      vis.visualizeCloud(vis_clouds);
+
       ROS_DEBUG("Convex hull has: %d data points.", (int)cloud_hull->points.size ());
       if ((int) cloud_hull->points.size() == 0)
       {
@@ -162,7 +190,7 @@ namespace segment_fixtures_from_planes_plugin
       }
 
       vis.visualizeCloud(model, debug);
-      ros::Duration(1.0).sleep();
+      ros::Duration(0.5).sleep();
     }
   }
 }

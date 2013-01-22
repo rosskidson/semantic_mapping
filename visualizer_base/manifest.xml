@@ -1,0 +1,18 @@
+<package>
+  <description brief="visualizer_base">
+
+     visualizer_base
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/visualizer_base</url>
+  <depend package="roscpp"/>
+  <depend package="pcl17"/>
+  <depend package="pcl_typedefs"/>
+  <depend package="sensor_msgs"/>
+
+</package>
+
+

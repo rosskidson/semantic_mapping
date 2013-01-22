@@ -3,10 +3,10 @@
 .pydevproject
 .cproject
 
-#qtcreator files
+#qtcreator project files
 *.user
 
-#c++ and ros crap
+#c++ and ros stuff
 bin
 build
 cmake_install.cmake
@@ -14,6 +14,13 @@ cmake_install.cmake
 lib
 srv_gen
 msg_gen
+docs
+# there is some autogen stuff in src folder
+#under the name of the package
+*/src/*/*
+#cpp dir for ros autogen files
+# this doesn't ignore *.cpp files
+cpp
 
 #some data types
 *.pcd
@@ -21,6 +28,8 @@ msg_gen
 
 #temp files
 *~
-
-#debugging
 core
+*.autosave
+
+#svn
+.svn

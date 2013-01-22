@@ -13,6 +13,10 @@
   <depend package="pcl_typedefs"/>
   <depend package="sensor_msgs"/>
 
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lvisualizer_base"/>
+  </export>
+
 </package>
 
 

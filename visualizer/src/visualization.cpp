@@ -8,15 +8,15 @@
 #include "visualizer/visualization.h"
 
 // ros
-#include <sensor_msgs/PointCloud2.h>
-#include <ros/ros.h>
+//#include <sensor_msgs/PointCloud2.h>
+//#include <ros/ros.h>
 #include <ros/console.h>
 
 //pcl
 #include <pcl17/point_types.h>
-#include <pcl17/ros/conversions.h>
-#include <pcl17/filters/voxel_grid.h>
-#include <pcl17/filters/extract_indices.h>
+//#include <pcl17/ros/conversions.h>
+//#include <pcl17/filters/voxel_grid.h>
+//#include <pcl17/filters/extract_indices.h>
 //vtk
 #include <boost/thread/thread.hpp>
 #include <pcl17/common/common_headers.h>
@@ -35,8 +35,7 @@
 
 static boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
-Visualization::Visualization ():
-  vox_grid_size_(0.0)
+Visualization::Visualization ()
 {
   if(!viewer_)    // instantiate viewer
   {
@@ -52,22 +51,7 @@ Visualization::~Visualization ()
   // TODO Auto-generated destructor stub
 }
 
-void Visualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg)
-{
-  PointCloudPtr cloud_ptr (new PointCloud);
-  pcl17::fromROSMsg(pointcloud_msg,*cloud_ptr);
-
-  visualizeCloud(cloud_ptr);
-}
-
-void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr)
-{
-  std::vector<PointCloudConstPtr> cloud_ptr_vec;
-  cloud_ptr_vec.push_back(cloud_ptr);
-  visualizeCloud(cloud_ptr_vec);
-}
-
-void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
+void Visualization::visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
 {
   viewer_->removeAllPointClouds();
   for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
@@ -96,30 +80,6 @@ void Visualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_v
   this->spinOnce();
 }
 
-void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr)
-{
-  pcl17::ExtractIndices<PointType> extractor;
-  PointCloudPtr output_cloud_ptr (new PointCloud);
-  extractor.setIndices(cloud_indices_ptr);
-  extractor.setInputCloud(cloud_ptr);
-  extractor.filter(*output_cloud_ptr);
-  visualizeCloud(output_cloud_ptr);
-}
-
-void Visualization::visualizeCloud (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs)
-{
-  std::vector<PointCloudConstPtr> clouds_to_visualize_ptrs;
-  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=cloud_indices_ptrs.begin(); itr!=cloud_indices_ptrs.end(); itr++)
-  {
-    pcl17::ExtractIndices<PointType> extractor;
-    PointCloudPtr output_cloud_ptr (new PointCloud);
-    extractor.setIndices(*itr);
-    extractor.setInputCloud(cloud_ptr);
-    extractor.filter(*output_cloud_ptr);
-    clouds_to_visualize_ptrs.push_back(output_cloud_ptr);
-  }
-  visualizeCloud(clouds_to_visualize_ptrs);
-}
 
 void Visualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
 {
@@ -151,13 +111,3 @@ void Visualization::visualizeImage(const sensor_msgs::Image& image_msg)
   cv::waitKey(0);
 }
 
-PointCloudConstPtr Visualization::downsampleCloud (PointCloudConstPtr input)
-{
-  const double voxel_size = vox_grid_size_;
-  PointCloudPtr cloud_filtered (new PointCloud);
-  pcl17::VoxelGrid<PointType> downsampler;
-  downsampler.setInputCloud (input);
-  downsampler.setLeafSize (voxel_size, voxel_size, voxel_size);
-  downsampler.filter (*cloud_filtered);
-  return cloud_filtered;
-}

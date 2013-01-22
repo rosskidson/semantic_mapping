@@ -13,7 +13,7 @@
   <depend package="pcl_typedefs"/>
   <depend package="sensor_msgs"/>
   <depend package="cv_bridge"/>
-  <rosdep name="eigen"/>  
+  <depend package="visualizer_base"/>
 
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>

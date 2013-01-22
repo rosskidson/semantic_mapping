@@ -237,7 +237,8 @@ void Controller::segmentPlanes()
   plane_segmenter_ptr_->setNormals(pointcloud_normals_ptrs_["model"]);
   plane_segmenter_ptr_->segmentPlanes(pointcloud_ptrs_["model"], plane_indices_ptrs_,plane_models_);
 
-  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], plane_indices_ptrs_);
+  VisualizationBase& base_vis = visualizer_;
+  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], plane_indices_ptrs_);
 }
 
 void Controller::segmentFixtures()
@@ -252,7 +253,7 @@ void Controller::segmentFixtures()
   fixture_segmenter_ptr_->setPlanes(plane_indices_ptrs_, plane_models_);
   fixture_segmenter_ptr_->segmentFixtures(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 
-  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
+  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 }
 
 void Controller::displayAllSegmentedFeatures()
@@ -261,7 +262,7 @@ void Controller::displayAllSegmentedFeatures()
   feature_indices_ptrs = plane_indices_ptrs_;
   for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=fixture_indices_ptrs_.begin(); itr!=fixture_indices_ptrs_.end();itr++)
     feature_indices_ptrs.push_back(*itr);
-  visualizer_.visualizeCloud(pointcloud_ptrs_["model"], feature_indices_ptrs);
+  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], feature_indices_ptrs);
 }
 
 void Controller::registerKinectToModel()

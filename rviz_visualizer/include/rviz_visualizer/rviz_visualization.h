@@ -27,7 +27,6 @@ class RVizVisualization
     void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     void visualizeImage(const sensor_msgs::Image& image_msg);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
-    void spinOnce();
 
   private:
     double vox_grid_size_;

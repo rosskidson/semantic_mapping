@@ -42,7 +42,7 @@ void VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr)
 {
   std::vector<PointCloudConstPtr> cloud_ptr_vec;
   cloud_ptr_vec.push_back(cloud_ptr);
-  visualizeCloud(cloud_ptr_vec);
+  visualizeClouds(cloud_ptr_vec);
 }
 
 void VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr)
@@ -55,7 +55,7 @@ void VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::Poi
   visualizeCloud(output_cloud_ptr);
 }
 
-void VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs)
+void VisualizationBase::visualizeClouds (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs)
 {
   std::vector<PointCloudConstPtr> clouds_to_visualize_ptrs;
   for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=cloud_indices_ptrs.begin(); itr!=cloud_indices_ptrs.end(); itr++)
@@ -67,7 +67,7 @@ void VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr, std::vecto
     extractor.filter(*output_cloud_ptr);
     clouds_to_visualize_ptrs.push_back(output_cloud_ptr);
   }
-  visualizeCloud(clouds_to_visualize_ptrs);
+  visualizeClouds(clouds_to_visualize_ptrs);
 }
 
 

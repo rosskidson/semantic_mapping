@@ -19,15 +19,19 @@
 class Visualization : public VisualizationBase
 {
   public:
-    using VisualizationBase::visualizeClouds;
-
     Visualization ();
     virtual ~Visualization ();
-    virtual void visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec);
-    void virtual visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
-    void virtual visualizeImage(const sensor_msgs::Image& image_msg);
-    void spinOnce();
+    virtual int addCloudToVisualizer (PointCloudConstPtr cloud_ptr,
+                                      double red=255,
+                                      double green=255,
+                                      double blue=255);
+    virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
+    virtual void visualizeImage(const sensor_msgs::Image& image_msg);
+    virtual void removeAllClouds();
 
+    void spinOnce();
+  private:
+    int cloud_counter_;
 
 };
 

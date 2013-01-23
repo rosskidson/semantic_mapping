@@ -27,8 +27,7 @@
 
 #include <iostream>
 
-RVizVisualization::RVizVisualization ():
-  vox_grid_size_(0.0)
+RVizVisualization::RVizVisualization ()
 {
 
 }
@@ -38,48 +37,30 @@ RVizVisualization::~RVizVisualization ()
   // TODO Auto-generated destructor stub
 }
 
-void RVizVisualization::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg)
-{
-  PointCloudPtr cloud_ptr (new PointCloud);
-  pcl17::fromROSMsg(pointcloud_msg,*cloud_ptr);
-  visualizeCloud(cloud_ptr);
-}
-
-void RVizVisualization::visualizeCloud (PointCloudConstPtr cloud_ptr)
-{
-  std::vector<PointCloudConstPtr> cloud_ptr_vec;
-  cloud_ptr_vec.push_back(cloud_ptr);
-  visualizeCloud(cloud_ptr_vec);
-}
-
-void RVizVisualization::visualizeCloud (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
+void Visualization::visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
 {
 
-}
-
-void RVizVisualization::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr)
-{
-  pcl17::ExtractIndices<PointType> extractor;
-  PointCloudPtr output_cloud_ptr (new PointCloud);
-  extractor.setIndices(cloud_indices_ptr);
-  extractor.setInputCloud(cloud_ptr);
-  extractor.filter(*output_cloud_ptr);
-  visualizeCloud(output_cloud_ptr);
-}
-
-void RVizVisualization::visualizeCloud (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs)
-{
-  std::vector<PointCloudConstPtr> clouds_to_visualize_ptrs;
-  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=cloud_indices_ptrs.begin(); itr!=cloud_indices_ptrs.end(); itr++)
+  for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
   {
-    pcl17::ExtractIndices<PointType> extractor;
-    PointCloudPtr output_cloud_ptr (new PointCloud);
-    extractor.setIndices(*itr);
-    extractor.setInputCloud(cloud_ptr);
-    extractor.filter(*output_cloud_ptr);
-    clouds_to_visualize_ptrs.push_back(output_cloud_ptr);
+    int cloud_num = itr - cloud_ptr_vec.begin();
+    std::stringstream cloud_name;
+    cloud_name << "cloud "<< itr - cloud_ptr_vec.begin();
+
+    // downsample cloud if needed
+    PointCloudConstPtr downsampled_ptr;
+    if(vox_grid_size_ > 0.0)
+      downsampled_ptr = downsampleCloud(*itr);
+    else
+      downsampled_ptr = *itr;
+
+    // different colours for different clouds
+    pcl17::visualization::PointCloudColorHandlerCustom<PointType>
+      single_color(downsampled_ptr, 50 + rand() % 205, 50 + rand() % 205, 50 + rand() % 205);
+
+    //add the cloud
+
   }
-  visualizeCloud(clouds_to_visualize_ptrs);
+
 }
 
 void RVizVisualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
@@ -90,15 +71,4 @@ void RVizVisualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, Poi
 void RVizVisualization::visualizeImage(const sensor_msgs::Image& image_msg)
 {
 
-}
-
-PointCloudConstPtr RVizVisualization::downsampleCloud (PointCloudConstPtr input)
-{
-  const double voxel_size = vox_grid_size_;
-  PointCloudPtr cloud_filtered (new PointCloud);
-  pcl17::VoxelGrid<PointType> downsampler;
-  downsampler.setInputCloud (input);
-  downsampler.setLeafSize (voxel_size, voxel_size, voxel_size);
-  downsampler.filter (*cloud_filtered);
-  return cloud_filtered;
 }

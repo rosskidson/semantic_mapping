@@ -19,15 +19,21 @@ class VisualizationBase
   public:
     VisualizationBase ();
     virtual ~VisualizationBase ();
-    void visualizeClouds (PointCloudConstPtr cloud_ptr, std::vector<pcl17::PointIndicesConstPtr>& cloud_indices_ptrs);
 
-    virtual void visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec) = 0;
-    virtual void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr) =0;
+    //returns an id of the cloud. neccessary for interaction
+    // rgb is for the colour of the cloud in the visualizer
+    virtual int addCloudToVisualizer (PointCloudConstPtr cloud_ptr,
+                                      double red=255,
+                                      double green=255,
+                                      double blue=255)=0;
+    virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr) =0;
     virtual void visualizeImage(const sensor_msgs::Image& image_msg) =0;
+    virtual void removeAllClouds()=0;
 
-    void visualizeCloud (PointCloudConstPtr cloud_ptr);
-    void visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg);
-    void visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr);
+    int visualizeCloud (PointCloudConstPtr cloud_ptr);
+    int visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg);
+    int visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr);
+    void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
 
   protected:

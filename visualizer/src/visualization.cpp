@@ -35,7 +35,8 @@
 
 static boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
 
-Visualization::Visualization ()
+Visualization::Visualization ():
+  cloud_counter_(0)
 {
   if(!viewer_)    // instantiate viewer
   {
@@ -51,39 +52,28 @@ Visualization::~Visualization ()
   // TODO Auto-generated destructor stub
 }
 
-void Visualization::visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec)
+void Visualization::removeAllClouds()
 {
   viewer_->removeAllPointClouds();
-  for(std::vector<PointCloudConstPtr>::iterator itr=cloud_ptr_vec.begin(); itr != cloud_ptr_vec.end(); itr++)
-  {
-    int cloud_num = itr - cloud_ptr_vec.begin();
-    std::stringstream cloud_name;
-    cloud_name << "cloud "<< itr - cloud_ptr_vec.begin();
+}
 
-    // downsample cloud if needed
-    PointCloudConstPtr downsampled_ptr;
-    if(vox_grid_size_ > 0.0)
-      downsampled_ptr = downsampleCloud(*itr);
-    else
-      downsampled_ptr = *itr;
+int Visualization::addCloudToVisualizer(PointCloudConstPtr cloud_ptr, double red, double green, double blue)
+{
+  pcl17::visualization::PointCloudColorHandlerCustom<PointType>
+      single_color(cloud_ptr, red, green, blue);
 
-    // different colours for different clouds
-    pcl17::visualization::PointCloudColorHandlerCustom<PointType>
-      single_color(downsampled_ptr, 50 + rand() % 205, 50 + rand() % 205, 50 + rand() % 205);
+  std::stringstream cloud_name;
+  cloud_name << "cloud "<< cloud_counter_++;
 
-    //add the cloud
-    viewer_->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());
-    viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1,
-      cloud_name.str());
-  }
-//  while (!viewer_->wasStopped ())
+  viewer_->addPointCloud<PointType> (cloud_ptr, single_color, cloud_name.str());
+  viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1, cloud_name.str());
   this->spinOnce();
+  return cloud_counter_;
 }
 
 
-void Visualization::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
+void Visualization::addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
 {
-  viewer_->removeAllPointClouds();
   viewer_->addPointCloudNormals<PointType, PointNormal>(cloud_ptr, cloud_normals_ptr, 20);
   viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1);
   this->spinOnce();

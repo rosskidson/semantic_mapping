@@ -19,12 +19,13 @@
 class Visualization : public VisualizationBase
 {
   public:
+    using VisualizationBase::addCloudToVisualizer;
     Visualization ();
     virtual ~Visualization ();
     virtual int addCloudToVisualizer (PointCloudConstPtr cloud_ptr,
-                                      double red=255,
-                                      double green=255,
-                                      double blue=255);
+                                      double red,
+                                      double green,
+                                      double blue);
     virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     virtual void visualizeImage(const sensor_msgs::Image& image_msg);
     virtual void removeAllClouds();

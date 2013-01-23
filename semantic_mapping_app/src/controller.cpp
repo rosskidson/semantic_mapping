@@ -245,6 +245,9 @@ void Controller::segmentPlanes()
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], plane_indices_ptrs_);
 }
 
+
+#include <pcl17/segmentation/extract_clusters.h>
+#include <pcl17/segmentation/sac_segmentation.h>
 void Controller::segmentFixtures()
 {
   ROS_INFO("segment fixtures...");
@@ -259,6 +262,34 @@ void Controller::segmentFixtures()
 
   visualizer_.removeAllClouds();
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
+
+//  pcl17::PointIndicesPtr inliers (new pcl17::PointIndices());
+//  pcl17::ModelCoefficients coefficients;
+//  pcl17::SACSegmentation<pcl17::PointXYZRGB> seg;
+//  seg.setOptimizeCoefficients(true);
+//  seg.setModelType(pcl17::SACMODEL_PLANE);
+//  seg.setMethodType(pcl17::SAC_RANSAC);
+//  seg.setDistanceThreshold(0.02);
+//  seg.setInputCloud(pointcloud_ptrs_["model"]);
+//  //        seg.setIndices(indices);
+//  seg.segment(*inliers, coefficients);
+
+//  std::vector<pcl17::PointIndices> cluster_indices;
+//  pcl17::EuclideanClusterExtraction<pcl17::PointXYZRGB> ec;
+//  pcl17::search::KdTree<pcl17::PointXYZRGB>::Ptr kd_tree(
+//        new pcl17::search::KdTree<pcl17::PointXYZRGB>);
+
+//  ec.setClusterTolerance(0.02);
+
+//  ec.setMinClusterSize(100);
+//  ec.setSearchMethod(kd_tree);
+//  ec.setInputCloud(pointcloud_ptrs_["model"]);
+//  ec.setIndices(inliers);
+//  ec.extract(cluster_indices);
+
+//  visualizer_.removeAllClouds();
+//  visualizer_.addCloudToVisualizer(pointcloud_ptrs_["model"],inliers);
+//  visualizer_.addCloudToVisualizer(pointcloud_ptrs_["model"],cluster_indices[0].makeShared());
 }
 
 void Controller::displayAllSegmentedFeatures()

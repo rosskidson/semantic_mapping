@@ -31,7 +31,7 @@ class Visualization : public VisualizationBase
 
     void spinOnce();
   private:
-    int cloud_counter_;
+    static int cloud_counter_;
 
 };
 

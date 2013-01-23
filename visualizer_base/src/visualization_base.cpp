@@ -30,27 +30,26 @@ VisualizationBase::~VisualizationBase ()
   // TODO Auto-generated destructor stub
 }
 
-int VisualizationBase::visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg)
+int VisualizationBase::addCloudToVisualizer (const sensor_msgs::PointCloud2& pointcloud_msg)
 {
   PointCloudPtr cloud_ptr (new PointCloud);
   pcl17::fromROSMsg(pointcloud_msg,*cloud_ptr);
 
-  return visualizeCloud(cloud_ptr);
+  return addCloudToVisualizer(cloud_ptr);
 }
 
-int VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr)
+int VisualizationBase::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr cloud_indices_ptr)
 {
   pcl17::ExtractIndices<PointType> extractor;
   PointCloudPtr output_cloud_ptr (new PointCloud);
   extractor.setIndices(cloud_indices_ptr);
   extractor.setInputCloud(cloud_ptr);
   extractor.filter(*output_cloud_ptr);
-  return visualizeCloud(output_cloud_ptr);
+  return addCloudToVisualizer(output_cloud_ptr);
 }
 
-int VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr)
+int VisualizationBase::addCloudToVisualizer (PointCloudConstPtr cloud_ptr)
 {
-  removeAllClouds();
   // downsample cloud if needed
   PointCloudConstPtr downsampled_ptr;
   if(vox_grid_size_ > 0.0)
@@ -61,11 +60,12 @@ int VisualizationBase::visualizeCloud (PointCloudConstPtr cloud_ptr)
   return addCloudToVisualizer(downsampled_ptr,  50 + rand() % 205, 50 + rand() % 205, 50 + rand() % 205);
 }
 
-void VisualizationBase::visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
+void VisualizationBase::addCloudsToVisualizer(PointCloudConstPtr cloud_ptr, const std::vector<pcl17::PointIndicesConstPtr>& indices_ptrs)
 {
-  removeAllClouds();
-  visualizeCloudNormals(cloud_ptr,cloud_normals_ptr);
+  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr = indices_ptrs.begin(); itr < indices_ptrs.end(); itr++)
+    addCloudToVisualizer(cloud_ptr, *itr);
 }
+
 
 PointCloudConstPtr VisualizationBase::downsampleCloud (PointCloudConstPtr input)
 {

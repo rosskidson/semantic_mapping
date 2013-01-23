@@ -33,10 +33,11 @@
 
 #include <iostream>
 
+// singleton instance of viewer
 static boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
+int Visualization::cloud_counter_ = 0;
 
-Visualization::Visualization ():
-  cloud_counter_(0)
+Visualization::Visualization ()
 {
   if(!viewer_)    // instantiate viewer
   {

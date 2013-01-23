@@ -23,17 +23,17 @@ class VisualizationBase
     //returns an id of the cloud. neccessary for interaction
     // rgb is for the colour of the cloud in the visualizer
     virtual int addCloudToVisualizer (PointCloudConstPtr cloud_ptr,
-                                      double red=255,
-                                      double green=255,
-                                      double blue=255)=0;
+                                      double red,
+                                      double green,
+                                      double blue)=0;
     virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr) =0;
     virtual void visualizeImage(const sensor_msgs::Image& image_msg) =0;
     virtual void removeAllClouds()=0;
 
-    int visualizeCloud (PointCloudConstPtr cloud_ptr);
-    int visualizeCloud (const sensor_msgs::PointCloud2& pointcloud_msg);
-    int visualizeCloud (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr& cloud_indices_ptr);
-    void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
+    int addCloudToVisualizer (PointCloudConstPtr cloud_ptr);
+    int addCloudToVisualizer (const sensor_msgs::PointCloud2& pointcloud_msg);
+    int addCloudToVisualizer (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr cloud_indices_ptr);
+    void addCloudsToVisualizer(PointCloudConstPtr cloud_ptr, const std::vector<pcl17::PointIndicesConstPtr>& indices_ptrs);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
 
   protected:

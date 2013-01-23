@@ -104,7 +104,7 @@ namespace segment_fixtures_from_planes_plugin
     extractor.filter(*model_noplanes_ptr);
 
     Visualization vis;
-    vis.visualizeCloud(model_noplanes_ptr);
+    vis.addCloudToVisualizer(model_noplanes_ptr);
 
     extractor.setNegative(false);
     for (uint plane_num = 0; plane_num < plane_coeffs_.size(); plane_num++)
@@ -149,12 +149,12 @@ namespace segment_fixtures_from_planes_plugin
       extractor.setIndices(plane_indices_ptrs_[plane_num]);
       extractor.filter(*temp);
 
-//      vis.visualizeCloud(temp);
+//      vis.addCloudToVisualizer(temp);
 //      ros::Duration(0.5).sleep();
-//      vis.visualizeCloud(cloud_hull);
+//      vis.addCloudToVisualizer(cloud_hull);
 //      ros::Duration(0.5).sleep();
 //      std::vector<PointCloudConstPtr> vis_clouds;
-//      vis.visualizeCloud(vis_clouds);
+//      vis.addCloudToVisualizer(vis_clouds);
 
       ROS_DEBUG("Convex hull has: %d data points.", (int)cloud_hull->points.size ());
       if ((int) cloud_hull->points.size() == 0)
@@ -189,7 +189,7 @@ namespace segment_fixtures_from_planes_plugin
         fixture_indices_ptrs.push_back(model_indices_ptr);
       }
 
-      vis.visualizeClouds(model, debug);
+      vis.addCloudsToVisualizer(model, debug);
       ros::Duration(0.5).sleep();
     }
   }

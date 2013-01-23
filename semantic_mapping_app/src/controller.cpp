@@ -192,7 +192,8 @@ void Controller::importScan()
   PointCloudPtr raw_scan_pointcloud_ptr;
   raw_scan_pointcloud_ptr = io_obj_.loadMeshFromFile (mesh_filename_);
   add_pointcloud("raw_scan",raw_scan_pointcloud_ptr);
-  visualizer_.visualizeCloud(pointcloud_ptrs_["raw_scan"]);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudToVisualizer(pointcloud_ptrs_["raw_scan"]);
 }
 
 void Controller::alignToPrincipleAxis()
@@ -202,7 +203,8 @@ void Controller::alignToPrincipleAxis()
   PointCloudPtr aligned_scan_ptr (new PointCloud);
   axis_align_ptr_->alignCloudPrincipleAxis(pointcloud_ptrs_["raw_scan"], aligned_scan_ptr, align_to_axis_);
   add_pointcloud("aligned_scan",aligned_scan_ptr);
-  visualizer_.visualizeCloud(pointcloud_ptrs_["aligned_scan"]);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudToVisualizer(pointcloud_ptrs_["aligned_scan"]);
 }
 
 void Controller::extractROI()
@@ -216,7 +218,8 @@ void Controller::extractROI()
   pcl_tools::filterCloud (cabinet_centered_cloud_ptr, Eigen::Vector4f(0,0,0,1), ROI_size_, cabinet_cloud_ptr);
 
   add_pointcloud("model",cabinet_cloud_ptr);
-  visualizer_.visualizeCloud(pointcloud_ptrs_["model"]);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudToVisualizer(pointcloud_ptrs_["model"]);
 }
 
 void Controller::extractNormalsFromModel()
@@ -224,7 +227,8 @@ void Controller::extractNormalsFromModel()
   add_pointcloud("model_downsample", pcl_tools::downsampleCloud(pointcloud_ptrs_["model"],0.001));
   calculateNormals("model");
   calculateNormals("model_downsample");
-  visualizer_.visualizeCloudNormals(pointcloud_ptrs_["model"], pointcloud_normals_ptrs_["model"]);
+  visualizer_.removeAllClouds();
+  visualizer_.addNormalsToVisualizer(pointcloud_ptrs_["model"], pointcloud_normals_ptrs_["model"]);
 }
 
 void Controller::segmentPlanes()
@@ -237,7 +241,8 @@ void Controller::segmentPlanes()
   plane_segmenter_ptr_->setNormals(pointcloud_normals_ptrs_["model"]);
   plane_segmenter_ptr_->segmentPlanes(pointcloud_ptrs_["model"], plane_indices_ptrs_,plane_models_);
 
-  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], plane_indices_ptrs_);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], plane_indices_ptrs_);
 }
 
 void Controller::segmentFixtures()
@@ -252,7 +257,8 @@ void Controller::segmentFixtures()
   fixture_segmenter_ptr_->setPlanes(plane_indices_ptrs_, plane_models_);
   fixture_segmenter_ptr_->segmentFixtures(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 
-  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 }
 
 void Controller::displayAllSegmentedFeatures()
@@ -261,7 +267,8 @@ void Controller::displayAllSegmentedFeatures()
   feature_indices_ptrs = plane_indices_ptrs_;
   for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=fixture_indices_ptrs_.begin(); itr!=fixture_indices_ptrs_.end();itr++)
     feature_indices_ptrs.push_back(*itr);
-  visualizer_.visualizeClouds(pointcloud_ptrs_["model"], feature_indices_ptrs);
+  visualizer_.removeAllClouds();
+  visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], feature_indices_ptrs);
 }
 
 void Controller::registerKinectToModel()

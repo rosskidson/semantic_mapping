@@ -8,15 +8,11 @@
 #include "visualizer/visualization.h"
 
 // ros
-//#include <sensor_msgs/PointCloud2.h>
-//#include <ros/ros.h>
 #include <ros/console.h>
 
 //pcl
 #include <pcl17/point_types.h>
-//#include <pcl17/ros/conversions.h>
-//#include <pcl17/filters/voxel_grid.h>
-//#include <pcl17/filters/extract_indices.h>
+
 //vtk
 #include <boost/thread/thread.hpp>
 #include <pcl17/common/common_headers.h>

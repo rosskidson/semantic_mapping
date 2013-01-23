@@ -24,8 +24,8 @@ class Visualization : public VisualizationBase
     Visualization ();
     virtual ~Visualization ();
     virtual void visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec);
-    void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
-    void visualizeImage(const sensor_msgs::Image& image_msg);
+    void virtual visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
+    void virtual visualizeImage(const sensor_msgs::Image& image_msg);
     void spinOnce();
 
 

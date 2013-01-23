@@ -69,7 +69,7 @@ void Visualization::visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_
 
     // different colours for different clouds
     pcl17::visualization::PointCloudColorHandlerCustom<PointType>
-      single_color(downsampled_ptr, rand() % 255, rand() % 255, rand() % 255);
+      single_color(downsampled_ptr, 50 + rand() % 205, 50 + rand() % 205, 50 + rand() % 205);
 
     //add the cloud
     viewer_->addPointCloud<PointType> (downsampled_ptr, single_color, cloud_name.str());

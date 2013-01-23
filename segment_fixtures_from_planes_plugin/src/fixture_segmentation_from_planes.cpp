@@ -189,7 +189,7 @@ namespace segment_fixtures_from_planes_plugin
         fixture_indices_ptrs.push_back(model_indices_ptr);
       }
 
-      vis.visualizeCloud(model, debug);
+      vis.visualizeClouds(model, debug);
       ros::Duration(0.5).sleep();
     }
   }

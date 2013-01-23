@@ -237,7 +237,6 @@ void Controller::segmentPlanes()
   plane_segmenter_ptr_->setNormals(pointcloud_normals_ptrs_["model"]);
   plane_segmenter_ptr_->segmentPlanes(pointcloud_ptrs_["model"], plane_indices_ptrs_,plane_models_);
 
-  VisualizationBase& base_vis = visualizer_;
   visualizer_.visualizeClouds(pointcloud_ptrs_["model"], plane_indices_ptrs_);
 }
 

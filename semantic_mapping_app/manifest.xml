@@ -29,6 +29,7 @@
   <depend package="kinect_capture_frame"/>
   <depend package="register_kinect_to_model"/>
   <depend package="visualizer"/>
+  <depend package="rviz_visualizer"/>
 
 <!-- pluginlib interfaces -->
   <depend package="align_principle_axis_interface"/>

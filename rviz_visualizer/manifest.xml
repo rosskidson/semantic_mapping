@@ -16,6 +16,11 @@
   <depend package="visualization_msgs"/>
   <depend package="visualizer_base"/>
 
+  <export>
+      <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+  </export>
+
+
 </package>
 
 

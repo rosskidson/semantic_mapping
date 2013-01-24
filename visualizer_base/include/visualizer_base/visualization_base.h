@@ -29,6 +29,7 @@ class VisualizationBase
     virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr) =0;
     virtual void visualizeImage(const sensor_msgs::Image& image_msg) =0;
     virtual void removeAllClouds()=0;
+    virtual void spinOnce()=0;
 
     int addCloudToVisualizer (PointCloudConstPtr cloud_ptr);
     int addCloudToVisualizer (const sensor_msgs::PointCloud2& pointcloud_msg);

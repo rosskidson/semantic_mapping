@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 
 #include "mesh_io/mesh_io.h"
-#include "visualizer/visualization.h"
+#include "rviz_visualizer/rviz_visualization.h"
 #include "pcl_typedefs/pcl_typedefs.h"
 
 #include <dynamic_reconfigure/server.h>
@@ -56,7 +56,7 @@ private:
         uint32_t level);
 
     ros::NodeHandle nh_;
-    Visualization visualizer_;
+    RVizVisualization visualizer_;
     MeshIO io_obj_;
 
     // data storage

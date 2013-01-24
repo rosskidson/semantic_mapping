@@ -10,6 +10,8 @@
 
 #include <visualizer_base/visualization_base.h>
 
+#include <interactive_markers/interactive_marker_server.h>
+
 // ros
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
@@ -29,9 +31,11 @@ class RVizVisualization : public VisualizationBase
     virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     virtual void visualizeImage(const sensor_msgs::Image& image_msg);
     virtual void removeAllClouds();
+    virtual void spinOnce();
 
   private:
     static int cloud_counter_;
+    interactive_markers::InteractiveMarkerServer interactive_marker_server_objects_;
 };
 
 #endif /* RVIZ_VISUALIZATION_H_ */

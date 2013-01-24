@@ -31,6 +31,7 @@ set(SEMANTIC_MAPPING_LIBRARIES
   mesh_io                   #to import model
   register_kinect           #registers kinect to the model
   visualizer
+  rviz_visualizer
   pcl_tools
  # axis_alignment            #plugin interface (some implementation exists in base class)
   ) 

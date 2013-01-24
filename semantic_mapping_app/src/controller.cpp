@@ -13,7 +13,7 @@
 #include "pcl_tools/pcl_tools.h"
 #include "mesh_io/mesh_io.h"
 #include "register_kinect_to_model/kinect_registration.h"
-#include "visualizer/visualization.h"
+#include "rviz_visualizer/rviz_visualization.h"
 
 // pluginlib interfaces
 #include "align_principle_axis_interface/axis_alignment.h"

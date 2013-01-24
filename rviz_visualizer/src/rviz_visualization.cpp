@@ -42,6 +42,14 @@ RVizVisualization::~RVizVisualization ()
 
 }
 
+void processFeedback(
+    const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
+{
+  ROS_INFO_STREAM( feedback->marker_name << " is now at "
+      << feedback->pose.position.x << ", " << feedback->pose.position.y
+      << ", " << feedback->pose.position.z );
+}
+
 /**
  *
  * @param[in] cloud_ptr  Pointer to pointcloud
@@ -86,7 +94,8 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
   int_marker.controls.push_back(control);
 
   interactive_marker_server_objects_.insert(int_marker);
-  //interactive_marker_server_objects_->setCallback(int_marker.name, boost::bind(&InteractiveMarkerPublisher::processObjectFeedback, this, _1));
+  interactive_marker_server_objects_.applyChanges();
+//  //interactive_marker_server_objects_->setCallback(int_marker.name, boost::bind(&InteractiveMarkerPublisher::processObjectFeedback, this, _1));
 }
 
 void RVizVisualization::addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)

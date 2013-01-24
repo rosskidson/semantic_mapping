@@ -28,8 +28,12 @@
 //interactive markers
 #include <interactive_markers/interactive_marker_server.h>
 
-
 #include <iostream>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+int RVizVisualization::cloud_counter_ = 0;
 
 RVizVisualization::RVizVisualization ():
   interactive_marker_server_objects_("semantic_mapping")
@@ -87,20 +91,74 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
   control.markers.push_back(marker);
 
   // create point cloud marker
+  std::stringstream marker_name;
+  marker_name << "cloud" << cloud_counter_++;
   visualization_msgs::InteractiveMarker int_marker;
   int_marker.header.frame_id = "/base_link";
-  int_marker.name = "cloud";
+  int_marker.name = marker_name.str();
   int_marker.description = "PointCloud";
   int_marker.controls.push_back(control);
 
   interactive_marker_server_objects_.insert(int_marker);
   interactive_marker_server_objects_.applyChanges();
 //  //interactive_marker_server_objects_->setCallback(int_marker.name, boost::bind(&InteractiveMarkerPublisher::processObjectFeedback, this, _1));
+
+  return cloud_counter_;
+}
+
+Eigen::Quaternionf dir2quat(Eigen::Vector3f d)
+{
+//????
+  return Eigen::Quaternionf();
 }
 
 void RVizVisualization::addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
 {
+  int normal_counter=0;
 
+  // putting this many interactive markers in rviz is too slow
+  for (size_t j = 0; j < cloud_ptr->points.size(); j+=100)
+  {
+    visualization_msgs::Marker marker;
+    marker.type = visualization_msgs::Marker::ARROW;
+
+    marker.pose.position.x = cloud_ptr->at(j).x;
+    marker.pose.position.y = cloud_ptr->at(j).y;
+    marker.pose.position.z = cloud_ptr->at(j).z;
+
+    const PointNormal& normal = cloud_normals_ptr->points.at(j);
+    Eigen::Quaternionf q = dir2quat(Eigen::Vector3f(normal.normal_x, normal.normal_y, normal.normal_z));
+    marker.pose.orientation.x = q.x();
+    marker.pose.orientation.y = q.y();
+    marker.pose.orientation.z = q.z();
+    marker.pose.orientation.w = q.w();
+    marker.lifetime = ros::Duration(0);
+    marker.color.r = 1.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 1.0f;
+    marker.color.a = 1.0f;
+    marker.scale.x = 0.03;
+    marker.scale.y = 0.03;
+    marker.scale.z = 0.03;
+
+    // create control object
+    visualization_msgs::InteractiveMarkerControl control;
+    control.always_visible = true;
+    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::BUTTON;
+    control.markers.push_back(marker);
+
+    // create point cloud marker
+    std::stringstream marker_name;
+    marker_name << "normal" << normal_counter++;
+    visualization_msgs::InteractiveMarker int_marker;
+    int_marker.header.frame_id = "/base_link";
+    int_marker.name = marker_name.str();
+    int_marker.description = "Normals";
+    int_marker.controls.push_back(control);
+
+//    interactive_marker_server_objects_.insert(int_marker);
+  }
+//  interactive_marker_server_objects_.applyChanges();
 }
 
 void RVizVisualization::visualizeImage(const sensor_msgs::Image& image_msg)
@@ -110,7 +168,8 @@ void RVizVisualization::visualizeImage(const sensor_msgs::Image& image_msg)
 
 void RVizVisualization::removeAllClouds()
 {
-
+  interactive_marker_server_objects_.clear();
+  interactive_marker_server_objects_.applyChanges();
 }
 
 void RVizVisualization::spinOnce()

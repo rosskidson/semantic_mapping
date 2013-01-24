@@ -46,16 +46,8 @@ RVizVisualization::~RVizVisualization ()
 
 }
 
-void processFeedback(
-    const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
-{
-  ROS_INFO_STREAM( feedback->marker_name << " is now at "
-      << feedback->pose.position.x << ", " << feedback->pose.position.y
-      << ", " << feedback->pose.position.z );
-}
-
 /**
- *
+ * Add a pointcloud to the visualizer object
  * @param[in] cloud_ptr  Pointer to pointcloud
  * @param[in] red Specify colour for the cloud to visualize
  * @param[in] green Specify colour for the cloud to visualize
@@ -112,6 +104,11 @@ Eigen::Quaternionf dir2quat(Eigen::Vector3f d)
   return Eigen::Quaternionf();
 }
 
+/**
+ * Add normals to the visualizer object
+ * @param[in] cloud_ptr  Pointer to pointcloud
+ * @param[in] cloud_normals_ptr  Pointer to normals of the pointcloud
+ */
 void RVizVisualization::addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
 {
   int normal_counter=0;

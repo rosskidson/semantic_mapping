@@ -8,21 +8,30 @@
 #ifndef RVIZ_VISUALIZATION_H_
 #define RVIZ_VISUALIZATION_H_
 
+#include <visualizer_base/visualization_base.h>
+
 // ros
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
 
 #include "pcl_typedefs/pcl_typedefs.h"
 
-class RVizVisualization
+class RVizVisualization : public VisualizationBase
 {
   public:
-    Visualization ();
-    virtual ~Visualization ();
-    virtual void visualizeClouds (std::vector<PointCloudConstPtr>& cloud_ptr_vec);
-    virtual void visualizeCloudNormals (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
+    using VisualizationBase::addCloudToVisualizer;
+    RVizVisualization ();
+    virtual ~RVizVisualization ();
+    virtual int addCloudToVisualizer (PointCloudConstPtr cloud_ptr,
+                                      double red,
+                                      double green,
+                                      double blue);
+    virtual void addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr);
     virtual void visualizeImage(const sensor_msgs::Image& image_msg);
+    virtual void removeAllClouds();
 
+  private:
+    static int cloud_counter_;
 };
 
 #endif /* RVIZ_VISUALIZATION_H_ */

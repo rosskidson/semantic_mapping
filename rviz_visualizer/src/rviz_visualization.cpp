@@ -34,25 +34,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <QApplication>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QWidget>
-#include <QObject>
-
-
-//class MainWindow : public QWidget
-//{
-//    Q_OBJECT
-//public slots:
-//      void buttonPressed();
-//};
-
-//void MainWindow::buttonPressed()
-//{
-//    QMessageBox::information(0, QString("Information"), QString("You've pressed the button \"Press Me!\""), QMessageBox::Ok);
-//}
-
 int RVizVisualization::cloud_counter_ = 0;
 
 RVizVisualization::RVizVisualization ():
@@ -60,12 +41,6 @@ RVizVisualization::RVizVisualization ():
   menu_handler_()
 {
   this->makeContextMenu();
-
-
-  QMessageBox msgBox;
-  msgBox.setText("The document has been modified.");
-  msgBox.exec();
-  //return a.exec();
 }
 
 RVizVisualization::~RVizVisualization ()

@@ -207,6 +207,7 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
   std::ostringstream s;
   ros::ServiceClient client;
   qtgui::inputDialog get_user_input_srv;
+  visualization_msgs::InteractiveMarker int_marker;
 //  s << "Feedback from marker '" << feedback->marker_name << "' "
 //      << " / control '" << feedback->control_name << "'";
   s << feedback->marker_name;
@@ -232,9 +233,15 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
 //      msg.data = s.str();
 //      message_publisher_.publish(msg);
         client = nh_.serviceClient<qtgui::inputDialog> ("ui_dialog_service");
+        get_user_input_srv.request.input.data = feedback->marker_name;
         if (!client.call (get_user_input_srv))
           ROS_INFO("service failed");
-
+        interactive_marker_server_objects_.get(feedback->marker_name, int_marker);
+        interactive_marker_server_objects_.erase(feedback->marker_name);
+        int_marker.name = get_user_input_srv.response.output.data.c_str();
+        interactive_marker_server_objects_.insert(int_marker);
+        interactive_marker_server_objects_.setCallback(int_marker.name, boost::bind(&RVizVisualization::processFeedback, this, _1));
+        interactive_marker_server_objects_.applyChanges();
       break;
 
     case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:

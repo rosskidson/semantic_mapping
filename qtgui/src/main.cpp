@@ -29,8 +29,8 @@ bool getUserInput(qtgui::inputDialog::Request& req, qtgui::inputDialog::Response
   QInputDialog inputDialog;
   inputDialog.setOptions(QInputDialog::NoButtons);
 
-  QString text =  inputDialog.getText(NULL ,"QInputDialog::getText() Example",
-                                       "User name:", QLineEdit::Normal,
+  QString text =  inputDialog.getText(NULL ,"Rename Semantic Object",
+                                       "Name:", QLineEdit::Normal,
                                       req.input.data.c_str(), &ok);
 
   if (ok && !text.isEmpty())

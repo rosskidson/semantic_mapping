@@ -16,6 +16,7 @@
 // ros
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
+#include <ros/ros.h>
 
 #include "pcl_typedefs/pcl_typedefs.h"
 
@@ -42,6 +43,9 @@ class RVizVisualization : public VisualizationBase
     static int cloud_counter_;
     interactive_markers::InteractiveMarkerServer interactive_marker_server_objects_;
     interactive_markers::MenuHandler menu_handler_;
+    ros::NodeHandle nh_;
+    ros::Publisher message_publisher_;
+
 };
 
 #endif /* RVIZ_VISUALIZATION_H_ */

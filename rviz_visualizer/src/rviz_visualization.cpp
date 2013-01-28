@@ -12,6 +12,7 @@
 #include <sensor_msgs/point_cloud_conversion.h>
 #include <ros/ros.h>
 #include <ros/console.h>
+#include <std_msgs/String.h>
 
 //pcl
 #include <pcl17/point_types.h>
@@ -37,10 +38,12 @@
 int RVizVisualization::cloud_counter_ = 0;
 
 RVizVisualization::RVizVisualization ():
+  nh_(),
   interactive_marker_server_objects_("semantic_mapping"),
   menu_handler_()
 {
   this->makeContextMenu();
+  message_publisher_ = nh_.advertise<std_msgs::String>("ui_popup", 1000);
 }
 
 RVizVisualization::~RVizVisualization ()
@@ -211,6 +214,7 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
                    << " in frame " << feedback->header.frame_id;
   }
 
+  std_msgs::String msg;
   switch ( feedback->event_type )
   {
     case visualization_msgs::InteractiveMarkerFeedback::BUTTON_CLICK:
@@ -219,6 +223,8 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
 
     case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
       ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
+      msg.data = s.str();
+      message_publisher_.publish(msg);
       break;
 
     case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:

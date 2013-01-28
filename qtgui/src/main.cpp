@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QWidget>
 #include <QObject>
+#include <QString>
 
 //class MainWindow : public QWidget
 //{
@@ -23,7 +24,7 @@
 void displayMessage(const std_msgs::String::ConstPtr& msg)
 {
   QMessageBox msgBox;
-  msgBox.setText("The document has been modified.");
+  msgBox.setText(msg->data.c_str());
   msgBox.exec();
 }
 

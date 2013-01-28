@@ -12,6 +12,12 @@
   <depend package="std_msgs"/>
   <depend package="qt_build"/>
 
+
+  <export>
+      <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+
 </package>
 
 

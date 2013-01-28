@@ -13,6 +13,7 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <std_msgs/String.h>
+#include "qtgui/inputDialog.h"
 
 //pcl
 #include <pcl17/point_types.h>
@@ -97,7 +98,7 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
 
   // create point cloud marker
   std::stringstream marker_name;
-  marker_name << "cloud" << cloud_counter_++;
+  marker_name << "Cloud_" << cloud_counter_++;
   visualization_msgs::InteractiveMarker int_marker;
   int_marker.header.frame_id = "/base_link";
   int_marker.name = marker_name.str();
@@ -193,8 +194,8 @@ void RVizVisualization::spinOnce()
  */
 void RVizVisualization::makeContextMenu()
 {
-  menu_handler_.insert( "Identify", boost::bind(&RVizVisualization::processFeedback, this, _1));
-  menu_handler_.insert( "Label", boost::bind(&RVizVisualization::processFeedback, this, _1));
+//  menu_handler_.insert( "Identify", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.insert( "Rename", boost::bind(&RVizVisualization::processFeedback, this, _1));
 //  interactive_markers::MenuHandler::EntryHandle sub_menu_handle = menu_handler_.insert( "Submenu" );
 //  menu_handler_.insert( sub_menu_handle, "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
 //  menu_handler_.insert( sub_menu_handle, "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
@@ -204,6 +205,8 @@ void RVizVisualization::makeContextMenu()
 void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
 {
   std::ostringstream s;
+  ros::ServiceClient client;
+  qtgui::inputDialog get_user_input_srv;
 //  s << "Feedback from marker '" << feedback->marker_name << "' "
 //      << " / control '" << feedback->control_name << "'";
   s << feedback->marker_name;
@@ -225,9 +228,13 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
       break;
 
     case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
-      ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
-      msg.data = s.str();
-      message_publisher_.publish(msg);
+//      ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
+//      msg.data = s.str();
+//      message_publisher_.publish(msg);
+        client = nh_.serviceClient<qtgui::inputDialog> ("ui_dialog_service");
+        if (!client.call (get_user_input_srv))
+          ROS_INFO("service failed");
+
       break;
 
     case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:
@@ -252,6 +259,8 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
 
     case visualization_msgs::InteractiveMarkerFeedback::MOUSE_UP:
       ROS_INFO_STREAM( s.str() << ": mouse up" << mouse_point_ss.str() << "." );
+      msg.data = s.str();
+      message_publisher_.publish(msg);
       break;
   }
 

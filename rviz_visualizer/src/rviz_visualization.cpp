@@ -27,6 +27,7 @@
 
 //interactive markers
 #include <interactive_markers/interactive_marker_server.h>
+#include <interactive_markers/menu_handler.h>
 
 #include <iostream>
 
@@ -36,9 +37,10 @@
 int RVizVisualization::cloud_counter_ = 0;
 
 RVizVisualization::RVizVisualization ():
-  interactive_marker_server_objects_("semantic_mapping")
+  interactive_marker_server_objects_("semantic_mapping"),
+  menu_handler_()
 {
-
+  this->makeContextMenu();
 }
 
 RVizVisualization::~RVizVisualization ()
@@ -77,10 +79,16 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
   marker.scale.z = 0.003;
 
   // create control object
+//  visualization_msgs::InteractiveMarkerControl control;
+//  control.always_visible = true;
+//  control.interaction_mode = visualization_msgs::InteractiveMarkerControl::BUTTON;
+//  control.markers.push_back(marker);
+
   visualization_msgs::InteractiveMarkerControl control;
   control.always_visible = true;
-  control.interaction_mode = visualization_msgs::InteractiveMarkerControl::BUTTON;
-  control.markers.push_back(marker);
+  control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MENU;
+  control.name = "menu_only_control";
+  control.markers.push_back( marker );
 
   // create point cloud marker
   std::stringstream marker_name;
@@ -92,8 +100,9 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
   int_marker.controls.push_back(control);
 
   interactive_marker_server_objects_.insert(int_marker);
+  interactive_marker_server_objects_.setCallback(int_marker.name, boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.apply( interactive_marker_server_objects_, int_marker.name );
   interactive_marker_server_objects_.applyChanges();
-//  //interactive_marker_server_objects_->setCallback(int_marker.name, boost::bind(&InteractiveMarkerPublisher::processObjectFeedback, this, _1));
 
   return cloud_counter_;
 }
@@ -172,4 +181,70 @@ void RVizVisualization::removeAllClouds()
 void RVizVisualization::spinOnce()
 {
 
+}
+
+/**
+ * Creates menu items for context menu
+ */
+void RVizVisualization::makeContextMenu()
+{
+  menu_handler_.insert( "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.insert( "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  interactive_markers::MenuHandler::EntryHandle sub_menu_handle = menu_handler_.insert( "Submenu" );
+  menu_handler_.insert( sub_menu_handle, "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.insert( sub_menu_handle, "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+}
+
+
+void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
+{
+  std::ostringstream s;
+  s << "Feedback from marker '" << feedback->marker_name << "' "
+      << " / control '" << feedback->control_name << "'";
+
+  std::ostringstream mouse_point_ss;
+  if( feedback->mouse_point_valid )
+  {
+    mouse_point_ss << " at " << feedback->mouse_point.x
+                   << ", " << feedback->mouse_point.y
+                   << ", " << feedback->mouse_point.z
+                   << " in frame " << feedback->header.frame_id;
+  }
+
+  switch ( feedback->event_type )
+  {
+    case visualization_msgs::InteractiveMarkerFeedback::BUTTON_CLICK:
+      ROS_INFO_STREAM( s.str() << ": button click" << mouse_point_ss.str() << "." );
+      break;
+
+    case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
+      ROS_INFO_STREAM( s.str() << ": menu item " << feedback->menu_entry_id << " clicked" << mouse_point_ss.str() << "." );
+      break;
+
+    case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:
+      ROS_INFO_STREAM( s.str() << ": pose changed"
+          << "\nposition = "
+          << feedback->pose.position.x
+          << ", " << feedback->pose.position.y
+          << ", " << feedback->pose.position.z
+          << "\norientation = "
+          << feedback->pose.orientation.w
+          << ", " << feedback->pose.orientation.x
+          << ", " << feedback->pose.orientation.y
+          << ", " << feedback->pose.orientation.z
+          << "\nframe: " << feedback->header.frame_id
+          << " time: " << feedback->header.stamp.sec << "sec, "
+          << feedback->header.stamp.nsec << " nsec" );
+      break;
+
+    case visualization_msgs::InteractiveMarkerFeedback::MOUSE_DOWN:
+      ROS_INFO_STREAM( s.str() << ": mouse down" << mouse_point_ss.str() << "." );
+      break;
+
+    case visualization_msgs::InteractiveMarkerFeedback::MOUSE_UP:
+      ROS_INFO_STREAM( s.str() << ": mouse up" << mouse_point_ss.str() << "." );
+      break;
+  }
+
+  interactive_marker_server_objects_.applyChanges();
 }

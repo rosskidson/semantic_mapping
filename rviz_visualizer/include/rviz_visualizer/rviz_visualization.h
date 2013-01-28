@@ -11,6 +11,7 @@
 #include <visualizer_base/visualization_base.h>
 
 #include <interactive_markers/interactive_marker_server.h>
+#include <interactive_markers/menu_handler.h>
 
 // ros
 #include <sensor_msgs/PointCloud2.h>
@@ -33,9 +34,14 @@ class RVizVisualization : public VisualizationBase
     virtual void removeAllClouds();
     virtual void spinOnce();
 
+    void makeContextMenu();
+
+    void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
+
   private:
     static int cloud_counter_;
     interactive_markers::InteractiveMarkerServer interactive_marker_server_objects_;
+    interactive_markers::MenuHandler menu_handler_;
 };
 
 #endif /* RVIZ_VISUALIZATION_H_ */

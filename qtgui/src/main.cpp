@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QString>
 #include <QInputDialog>
+#include <QSize>
 
 //class MainWindow : public QWidget
 //{
@@ -29,7 +30,7 @@ bool getUserInput(qtgui::inputDialog::Request& req, qtgui::inputDialog::Response
   QInputDialog inputDialog;
   inputDialog.setOptions(QInputDialog::NoButtons);
 
-  QString text =  inputDialog.getText(NULL ,"Rename Semantic Object",
+  QString text =  inputDialog.getText(NULL ,"Rename Object",
                                        "Name:", QLineEdit::Normal,
                                       req.input.data.c_str(), &ok);
 
@@ -38,12 +39,17 @@ bool getUserInput(qtgui::inputDialog::Request& req, qtgui::inputDialog::Response
     std::cout<<text.toStdString()<<std::endl;
     res.output.data = text.toStdString();
   }
+  else
+  {
+    res.output.data = req.input.data;
+  }
   return true;
 }
 
 void displayMessage(const std_msgs::String::ConstPtr& msg)
 {
   QMessageBox msgBox;
+  msgBox.setWindowTitle("Object Name           ");
   msgBox.setText(msg->data.c_str());
   msgBox.exec();
 }

@@ -35,6 +35,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+static const float POINT_SIZE = 0.005;
+
 int RVizVisualization::cloud_counter_ = 0;
 
 RVizVisualization::RVizVisualization ():
@@ -77,9 +79,9 @@ int RVizVisualization::addCloudToVisualizer (PointCloudConstPtr cloud_ptr, doubl
   marker.color.b = blue;
   marker.color.a = 1.0f;
   marker.lifetime = ros::Duration(0);
-  marker.scale.x = 0.003;
-  marker.scale.y = 0.003;
-  marker.scale.z = 0.003;
+  marker.scale.x = POINT_SIZE;
+  marker.scale.y = POINT_SIZE;
+  marker.scale.z = POINT_SIZE;
 
   // create control object
 //  visualization_msgs::InteractiveMarkerControl control;
@@ -191,19 +193,20 @@ void RVizVisualization::spinOnce()
  */
 void RVizVisualization::makeContextMenu()
 {
-  menu_handler_.insert( "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
-  menu_handler_.insert( "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
-  interactive_markers::MenuHandler::EntryHandle sub_menu_handle = menu_handler_.insert( "Submenu" );
-  menu_handler_.insert( sub_menu_handle, "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
-  menu_handler_.insert( sub_menu_handle, "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.insert( "Identify", boost::bind(&RVizVisualization::processFeedback, this, _1));
+  menu_handler_.insert( "Label", boost::bind(&RVizVisualization::processFeedback, this, _1));
+//  interactive_markers::MenuHandler::EntryHandle sub_menu_handle = menu_handler_.insert( "Submenu" );
+//  menu_handler_.insert( sub_menu_handle, "First Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
+//  menu_handler_.insert( sub_menu_handle, "Second Entry", boost::bind(&RVizVisualization::processFeedback, this, _1));
 }
 
 
 void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
 {
   std::ostringstream s;
-  s << "Feedback from marker '" << feedback->marker_name << "' "
-      << " / control '" << feedback->control_name << "'";
+//  s << "Feedback from marker '" << feedback->marker_name << "' "
+//      << " / control '" << feedback->control_name << "'";
+  s << feedback->marker_name;
 
   std::ostringstream mouse_point_ss;
   if( feedback->mouse_point_valid )

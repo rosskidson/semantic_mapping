@@ -1,4 +1,6 @@
 <launch>
+
+ <node pkg="qtgui" type="qtgui" name="qtgui" cwd="node" required="true" output="screen"/>
  <node pkg="semantic_mapping_app" type="main" name="semantic_mapping_app" cwd="node" required="false" output="screen"> 
 
 

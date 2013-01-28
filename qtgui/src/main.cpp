@@ -36,5 +36,5 @@ int main(int argc, char** argv)
 
   QApplication a(argc, argv);
   ros::spin();
-  return a.exec();
+  return 0;
 }

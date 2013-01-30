@@ -1,0 +1,16 @@
+<package>
+  <description brief="rviz_panel">
+
+     rviz_panel
+
+  </description>
+  <author>Ross Kidson</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rviz_panel</url>
+  <depend package="roscpp"/>
+  <depend package="rviz"/>
+
+</package>
+
+

@@ -1,0 +1,9 @@
+<library path="lib/librviz_panel">
+  <class name="rviz_panel/ControllerPanel"
+         type="rviz_panel::ControllerPanel"
+         base_class_type="rviz::Panel">
+    <description>
+      A panel to manage the semantic mapping system
+    </description>
+  </class>
+</library>

@@ -16,9 +16,9 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 //cloud stuff
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/ros/conversions.h>
+#include <pcl17/io/pcd_io.h>
+#include <pcl17/point_types.h>
+#include <pcl17/ros/conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 // for string concat.
 #include <sstream>
@@ -32,7 +32,7 @@ static const std::string image_topic = "/camera/rgb/image_color";
 
 void takePointCloudSnapshot (const int image_no)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr pcl_pointcloud_ptr (new (pcl::PointCloud<pcl::PointXYZRGB>));
+  pcl17::PointCloud<pcl17::PointXYZRGB>::Ptr pcl_pointcloud_ptr (new (pcl17::PointCloud<pcl17::PointXYZRGB>));
   sensor_msgs::PointCloud2ConstPtr ros_pointcloud_ptr =
       ros::topic::waitForMessage<sensor_msgs::PointCloud2> (cloud_topic, ros::Duration (5.0));
   if(!ros_pointcloud_ptr)
@@ -40,8 +40,8 @@ void takePointCloudSnapshot (const int image_no)
     ROS_WARN_STREAM("No pointcloud message recieved");
     return;
   }
-  pcl::fromROSMsg (*ros_pointcloud_ptr, *pcl_pointcloud_ptr);
-  pcl::PCDWriter writer;
+  pcl17::fromROSMsg (*ros_pointcloud_ptr, *pcl_pointcloud_ptr);
+  pcl17::PCDWriter writer;
   std::stringstream filename;
   filename << "pointcloud_" << image_no << ".pcd";
   writer.write (filename.str (), *pcl_pointcloud_ptr);

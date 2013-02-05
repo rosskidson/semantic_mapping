@@ -16,7 +16,7 @@
   <url>http://ros.org/wiki/kinect_capture_frame</url>
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
-  <depend package="pcl"/>
+  <depend package="pcl17"/>
   <depend package="image_transport"/>
   <depend package="cv_bridge"/>
   <depend package="opencv2"/>

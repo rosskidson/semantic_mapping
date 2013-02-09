@@ -32,7 +32,7 @@ namespace rviz_panel
 
   protected:
     // One-line text editor for entering the outgoing ROS topic name.
-    QLineEdit* output_topic_editor_;
+    QLineEdit* output_topic_editor_ptr_;
 
     // The current name of the output topic.
     QString output_topic_;

@@ -15,21 +15,13 @@ namespace rviz_panel
   // the Q_OBJECT macro.
   Q_OBJECT
   public:
-    // QWidget subclass constructors usually take a parent widget
-    // parameter (which usually defaults to 0).  At the same time,
-    // pluginlib::ClassLoader creates instances by calling the default
-    // constructor (with no arguments).  Taking the parameter and giving
-    // a default of 0 lets the default constructor work and also lets
-    // someone using the class for something else to pass in a parent
-    // widget as they normally would with Qt.
     ControllerPanel( QWidget* parent = 0 );
 
+    virtual void load( const rviz::Config& config );
+    virtual void save( rviz::Config config ) const;
     // A couple of public Qt slots.
   public Q_SLOTS:
-    // In this example setTopic() does not get connected to any signal
-    // (it is called directly), but it is easy to define it as a public
-    // slot instead of a private function in case it would be useful to
-    // some other user.
+
     void setTopic( const QString& topic );
 
     // Here we declare some internal slots.

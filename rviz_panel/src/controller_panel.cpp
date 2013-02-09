@@ -24,23 +24,14 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   output_topic_editor_ = new QLineEdit;
   topic_layout->addWidget( output_topic_editor_ );
 
-  // Create a timer for sending the output.  Motor controllers want to
-  // be reassured frequently that they are doing the right thing, so
-  // we keep re-sending velocities even when they aren't changing.
-  //
-  // Here we take advantage of QObject's memory management behavior:
-  // since "this" is passed to the new QTimer as its parent, the
-  // QTimer is deleted by the QObject destructor when this TeleopPanel
-  // object is destroyed.  Therefore we don't need to keep a pointer
-  // to the timer.
-//  QTimer* output_timer = new QTimer( this );
+  QVBoxLayout* layout = new QVBoxLayout;
+  layout->addLayout( topic_layout );
+  //layout->addWidget( drive_widget_ );
+  setLayout( layout );
 
   // Next we make signal/slot connections.
   connect( output_topic_editor_, SIGNAL( editingFinished() ), this, SLOT( updateTopic() ));
   //connect( output_timer, SIGNAL( timeout() ), this, SLOT( sendVel() ));
-
-  // Start the timer.
-//  output_timer->start( 100 );
 
   Q_EMIT configChanged();
 }
@@ -84,26 +75,26 @@ void ControllerPanel::setTopic( const QString& new_topic )
 //  }
 //}
 
-//// Save all configuration data from this panel to the given
-//// Config object.  It is important here that you call save()
-//// on the parent class so the class id and panel name get saved.
-//void TeleopPanel::save( rviz::Config config ) const
-//{
-//  rviz::Panel::save( config );
-//  config.mapSetValue( "Topic", output_topic_ );
-//}
+// Save all configuration data from this panel to the given
+// Config object.  It is important here that you call save()
+// on the parent class so the class id and panel name get saved.
+void ControllerPanel::save( rviz::Config config ) const
+{
+  rviz::Panel::save( config );
+  //config.mapSetValue( "Topic", output_topic_ );
+}
 
-//// Load all configuration data for this panel from the given Config object.
-//void TeleopPanel::load( const rviz::Config& config )
-//{
-//  rviz::Panel::load( config );
+// Load all configuration data for this panel from the given Config object.
+void ControllerPanel::load( const rviz::Config& config )
+{
+  rviz::Panel::load( config );
 //  QString topic;
 //  if( config.mapGetString( "Topic", &topic ))
 //  {
 //    output_topic_editor_->setText( topic );
 //    updateTopic();
 //  }
-//}
+}
 
 } // end namespace rviz_plugin_tutorials
 
@@ -111,5 +102,6 @@ void ControllerPanel::setTopic( const QString& new_topic )
 // loadable by pluginlib::ClassLoader must have these two lines
 // compiled in its .cpp file, outside of any namespace scope.
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_DECLARE_CLASS( rviz_panel, ControllerPanel, rviz_panel::ControllerPanel, rviz::Panel )
+PLUGINLIB_EXPORT_CLASS(rviz_panel::ControllerPanel, rviz::Panel )
+//PLUGINLIB_DECLARE_CLASS( rviz_panel, ControllerPanel, rviz_panel::ControllerPanel, rviz::Panel )
 // END_TUTORIAL

@@ -36,6 +36,11 @@
   <depend package="segment_planes_interface"/>
   <depend package="segment_fixtures_interface"/>
 
+  <export>
+      <cpp cflags="-I${prefix}/cfg/cpp" />
+  </export>
+
+
 </package>
 
 

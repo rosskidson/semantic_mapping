@@ -28,7 +28,7 @@ namespace rviz_panel
   protected Q_SLOTS:
     // updateTopic() reads the topic name from the QLineEdit and calls
     // setTopic() with the result.
-    void updateTopic();
+    void importScan();
 
   protected:
     // One-line text editor for entering the outgoing ROS topic name.

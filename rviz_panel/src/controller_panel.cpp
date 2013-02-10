@@ -1,6 +1,10 @@
 #include <stdio.h>
 
 #include "rviz_panel/controller_panel.h"
+
+//#include <semantic_mapping_app/ControllerConfig.h>
+//#include <dynamic_reconfigure/Reconfigure.h>
+
 #include <QWidget>
 #include <QPainter>
 #include <QLineEdit>
@@ -57,15 +61,22 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   setLayout( layout_ptr );
 
   // Next we make signal/slot connections.
-  //connect( output_topic_editor_ptr_, SIGNAL( editingFinished() ), this, SLOT( updateTopic() ));
+  connect( import_button_ptr, SIGNAL( pressed() ), this, SLOT( importScan()) );
   //connect( output_timer, SIGNAL( timeout() ), this, SLOT( sendVel() ));
 
   Q_EMIT configChanged();
 }
 
-void ControllerPanel::updateTopic()
+void ControllerPanel::importScan()
 {
-  setTopic( output_topic_editor_ptr_->text() );
+//  Code for setting param via ros service:
+//  semantic_mapping_app::ControllerConfig config;
+//  dynamic_reconfigure::Reconfigurere config_srv;
+//  ros::ServiceClient client;
+//  client = nh_.serviceClient<dynamic_reconfigure::Reconfigure> ("/semantic_mapping_app/controller/set_parameters");
+//  client.call (reconfig_srv);
+
+  system("rosrun dynamic_reconfigure dynparam set semantic_mapping_app/controller import_scan true");
 }
 
 // Set the topic name we are publishing to.

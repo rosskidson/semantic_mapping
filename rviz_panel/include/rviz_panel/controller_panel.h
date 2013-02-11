@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 
+#include <QLabel>
+
 #include <dynamic_reconfigure/Reconfigure.h>
 
 class QLineEdit;
@@ -36,6 +38,7 @@ namespace rviz_panel
     void extractNormals();
     void segmentPlanes();
     void segmentFixtures();
+    void displayAllObjects();
 
   protected:
     // One-line text editor for entering the outgoing ROS topic name.
@@ -51,6 +54,8 @@ namespace rviz_panel
     dynamic_reconfigure::Reconfigure* makeReconfigureServiceObjWithBool(const std::string& name);
 
     void callDynamicReconfigService(dynamic_reconfigure::Reconfigure* config_srv_ptr);
+
+    QLabel* status_label_ptr_;
   };
 
 } // end namespace rviz_plugin_tutorials

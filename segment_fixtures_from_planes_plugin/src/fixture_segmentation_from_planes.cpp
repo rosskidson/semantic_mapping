@@ -19,7 +19,7 @@
 
 #include <ros/console.h>
 
-#include <visualizer/visualization.h>
+//#include <visualizer/visualization.h>
 #include <pcl_tools/pcl_tools.h>
 
 //pluginlib
@@ -103,15 +103,15 @@ namespace segment_fixtures_from_planes_plugin
     extractor.setInputCloud(model);
     extractor.filter(*model_noplanes_ptr);
 
-    Visualization vis;
-    vis.addCloudToVisualizer(model_noplanes_ptr);
+    //Visualization vis;
+    //vis.addCloudToVisualizer(model_noplanes_ptr);
 
     extractor.setNegative(false);
     for (uint plane_num = 0; plane_num < plane_coeffs_.size(); plane_num++)
     {
       //little hack for now to get the planes I want.
-//      if(plane_num !=6 && plane_num !=8 )
-//        continue;
+      if(plane_num !=6 && plane_num !=8 )
+        continue;
       ROS_DEBUG("Plane model: [%f, %f, %f, %f] with %d inliers.",
                plane_coeffs_[plane_num]->values[0], plane_coeffs_[plane_num]->values[1],
                plane_coeffs_[plane_num]->values[2], plane_coeffs_[plane_num]->values[3], plane_indices_ptrs_[plane_num]->indices.size());
@@ -189,8 +189,8 @@ namespace segment_fixtures_from_planes_plugin
         fixture_indices_ptrs.push_back(model_indices_ptr);
       }
 
-      vis.addCloudsToVisualizer(model, debug);
-      ros::Duration(0.5).sleep();
+//      vis.addCloudsToVisualizer(model, debug);
+//      ros::Duration(0.5).sleep();
     }
   }
 }

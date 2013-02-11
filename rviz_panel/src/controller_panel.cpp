@@ -49,6 +49,13 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   QPushButton* segment_fixtures_button_ptr = new QPushButton;
   segment_fixtures_button_ptr->setText("Segment Fixtures");
 
+  // Display all
+  QPushButton* display_all_object_button_ptr = new QPushButton;
+  display_all_object_button_ptr->setText("Show all segmented objects");
+
+  //Status label
+  status_label_ptr_ = new QLabel("");
+
   // Entire layout
   QVBoxLayout* layout_ptr = new QVBoxLayout;
   layout_ptr->addWidget(import_button_ptr);
@@ -57,6 +64,8 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   layout_ptr->addWidget(extract_normals_button_ptr);
   layout_ptr->addWidget(segment_planes_button_ptr);
   layout_ptr->addWidget(segment_fixtures_button_ptr);
+  layout_ptr->addWidget(display_all_object_button_ptr);
+  //layout_ptr->addWidget(status_label_ptr_);
   setLayout( layout_ptr );
 
   // Next we make signal/slot connections.
@@ -66,6 +75,7 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   connect( extract_normals_button_ptr, SIGNAL( pressed() ), this, SLOT( extractNormals()) );
   connect( segment_planes_button_ptr, SIGNAL( pressed() ), this, SLOT( segmentPlanes()) );
   connect( segment_fixtures_button_ptr, SIGNAL( pressed() ), this, SLOT( segmentFixtures()) );
+  connect( display_all_object_button_ptr, SIGNAL( pressed() ), this, SLOT( displayAllObjects()) );
 
   Q_EMIT configChanged();
 }
@@ -98,6 +108,11 @@ void ControllerPanel::segmentPlanes()
 void ControllerPanel::segmentFixtures()
 {
   callDynamicReconfigService(makeReconfigureServiceObjWithBool("segment_fixtures"));
+}
+
+void ControllerPanel::displayAllObjects()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("display_all_segmented_features"));
 }
 
 dynamic_reconfigure::Reconfigure* ControllerPanel::makeReconfigureServiceObjWithBool(const std::string& name)

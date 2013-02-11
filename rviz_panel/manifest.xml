@@ -11,8 +11,8 @@
   <depend package="roscpp"/>
   <depend package="rviz"/>
   <depend package="pluginlib"/>
- <!-- <depend package="semantic_mapping_app"/>
-  <depend package="dynamic_reconfigure"/>-->
+  <depend package="semantic_mapping_app"/>
+  <depend package="dynamic_reconfigure"/>
   <export>
         <rosdoc config="${prefix}/rosdoc.yaml"/>
         <rviz plugin="${prefix}/plugin_description.xml"/>

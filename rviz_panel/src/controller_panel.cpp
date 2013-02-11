@@ -2,8 +2,7 @@
 
 #include "rviz_panel/controller_panel.h"
 
-//#include <semantic_mapping_app/ControllerConfig.h>
-//#include <dynamic_reconfigure/Reconfigure.h>
+#include <dynamic_reconfigure/Reconfigure.h>
 
 #include <QWidget>
 #include <QPainter>
@@ -62,21 +61,60 @@ ControllerPanel::ControllerPanel( QWidget* parent )
 
   // Next we make signal/slot connections.
   connect( import_button_ptr, SIGNAL( pressed() ), this, SLOT( importScan()) );
-  //connect( output_timer, SIGNAL( timeout() ), this, SLOT( sendVel() ));
+  connect( align_button_ptr, SIGNAL( pressed() ), this, SLOT( alignToAxis()) );
+  connect( extract_ROI_button_ptr, SIGNAL( pressed() ), this, SLOT( extractROI()) );
+  connect( extract_normals_button_ptr, SIGNAL( pressed() ), this, SLOT( extractNormals()) );
+  connect( segment_planes_button_ptr, SIGNAL( pressed() ), this, SLOT( segmentPlanes()) );
+  connect( segment_fixtures_button_ptr, SIGNAL( pressed() ), this, SLOT( segmentFixtures()) );
 
   Q_EMIT configChanged();
 }
 
 void ControllerPanel::importScan()
 {
-//  Code for setting param via ros service:
-//  semantic_mapping_app::ControllerConfig config;
-//  dynamic_reconfigure::Reconfigurere config_srv;
-//  ros::ServiceClient client;
-//  client = nh_.serviceClient<dynamic_reconfigure::Reconfigure> ("/semantic_mapping_app/controller/set_parameters");
-//  client.call (reconfig_srv);
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("import_scan"));
+}
 
-  system("rosrun dynamic_reconfigure dynparam set semantic_mapping_app/controller import_scan true");
+void ControllerPanel::alignToAxis()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("align_to_principle_axis"));
+}
+
+void ControllerPanel::extractROI()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("extract_ROI"));
+}
+
+void ControllerPanel::extractNormals()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("extract_normals_from_model"));
+}
+
+void ControllerPanel::segmentPlanes()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("segment_planes"));
+}
+
+void ControllerPanel::segmentFixtures()
+{
+  callDynamicReconfigService(makeReconfigureServiceObjWithBool("segment_fixtures"));
+}
+
+dynamic_reconfigure::Reconfigure* ControllerPanel::makeReconfigureServiceObjWithBool(const std::string& name)
+{
+  dynamic_reconfigure::BoolParameter bool_param;
+  bool_param.name = name;
+  bool_param.value = true;
+  dynamic_reconfigure::Reconfigure* config_srv_ptr = new dynamic_reconfigure::Reconfigure;
+  config_srv_ptr->request.config.bools.push_back(bool_param);
+  return config_srv_ptr;
+}
+
+void ControllerPanel::callDynamicReconfigService(dynamic_reconfigure::Reconfigure* config_srv_ptr)
+{
+  ros::ServiceClient client;
+  client = nh_.serviceClient<dynamic_reconfigure::Reconfigure> ("/semantic_mapping_app/controller/set_parameters");
+  client.call (*config_srv_ptr);
 }
 
 // Set the topic name we are publishing to.

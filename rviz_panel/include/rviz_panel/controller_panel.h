@@ -4,6 +4,8 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 
+#include <dynamic_reconfigure/Reconfigure.h>
+
 class QLineEdit;
 
 namespace rviz_panel
@@ -29,6 +31,11 @@ namespace rviz_panel
     // updateTopic() reads the topic name from the QLineEdit and calls
     // setTopic() with the result.
     void importScan();
+    void alignToAxis();
+    void extractROI();
+    void extractNormals();
+    void segmentPlanes();
+    void segmentFixtures();
 
   protected:
     // One-line text editor for entering the outgoing ROS topic name.
@@ -39,6 +46,11 @@ namespace rviz_panel
 
     // The ROS node handle.
     ros::NodeHandle nh_;
+
+  private:
+    dynamic_reconfigure::Reconfigure* makeReconfigureServiceObjWithBool(const std::string& name);
+
+    void callDynamicReconfigService(dynamic_reconfigure::Reconfigure* config_srv_ptr);
   };
 
 } // end namespace rviz_plugin_tutorials

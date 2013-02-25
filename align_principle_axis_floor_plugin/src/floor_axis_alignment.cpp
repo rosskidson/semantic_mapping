@@ -61,6 +61,9 @@ namespace align_principle_axis_floor_plugin
 
    angle_ = config.angle * (M_PI/180.0);
 
+   ransac_threshold_ = config.ransac_distance_threshold;
+   max_iterations_ = config.max_iterations;
+
   }
 
   void FloorAxisAlignment::alignCloudPrincipleAxis (const PointCloudConstPtr input_cloud_ptr,
@@ -89,8 +92,8 @@ namespace align_principle_axis_floor_plugin
     seg.setOptimizeCoefficients (true);
     seg.setModelType (pcl17::SACMODEL_PERPENDICULAR_PLANE);
     seg.setMethodType (pcl17::SAC_RANSAC);
-    seg.setDistanceThreshold (0.01);
-    seg.setMaxIterations(400);
+    seg.setDistanceThreshold (ransac_threshold_);
+    seg.setMaxIterations(max_iterations_);
     //seg.setProbability(0.1);
 
     seg.setAxis (Eigen::Vector3f (0, 0, 1));
@@ -101,7 +104,13 @@ namespace align_principle_axis_floor_plugin
     if (inliers->indices.size () == 0)
     {
       PCL17_ERROR("Could not estimate a planar model for the given dataset.");
+      // I had some issues with pcl on a different computer to where I normally dev.  This is a workaround to be removed
+      coefficients->values.push_back(-0.0370391);
+      coefficients->values.push_back(0.0777064);
+      coefficients->values.push_back(0.996288);
+      coefficients->values.push_back(2.63374);
     }
+
 
     std::cerr << "Model coefficients: " << coefficients->values[0] << " " << coefficients->values[1]
     << " " << coefficients->values[2] << " " << coefficients->values[3] << std::endl;

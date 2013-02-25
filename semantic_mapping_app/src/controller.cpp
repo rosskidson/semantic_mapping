@@ -243,6 +243,18 @@ void Controller::segmentPlanes()
 
   visualizer_.removeAllClouds();
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], plane_indices_ptrs_);
+  //visualizer_.addCloudToVisualizer(pointcloud_ptrs_["model"], plane_indices_ptrs_[4]);
+
+  for(int i=0; i<plane_models_.size(); i++)
+  {
+    ROS_INFO_STREAM("Plane models " << plane_models_[i]->values[0] << ", " <<
+                        plane_models_[i]->values[1] << ", " <<
+                        plane_models_[i]->values[2] << ", " <<
+                        plane_models_[i]->values[3]);
+  }
+        // call complete plane function, passing also 2 points (to place the markers)
+    visualizer_.completePlane(plane_models_[15], pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[15]->indices.front()],
+                                  pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[15]->indices.back()]);
 }
 
 

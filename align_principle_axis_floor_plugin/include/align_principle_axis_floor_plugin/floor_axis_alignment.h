@@ -36,6 +36,8 @@ namespace align_principle_axis_floor_plugin
       // local params
       Eigen::Vector3f axis_;
       double angle_;
+      double ransac_threshold_;
+      int max_iterations_;
 
   };
 

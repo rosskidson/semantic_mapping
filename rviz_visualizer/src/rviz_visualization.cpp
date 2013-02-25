@@ -20,6 +20,7 @@
 #include <pcl17/ros/conversions.h>
 #include <pcl17/filters/voxel_grid.h>
 #include <pcl17/filters/extract_indices.h>
+#include <pcl17/ModelCoefficients.h>
 
 //visualization msgs
 #include <visualization_msgs/MarkerArray.h>
@@ -43,7 +44,8 @@ int RVizVisualization::cloud_counter_ = 0;
 RVizVisualization::RVizVisualization ():
   nh_(),
   interactive_marker_server_objects_("semantic_mapping"),
-  menu_handler_()
+  menu_handler_(),
+  plane_counter_(0)
 {
   this->makeContextMenu();
   message_publisher_ = nh_.advertise<std_msgs::String>("ui_popup", 1000);
@@ -245,7 +247,7 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
       break;
 
     case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:
-      ROS_INFO_STREAM( s.str() << ": pose changed"
+      ROS_DEBUG_STREAM( s.str() << ": pose changed"
           << "\nposition = "
           << feedback->pose.position.x
           << ", " << feedback->pose.position.y
@@ -267,9 +269,70 @@ void RVizVisualization::processFeedback( const visualization_msgs::InteractiveMa
     case visualization_msgs::InteractiveMarkerFeedback::MOUSE_UP:
       ROS_INFO_STREAM( s.str() << ": mouse up" << mouse_point_ss.str() << "." );
       msg.data = s.str();
-      message_publisher_.publish(msg);
+      //message_publisher_.publish(msg);
       break;
   }
 
+  interactive_marker_server_objects_.applyChanges();
+}
+
+visualization_msgs::Marker RVizVisualization::makeBox( visualization_msgs::InteractiveMarker &msg )
+{
+  visualization_msgs::Marker marker;
+
+  marker.type = visualization_msgs::Marker::CUBE;
+  marker.scale.x = msg.scale * 0.45;
+  marker.scale.y = msg.scale * 0.45;
+  marker.scale.z = msg.scale * 0.45;
+  marker.color.r = 0.5;
+  marker.color.g = 0.5;
+  marker.color.b = 0.5;
+  marker.color.a = 1.0;
+
+  return marker;
+}
+
+visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients,
+                                                                                    const PointType& position,
+                                                                                    const std::string& name)
+{
+  visualization_msgs::InteractiveMarker int_marker;
+  int_marker.header.frame_id = "/base_link";
+  int_marker.pose.position.x = position.x;
+  int_marker.pose.position.y = position.y;
+  int_marker.pose.position.z = position.z;
+  int_marker.scale = 0.1;
+
+  int_marker.name = name;
+  int_marker.description = "complete plane marker";
+
+  visualization_msgs::InteractiveMarkerControl control;
+
+  int sign = coefficients->values[3] > 0 ? 1 : -1;
+  control.orientation.w = 1;
+  control.orientation.x = (coefficients->values[0])*sign;
+  control.orientation.y = (coefficients->values[2])*sign;
+  control.orientation.z = (coefficients->values[1])*sign;
+  control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
+  int_marker.controls.push_back(control);
+
+  // make a box which also moves in the plane
+  control.markers.push_back( makeBox(int_marker) );
+  control.always_visible = true;
+  int_marker.controls.push_back(control);
+    return int_marker;
+}
+
+void RVizVisualization::completePlane(const pcl17::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point)
+{
+    plane_counter_++;
+    std::stringstream plane_name_1, plane_name_2;
+    plane_name_1 << "plane_marker_" << plane_counter_ << "_1";
+    plane_name_2 << "plane_marker_" << plane_counter_ << "_2";
+
+  interactive_marker_server_objects_.insert(makeMarkerFromCoefficients(coefficients, first_point, plane_name_1.str()));
+  interactive_marker_server_objects_.insert(makeMarkerFromCoefficients(coefficients, last_point, plane_name_2.str()));
+  interactive_marker_server_objects_.setCallback(plane_name_1.str(), boost::bind(&RVizVisualization::processFeedback, this, _1));
+  interactive_marker_server_objects_.setCallback(plane_name_2.str(), boost::bind(&RVizVisualization::processFeedback, this, _1));
   interactive_marker_server_objects_.applyChanges();
 }

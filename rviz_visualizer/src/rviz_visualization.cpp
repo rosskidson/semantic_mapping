@@ -308,11 +308,14 @@ visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficie
 
   visualization_msgs::InteractiveMarkerControl control;
 
-  int sign = coefficients->values[3] > 0 ? 1 : -1;
-  control.orientation.w = 1;
-  control.orientation.x = (coefficients->values[0])*sign;
-  control.orientation.y = (coefficients->values[2])*sign;
-  control.orientation.z = (coefficients->values[1])*sign;
+    //dot product
+  double F = acos(coefficients->values[0])/2;
+
+  //int sign = coefficients->values[3] > 0 ? 1 : -1;
+  control.orientation.w = cos(F);
+  control.orientation.x = 0;
+  control.orientation.y = -sin(F)*coefficients->values[2];
+  control.orientation.z = sin(F)*coefficients->values[1];
   control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
   int_marker.controls.push_back(control);
 

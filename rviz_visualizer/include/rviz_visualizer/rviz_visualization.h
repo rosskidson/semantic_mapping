@@ -42,8 +42,14 @@ class RVizVisualization : public VisualizationBase
 
     void completePlane(const pcl17::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point);
 
-    visualization_msgs::Marker  makeBox( visualization_msgs::InteractiveMarker &msg );
+    void createNewPlane();
+
+    visualization_msgs::Marker makeBox( visualization_msgs::InteractiveMarker &msg,
+          const double x_scale, const double y_scale, const double z_scale );
+
     visualization_msgs::InteractiveMarker makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients, const PointType &position, const std::string &name);
+
+    void makeROImarkers();
 
   private:
     static int cloud_counter_;
@@ -52,6 +58,8 @@ class RVizVisualization : public VisualizationBase
     interactive_markers::MenuHandler menu_handler_;
     ros::NodeHandle nh_;
     ros::Publisher message_publisher_;
+
+    int hax;
 
 };
 

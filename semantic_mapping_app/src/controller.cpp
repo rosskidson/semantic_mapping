@@ -312,6 +312,7 @@ void Controller::displayAllSegmentedFeatures()
     feature_indices_ptrs.push_back(*itr);
   visualizer_.removeAllClouds();
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], feature_indices_ptrs);
+  visualizer_.createNewPlane();
 }
 
 void Controller::registerKinectToModel()

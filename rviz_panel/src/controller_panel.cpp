@@ -34,7 +34,7 @@ ControllerPanel::ControllerPanel( QWidget* parent )
   QVBoxLayout* extract_ROI_layout_ptr = new QVBoxLayout;
   QPushButton* extract_ROI_button_ptr = new QPushButton;
   extract_ROI_button_ptr->setText("Extract ROI");
-  extract_ROI_layout_ptr->addWidget(new QLabel("TODO: interactive ROI selection tool"));
+  //extract_ROI_layout_ptr->addWidget(new QLabel("TODO: interactive ROI selection tool"));
   extract_ROI_layout_ptr->addWidget(extract_ROI_button_ptr);
 
   // extract normals

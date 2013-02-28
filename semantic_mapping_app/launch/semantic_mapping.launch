@@ -4,10 +4,10 @@
  <node pkg="semantic_mapping_app" type="main" name="semantic_mapping_app" cwd="node" required="false" output="screen"> 
 
 
-    <!--<param name="controller/mesh_filename"                                 value="/work/kidson/meshes/cabinet_scan_2/mesh_1.ply" />-->
+    <param name="controller/mesh_filename"                                 value="/work/kidson/meshes/cabinet_scan_2/mesh_1.ply" />
     <param name="controller/mesh_registration_images_directory"            value="/work/kidson/meshes/cabinet_scan_2/KinFuSnapshots" />
     <param name="controller/mesh_registration_transformations_directory"   value="/work/kidson/meshes/cabinet_scan_2/KinFuSnapshots" />
-    <param name="controller/mesh_filename"            value="/media/bigguy/work/meshes/cabinet_scan_2/mesh_1.ply" />
+    <!--<param name="controller/mesh_filename"            value="/media/bigguy/work/meshes/cabinet_scan_2/mesh_1.ply" />-->
 
     <param name="controller/ROI_origin_x" value="0.9"/>
     <param name="controller/ROI_origin_y" value="0.8"/>

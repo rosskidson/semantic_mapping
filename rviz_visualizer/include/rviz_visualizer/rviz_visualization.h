@@ -45,6 +45,8 @@ class RVizVisualization : public VisualizationBase
     visualization_msgs::Marker  makeBox( visualization_msgs::InteractiveMarker &msg );
     visualization_msgs::InteractiveMarker makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients, const PointType &position, const std::string &name);
 
+    geometry_msgs::Quaternion convertModelCoefficientsToRotation(const pcl17::ModelCoefficients::ConstPtr& coefficients_ptr);
+
   private:
     static int cloud_counter_;
     int plane_counter_;

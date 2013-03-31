@@ -253,8 +253,8 @@ void Controller::segmentPlanes()
                         plane_models_[i]->values[3]);
   }
         // call complete plane function, passing also 2 points (to place the markers)
-    visualizer_.completePlane(plane_models_[15], pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[15]->indices.front()],
-                                  pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[15]->indices.back()]);
+    visualizer_.completePlane(plane_models_[6], pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[6]->indices.front()],
+                                  pointcloud_ptrs_["model"]->points[plane_indices_ptrs_[6]->indices.back()]);
 }
 
 

@@ -292,6 +292,23 @@ visualization_msgs::Marker RVizVisualization::makeBox( visualization_msgs::Inter
   return marker;
 }
 
+/*
+ * The interactive marker needs to be rotated such that it moves on the plane
+ * Without rotation the marker will move on the y/z plane (normal vector [1,0,0])
+ * Therefore the rotation to be calculated is from [1,0,0] to the normal of the plane equation
+ */
+
+geometry_msgs::Quaternion RVizVisualization::convertModelCoefficientsToRotation(const pcl17::ModelCoefficients::ConstPtr& coefficients_ptr)
+{
+    geometry_msgs::Quaternion rotation;
+  double F = acos(coefficients_ptr->values[0])/2;
+  rotation.w = cos(F);
+  rotation.x = 0;
+  rotation.y = -sin(F)*coefficients_ptr->values[2];
+  rotation.z = sin(F)*coefficients_ptr->values[1];
+    return rotation;
+}
+
 visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients,
                                                                                     const PointType& position,
                                                                                     const std::string& name)
@@ -308,14 +325,7 @@ visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficie
 
   visualization_msgs::InteractiveMarkerControl control;
 
-    //dot product
-  double F = acos(coefficients->values[0])/2;
-
-  //int sign = coefficients->values[3] > 0 ? 1 : -1;
-  control.orientation.w = cos(F);
-  control.orientation.x = 0;
-  control.orientation.y = -sin(F)*coefficients->values[2];
-  control.orientation.z = sin(F)*coefficients->values[1];
+  control.orientation = convertModelCoefficientsToRotation(coefficients);
   control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
   int_marker.controls.push_back(control);
 

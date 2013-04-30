@@ -19,7 +19,7 @@
 #include <ros/ros.h>
 
 #include "pcl_typedefs/pcl_typedefs.h"
-#include <pcl17/ModelCoefficients.h>
+#include <pcl/ModelCoefficients.h>
 
 class RVizVisualization : public VisualizationBase
 {
@@ -40,12 +40,12 @@ class RVizVisualization : public VisualizationBase
 
     void processFeedback( const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback );
 
-    void completePlane(const pcl17::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point);
+    void completePlane(const pcl::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point);
 
     visualization_msgs::Marker  makeBox( visualization_msgs::InteractiveMarker &msg );
-    visualization_msgs::InteractiveMarker makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients, const PointType &position, const std::string &name);
+    visualization_msgs::InteractiveMarker makeMarkerFromCoefficients(const pcl::ModelCoefficients::ConstPtr& coefficients, const PointType &position, const std::string &name);
 
-    geometry_msgs::Quaternion convertModelCoefficientsToRotation(const pcl17::ModelCoefficients::ConstPtr& coefficients_ptr);
+    geometry_msgs::Quaternion convertModelCoefficientsToRotation(const pcl::ModelCoefficients::ConstPtr& coefficients_ptr);
 
   private:
     static int cloud_counter_;

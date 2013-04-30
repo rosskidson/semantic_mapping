@@ -10,10 +10,10 @@
 //ros
 #include "ros/ros.h"
 //pcl
-#include <pcl17/io/ply_io.h>
-#include <pcl17/io/pcd_io.h>
-#include <pcl17/io/vtk_lib_io.h>
-#include <pcl17/ros/conversions.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/ros/conversions.h>
 
 //opencv
 #include <opencv2/highgui/highgui.hpp>
@@ -36,15 +36,15 @@ MeshIO::~MeshIO ()
 PointCloudPtr MeshIO::loadMeshFromFile (std::string filename)
 {
   PointCloudPtr temp (new PointCloud);
-  pcl17::PolygonMesh mesh;
-  pcl17::io::loadPolygonFilePLY (filename, mesh);
-  pcl17::fromROSMsg (mesh.cloud, *temp);  
+  pcl::PolygonMesh mesh;
+  pcl::io::loadPolygonFilePLY (filename, mesh);
+  pcl::fromROSMsg (mesh.cloud, *temp);  
   return temp;
 }
 
 PointCloudPtr MeshIO::loadPointcloudFromFile (std::string filename)
 {
-  pcl17::PCDReader reader;
+  pcl::PCDReader reader;
   PointCloudPtr input (new PointCloud);
   reader.read (filename, *input);
   return input;
@@ -52,7 +52,7 @@ PointCloudPtr MeshIO::loadPointcloudFromFile (std::string filename)
 
 void MeshIO::savePointcloudToFile (const PointCloudConstPtr input_cloud_ptr, std::string filename)
 {
-  pcl17::PCDWriter writer;
+  pcl::PCDWriter writer;
   writer.write(filename, *input_cloud_ptr);
 }
 
@@ -128,7 +128,7 @@ Eigen::Matrix4f MeshIO::extractTransformationFromFile (std::string filename)
 void MeshIO::loadPointcloudsFromDir (std::string directory, std::vector<PointCloud>& pointclouds)
 {
   std::set<std::string> file_list;
-  pcl17::PCDReader reader;
+  pcl::PCDReader reader;
   PointCloud temp_pointcloud;
   getFileListWithExtension (directory, ".pcd", file_list);
   for (std::set<std::string>::iterator itr = file_list.begin (); itr != file_list.end (); itr++)

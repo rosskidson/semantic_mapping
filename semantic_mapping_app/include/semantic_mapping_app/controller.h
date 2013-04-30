@@ -62,8 +62,8 @@ private:
     // data storage
     std::map<std::string, PointCloudConstPtr> pointcloud_ptrs_;
     std::map<std::string, PointCloudNormalsConstPtr> pointcloud_normals_ptrs_;
-    std::vector<pcl17::PointIndicesConstPtr> plane_indices_ptrs_, fixture_indices_ptrs_;
-    std::vector<pcl17::ModelCoefficients::ConstPtr> plane_models_;
+    std::vector<pcl::PointIndicesConstPtr> plane_indices_ptrs_, fixture_indices_ptrs_;
+    std::vector<pcl::ModelCoefficients::ConstPtr> plane_models_;
 
     Eigen::Matrix4f align_to_axis_, move_model_to_origin_;
     Eigen::Vector4f ROI_size_;

@@ -33,8 +33,8 @@ class VisualizationBase
 
     int addCloudToVisualizer (PointCloudConstPtr cloud_ptr);
     int addCloudToVisualizer (const sensor_msgs::PointCloud2& pointcloud_msg);
-    int addCloudToVisualizer (PointCloudConstPtr cloud_ptr, pcl17::PointIndicesConstPtr cloud_indices_ptr);
-    void addCloudsToVisualizer(PointCloudConstPtr cloud_ptr, const std::vector<pcl17::PointIndicesConstPtr>& indices_ptrs);
+    int addCloudToVisualizer (PointCloudConstPtr cloud_ptr, pcl::PointIndicesConstPtr cloud_indices_ptr);
+    void addCloudsToVisualizer(PointCloudConstPtr cloud_ptr, const std::vector<pcl::PointIndicesConstPtr>& indices_ptrs);
     PointCloudConstPtr downsampleCloud (PointCloudConstPtr input);
 
   protected:

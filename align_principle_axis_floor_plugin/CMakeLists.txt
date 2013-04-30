@@ -26,13 +26,17 @@ rosbuild_find_ros_package(dynamic_reconfigure)
 include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 gencfg()
 
+# PCL ####################
+find_package(PCL 1.6.1 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+
 # eIGEN ####################
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(floor_axis_alignment src/floor_axis_alignment.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
+rosbuild_add_library(floor_axis_alignment src/floor_axis_alignment.cpp )
+target_link_libraries(floor_axis_alignment ${PCL_LIBRARIES})
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)

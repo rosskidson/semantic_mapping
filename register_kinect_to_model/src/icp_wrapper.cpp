@@ -7,9 +7,9 @@
 
 #include "register_kinect_to_model/icp_wrapper.h"
 #include <ros/console.h>
-#include <pcl17/point_types.h>
-#include <pcl17/registration/icp.h>
-#include <pcl17/filters/voxel_grid.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+#include <pcl/filters/voxel_grid.h>
 
 ICPWrapper::ICPWrapper ()
 {
@@ -32,7 +32,7 @@ Eigen::Matrix4f ICPWrapper::performICP (PointCloudConstPtr source_cloud_ptr,
   icp_.setInputCloud (downsampleCloud(source_cloud_ptr));
   icp_.setInputTarget (downsampleCloud(target_cloud_ptr));
 
-  pcl17::console::setVerbosityLevel (pcl17::console::L_DEBUG);
+  pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
 
   icp_.align (source_cloud_transformed, initial_transform);
   ROS_INFO_STREAM ("ICP has converged: " << icp_.hasConverged() << " score: "
@@ -44,7 +44,7 @@ PointCloudConstPtr ICPWrapper::downsampleCloud (PointCloudConstPtr input)
 {
   const double voxel_size = 0.01;
   PointCloudPtr cloud_filtered (new PointCloud);
-  pcl17::VoxelGrid<PointType> downsampler;
+  pcl::VoxelGrid<PointType> downsampler;
   downsampler.setInputCloud (input);
   downsampler.setLeafSize (voxel_size, voxel_size, voxel_size);
   downsampler.filter (*cloud_filtered);

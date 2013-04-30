@@ -8,7 +8,6 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/rviz_visualizer</url>
-  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>

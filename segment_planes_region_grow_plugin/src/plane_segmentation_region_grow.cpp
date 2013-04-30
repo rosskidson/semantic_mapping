@@ -8,18 +8,18 @@
 #include "segment_planes_region_grow_plugin/plane_segmentation_region_grow.h"
 
 
-#include <pcl17/search/search.h>
-#include <pcl17/search/kdtree.h>
-#include <pcl17/segmentation/region_growing.h>
+#include <pcl/search/search.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/segmentation/region_growing.h>
 
 #include <ros/console.h>
 
 //pluginlib
 #include <pluginlib/class_list_macros.h>
 
-#include <pcl17/sample_consensus/method_types.h>
-#include <pcl17/sample_consensus/model_types.h>
-#include <pcl17/segmentation/sac_segmentation.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
 
 
 
@@ -35,14 +35,14 @@ namespace segment_planes_region_grow_plugin
 {
 
   PlaneSegmentationRegionGrow::PlaneSegmentationRegionGrow ():
-    normals_ptr_(new pcl17::PointCloud<pcl17::Normal>),
+    normals_ptr_(new pcl::PointCloud<pcl::Normal>),
     nh_("~/plane_segmentation_region_grow"),
     reconfig_srv_(nh_),
     region_grow_()
   {
     reconfig_callback_ = boost::bind (&PlaneSegmentationRegionGrow::reconfigCallback, this, _1, _2);
     reconfig_srv_.setCallback (reconfig_callback_);
-    pcl17::search::Search<pcl17::PointXYZ>::Ptr tree = boost::shared_ptr<pcl17::search::Search<pcl17::PointXYZ> > (new pcl17::search::KdTree<pcl17::PointXYZ>);
+    pcl::search::Search<pcl::PointXYZ>::Ptr tree = boost::shared_ptr<pcl::search::Search<pcl::PointXYZ> > (new pcl::search::KdTree<pcl::PointXYZ>);
     region_grow_.setSearchMethod (tree);
   }
 
@@ -74,12 +74,12 @@ namespace segment_planes_region_grow_plugin
   void PlaneSegmentationRegionGrow::setNormals(const PointCloudNormalsConstPtr normals)
   {
     //normals_ptr_ = normals
-    pcl17::copyPointCloud(*normals, *normals_ptr_);  // normals_ptr must be of type <pointxyz, normal>  copyPointCloud
+    pcl::copyPointCloud(*normals, *normals_ptr_);  // normals_ptr must be of type <pointxyz, normal>  copyPointCloud
   }
 
   void PlaneSegmentationRegionGrow::segmentPlanes (const PointCloudConstPtr model,
-      std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs, std::vector<
-          pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)
+      std::vector<pcl::PointIndicesConstPtr>& plane_indices_ptrs, std::vector<
+          pcl::ModelCoefficients::ConstPtr>& plane_coeffs)
   {
     ROS_INFO("region_grow");
     //calculate normals
@@ -90,32 +90,32 @@ namespace segment_planes_region_grow_plugin
     }
 
     // region growing only works for pointXYZ.  convert here
-    pcl17::PointCloud<pcl17::PointXYZ>::Ptr model_noRGB_ptr (new pcl17::PointCloud<pcl17::PointXYZ>);
-    pcl17::copyPointCloud(*model, *model_noRGB_ptr);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr model_noRGB_ptr (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*model, *model_noRGB_ptr);
 
     region_grow_.setInputCloud (model_noRGB_ptr);
     region_grow_.setInputNormals (normals_ptr_);
 
-    std::vector <pcl17::PointIndices> clusters;
+    std::vector <pcl::PointIndices> clusters;
     region_grow_.extract ( clusters);
 
     std::cout << "Number of clusters is equal to " << clusters.size () << std::endl;
     std::cout << "First cluster has " << clusters[0].indices.size () << " points.\n";
     std::cout << "These are the indices of the points of the initial" <<
       std::endl << "cloud that belong to the first cluster:" << std::endl;
-    for(std::vector<pcl17::PointIndices>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
+    for(std::vector<pcl::PointIndices>::iterator itr = clusters.begin(); itr != clusters.end(); itr++)
     {
       ///////////// get point cloud
-      pcl17::PointIndicesPtr indices_ptr (new pcl17::PointIndices(*itr));
+      pcl::PointIndicesPtr indices_ptr (new pcl::PointIndices(*itr));
       plane_indices_ptrs.push_back(indices_ptr);
 
       ////////////// get plane eq.
-      pcl17::ModelCoefficients::Ptr coefficients (new pcl17::ModelCoefficients);
-      pcl17::PointIndices::Ptr inliers (new pcl17::PointIndices);
-      pcl17::SACSegmentation<PointType> seg;
+      pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+      pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+      pcl::SACSegmentation<PointType> seg;
       seg.setOptimizeCoefficients (true);
-      seg.setModelType (pcl17::SACMODEL_PLANE);
-      seg.setMethodType (pcl17::SAC_RANSAC);
+      seg.setModelType (pcl::SACMODEL_PLANE);
+      seg.setMethodType (pcl::SAC_RANSAC);
       seg.setDistanceThreshold (0.01);
 
       seg.setInputCloud (model);

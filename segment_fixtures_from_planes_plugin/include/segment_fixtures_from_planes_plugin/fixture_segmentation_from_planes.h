@@ -12,11 +12,11 @@
 #include <pcl_typedefs/pcl_typedefs.h>
 #include <segment_fixtures_interface/fixture_segmentation.h>
 
-#include <pcl17/filters/project_inliers.h>
-#include <pcl17/segmentation/extract_polygonal_prism_data.h>
-#include <pcl17/segmentation/extract_clusters.h>
-#include <pcl17/surface/convex_hull.h>
-#include <pcl17/search/kdtree.h>
+#include <pcl/filters/project_inliers.h>
+#include <pcl/segmentation/extract_polygonal_prism_data.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/surface/convex_hull.h>
+#include <pcl/search/kdtree.h>
 
 
 #include <dynamic_reconfigure/server.h>
@@ -30,17 +30,17 @@ namespace segment_fixtures_from_planes_plugin
       FixtureSegmentationFromPlanes();
       virtual ~FixtureSegmentationFromPlanes();
 
-      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<pcl17::PointIndicesConstPtr>& fixture_indices_ptrs);
+      virtual void segmentFixtures(const PointCloudConstPtr model, std::vector<pcl::PointIndicesConstPtr>& fixture_indices_ptrs);
 
-      virtual void setPlanes(std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
-            std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs_);
+      virtual void setPlanes(std::vector<pcl::PointIndicesConstPtr>& plane_indices_ptrs,
+            std::vector<pcl::ModelCoefficients::ConstPtr>& plane_coeffs_);
 
     private:
 
       void reconfigCallback (segment_fixtures_from_planes_plugin::FixtureSegmentationConfig &config, uint32_t level);
 
-      std::vector<pcl17::PointIndicesConstPtr> plane_indices_ptrs_;
-      std::vector<pcl17::ModelCoefficients::ConstPtr> plane_coeffs_;
+      std::vector<pcl::PointIndicesConstPtr> plane_indices_ptrs_;
+      std::vector<pcl::ModelCoefficients::ConstPtr> plane_coeffs_;
 
       ros::NodeHandle nh_;
       dynamic_reconfigure::Server<segment_fixtures_from_planes_plugin::FixtureSegmentationConfig> reconfig_srv_;
@@ -49,11 +49,11 @@ namespace segment_fixtures_from_planes_plugin
       int min_handle_candidates_points_;
       float plane_scale_down_factor_;
 
-      pcl17::ProjectInliers<PointType> projector_; // project points from planes onto a perfect plane
-      pcl17::ConvexHull<PointType> chull_;
-      pcl17::ExtractPolygonalPrismData<PointType> prism_;
-      pcl17::EuclideanClusterExtraction<PointType> fixture_cluster_;
-      pcl17::search::KdTree<PointType>::Ptr clusters_tree_ptr_;
+      pcl::ProjectInliers<PointType> projector_; // project points from planes onto a perfect plane
+      pcl::ConvexHull<PointType> chull_;
+      pcl::ExtractPolygonalPrismData<PointType> prism_;
+      pcl::EuclideanClusterExtraction<PointType> fixture_cluster_;
+      pcl::search::KdTree<PointType>::Ptr clusters_tree_ptr_;
 
   };
 }

@@ -16,11 +16,11 @@
 #include "qtgui/inputDialog.h"
 
 //pcl
-#include <pcl17/point_types.h>
-#include <pcl17/ros/conversions.h>
-#include <pcl17/filters/voxel_grid.h>
-#include <pcl17/filters/extract_indices.h>
-#include <pcl17/ModelCoefficients.h>
+#include <pcl/point_types.h>
+#include <pcl/ros/conversions.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/ModelCoefficients.h>
 
 //visualization msgs
 #include <visualization_msgs/MarkerArray.h>
@@ -298,7 +298,7 @@ visualization_msgs::Marker RVizVisualization::makeBox( visualization_msgs::Inter
  * Therefore the rotation to be calculated is from [1,0,0] to the normal of the plane equation
  */
 
-geometry_msgs::Quaternion RVizVisualization::convertModelCoefficientsToRotation(const pcl17::ModelCoefficients::ConstPtr& coefficients_ptr)
+geometry_msgs::Quaternion RVizVisualization::convertModelCoefficientsToRotation(const pcl::ModelCoefficients::ConstPtr& coefficients_ptr)
 {
     geometry_msgs::Quaternion rotation;
   double F = acos(coefficients_ptr->values[0])/2;
@@ -309,7 +309,7 @@ geometry_msgs::Quaternion RVizVisualization::convertModelCoefficientsToRotation(
     return rotation;
 }
 
-visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficients(const pcl17::ModelCoefficients::ConstPtr& coefficients,
+visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficients(const pcl::ModelCoefficients::ConstPtr& coefficients,
                                                                                     const PointType& position,
                                                                                     const std::string& name)
 {
@@ -336,7 +336,7 @@ visualization_msgs::InteractiveMarker RVizVisualization::makeMarkerFromCoefficie
     return int_marker;
 }
 
-void RVizVisualization::completePlane(const pcl17::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point)
+void RVizVisualization::completePlane(const pcl::ModelCoefficients::ConstPtr &coefficients, const PointType& first_point, const PointType& last_point)
 {
     plane_counter_++;
     std::stringstream plane_name_1, plane_name_2;

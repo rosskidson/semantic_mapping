@@ -25,9 +25,13 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
+# PCL ####################
+find_package(PCL 1.6.1 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+
 #common commands for building c++ executables and libraries
 rosbuild_add_library(pcl_tools src/pcl_tools.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
+target_link_libraries(pcl_tools ${PCL_LIBRARIES})
 #rosbuild_add_boost_directories()
 rosbuild_add_executable(vox_filter src/vox_filter.cpp)
 rosbuild_link_boost(vox_filter system)

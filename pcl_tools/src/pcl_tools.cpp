@@ -6,37 +6,38 @@
  */
 
 #include "pcl_tools/pcl_tools.h"
-
 #include <pcl_typedefs/pcl_typedefs.h>
+
+#include <ros/ros.h>
 
 #include <Eigen/Core>
 
 //normal estimation
-#include <pcl17/kdtree/kdtree_flann.h>
-#include <pcl17/features/normal_3d.h>
-#include <pcl17/features/normal_3d_omp.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d_omp.h>
 //voxel grid filter
-#include <pcl17/filters/voxel_grid.h>
+#include <pcl/filters/voxel_grid.h>
 //box filter
-#include <pcl17/filters/crop_box.h>
+#include <pcl/filters/crop_box.h>
 // tranform cloud
-#include <pcl17/common/transforms.h>
+#include <pcl/common/transforms.h>
 // extract indices
-#include <pcl17/filters/extract_indices.h>
+#include <pcl/filters/extract_indices.h>
 // kdtree
-#include <pcl17/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 // conversions
 #include "cv_bridge/cv_bridge.h"
-#include "pcl17/ros/conversions.h"
+#include "pcl/ros/conversions.h"
 
 namespace pcl_tools
 {
   void calculateNormals (PointCloudConstPtr input_cloud_ptr, PointCloudNormalsPtr normals_ptr)
   {
-    pcl17::NormalEstimation<PointType, PointNormal> normal_est;
+    pcl::NormalEstimation<PointType, PointNormal> normal_est;
     normal_est.setInputCloud (input_cloud_ptr);
-    pcl17::search::KdTree<PointType>::Ptr tree (new pcl17::search::KdTree<PointType> ());
+    pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());
     normal_est.setSearchMethod (tree);
     normal_est.setKSearch(50);
     normal_est.compute (*normals_ptr);
@@ -45,9 +46,9 @@ namespace pcl_tools
 
   void calculateNormalsOMP (PointCloudConstPtr input_cloud_ptr, PointCloudNormalsPtr normals_ptr)
   {
-    pcl17::NormalEstimationOMP<PointType, PointNormal> normal_est;
+    pcl::NormalEstimationOMP<PointType, PointNormal> normal_est;
     normal_est.setInputCloud (input_cloud_ptr);
-    pcl17::search::KdTree<PointType>::Ptr tree (new pcl17::search::KdTree<PointType> ());
+    pcl::search::KdTree<PointType>::Ptr tree (new pcl::search::KdTree<PointType> ());
     normal_est.setSearchMethod (tree);
     normal_est.setKSearch(50);
     normal_est.compute (*normals_ptr);
@@ -60,23 +61,23 @@ namespace pcl_tools
   }
 
   // searches for points from a given point cloud in another pointcloud to convert a pointcloud to indices
-  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& input_cloud_ptr,
-                                                  const pcl17::PointIndicesConstPtr& input_indices_ptr,
+  pcl::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& input_cloud_ptr,
+                                                  const pcl::PointIndicesConstPtr& input_indices_ptr,
                                                   const PointCloudConstPtr& search_cloud_ptr)
   {
     PointCloudPtr source_cloud (new PointCloud);
-    pcl17::ExtractIndices<PointType> extractor;
+    pcl::ExtractIndices<PointType> extractor;
     extractor.setIndices(input_indices_ptr);
     extractor.setInputCloud(input_cloud_ptr);
     extractor.filter(*source_cloud);
     return getIndicesFromPointCloud(source_cloud, search_cloud_ptr);
   }
 
-  pcl17::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& source_cloud,
+  pcl::PointIndicesPtr getIndicesFromPointCloud(const PointCloudConstPtr& source_cloud,
                                                   const PointCloudConstPtr& search_cloud_ptr)
   {
-    pcl17::PointIndicesPtr output_indices_ptr (new pcl17::PointIndices);
-    pcl17::KdTreeFLANN<PointType> kdtreeNN;
+    pcl::PointIndicesPtr output_indices_ptr (new pcl::PointIndices);
+    pcl::KdTreeFLANN<PointType> kdtreeNN;
     std::vector<int> pointIdxNKNSearch(1);
     std::vector<float> pointNKNSquaredDistance(1);
     kdtreeNN.setInputCloud(search_cloud_ptr);
@@ -107,13 +108,13 @@ namespace pcl_tools
   PointCloudPtr convertSensorMsgPointCloudToPCL (sensor_msgs::PointCloud2& ros_pointcloud)
   {
     PointCloudPtr pointcloud_ptr (new PointCloud);
-    pcl17::fromROSMsg (ros_pointcloud, *pointcloud_ptr);
+    pcl::fromROSMsg (ros_pointcloud, *pointcloud_ptr);
     return pointcloud_ptr;
   }
 
   PointCloudPtr downsampleCloud(const PointCloudConstPtr input_cloud_ptr, const float leaf_size)
   {
-    pcl17::VoxelGrid<PointType> sor;
+    pcl::VoxelGrid<PointType> sor;
     PointCloudPtr output_cloud_ptr (new PointCloud);
     sor.setInputCloud (input_cloud_ptr);
     sor.setLeafSize (leaf_size, leaf_size, leaf_size);
@@ -125,7 +126,7 @@ namespace pcl_tools
       const Eigen::Vector4f& max_point, const PointCloudPtr output_cloud_ptr)
   {
     // apply filter
-    pcl17::CropBox<PointType> box_filter;
+    pcl::CropBox<PointType> box_filter;
     box_filter.setInputCloud (input_cloud_ptr);
     box_filter.setMin (min_point);
     box_filter.setMax (max_point);

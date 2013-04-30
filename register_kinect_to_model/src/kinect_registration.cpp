@@ -1,4 +1,4 @@
-/*
+	/*
  * kinect_registration.cpp
  *
  *  Created on: Nov 4, 2012

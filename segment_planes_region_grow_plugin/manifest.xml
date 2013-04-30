@@ -8,7 +8,6 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/segment_planes_region_grow_plugin</url>
-  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="roscpp"/>
   <depend package="pluginlib"/>

@@ -11,14 +11,14 @@
 #include <ros/console.h>
 
 //pcl
-#include <pcl17/point_types.h>
+#include <pcl/point_types.h>
 
 //vtk
 #include <boost/thread/thread.hpp>
-#include <pcl17/common/common_headers.h>
-#include <pcl17/features/normal_3d.h>
-#include <pcl17/visualization/pcl_visualizer.h>
-#include <pcl17/console/parse.h>
+#include <pcl/common/common_headers.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/parse.h>
 
 // opencv -> ROS -> opencv
 #include <cv_bridge/cv_bridge.h>
@@ -30,14 +30,14 @@
 #include <iostream>
 
 // singleton instance of viewer
-static boost::shared_ptr<pcl17::visualization::PCLVisualizer> viewer_;
+static boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer_;
 int Visualization::cloud_counter_ = 0;
 
 Visualization::Visualization ()
 {
   if(!viewer_)    // instantiate viewer
   {
-    viewer_.reset(new pcl17::visualization::PCLVisualizer ("3D Viewer"));
+    viewer_.reset(new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer_->addCoordinateSystem (1.0);
     viewer_->initCameraParameters ();
     viewer_->setBackgroundColor (0, 0, 0);
@@ -56,14 +56,14 @@ void Visualization::removeAllClouds()
 
 int Visualization::addCloudToVisualizer(PointCloudConstPtr cloud_ptr, double red, double green, double blue)
 {
-  pcl17::visualization::PointCloudColorHandlerCustom<PointType>
+  pcl::visualization::PointCloudColorHandlerCustom<PointType>
       single_color(cloud_ptr, red, green, blue);
 
   std::stringstream cloud_name;
   cloud_name << "cloud "<< cloud_counter_++;
 
   viewer_->addPointCloud<PointType> (cloud_ptr, single_color, cloud_name.str());
-  viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1, cloud_name.str());
+  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, cloud_name.str());
   this->spinOnce();
   return cloud_counter_;
 }
@@ -72,7 +72,7 @@ int Visualization::addCloudToVisualizer(PointCloudConstPtr cloud_ptr, double red
 void Visualization::addNormalsToVisualizer (PointCloudConstPtr cloud_ptr, PointCloudNormalsConstPtr cloud_normals_ptr)
 {
   viewer_->addPointCloudNormals<PointType, PointNormal>(cloud_ptr, cloud_normals_ptr, 20);
-  viewer_->setPointCloudRenderingProperties (pcl17::visualization::PCL17_VISUALIZER_POINT_SIZE, 1);
+  viewer_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1);
   this->spinOnce();
 }
 

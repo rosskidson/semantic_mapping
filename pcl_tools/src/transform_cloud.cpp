@@ -1,7 +1,7 @@
 #include "pcl_tools/pcl_tools.h"
 
 #include <iostream>
-#include <pcl17/io/pcd_io.h>
+#include <pcl/io/pcd_io.h>
 
 int main (int argc, char** argv)
 {
@@ -10,7 +10,7 @@ int main (int argc, char** argv)
     std::cerr << "please provide a pointcloud file followed by a text file containing a transformation matrix as arguments\n";
     exit(0);
   }
-  pcl17::PCDReader reader;
+  pcl::PCDReader reader;
   PointCloudPtr input_cloud_ptr (new PointCloud);
   PointCloudPtr output_cloud_ptr (new PointCloud);
   PointCloudPtr inv_cloud_ptr (new PointCloud);
@@ -30,7 +30,7 @@ int main (int argc, char** argv)
   pcl_tools::transformPointCloud(input_cloud_ptr, output_cloud_ptr, trafo);
   pcl_tools::transformPointCloud(input_cloud_ptr, inv_cloud_ptr, trafo_inv);
 
-  pcl17::PCDWriter writer;
+  pcl::PCDWriter writer;
   writer.write ("output.pcd", *output_cloud_ptr, false);
   writer.write ("output_inverse.pcd", *inv_cloud_ptr, false);
   return (0);

@@ -11,8 +11,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/pcl_tools</url>
   <depend package="pcl_typedefs"/>  
-  <depend package="pcl17"/>
-  <depend package="pcl17_ros"/>
+  <depend package="pcl_ros"/>  
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
   <depend package="cv_bridge"/>

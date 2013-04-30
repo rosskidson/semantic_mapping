@@ -21,6 +21,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# PCL ####################
+find_package(PCL 1.6.1 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
 
 #add dynamic reconfigure api
 rosbuild_find_ros_package(dynamic_reconfigure)
@@ -34,6 +37,7 @@ set(SEMANTIC_MAPPING_LIBRARIES
   rviz_visualizer
   pcl_tools
  # axis_alignment            #plugin interface (some implementation exists in base class)
+  ${PCL_LIBRARIES}
   ) 
 
 #common commands for building c++ executables and libraries

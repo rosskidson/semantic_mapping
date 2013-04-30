@@ -16,6 +16,9 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+# PCL ####################
+find_package(PCL 1.6.1 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
 
 # eIGEN ####################
 find_package(Eigen REQUIRED)

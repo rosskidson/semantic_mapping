@@ -8,15 +8,12 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/segment_fixtures_from_planes_plugin</url>
-  <depend package="pcl17"/>
   <depend package="pcl_typedefs"/>
   <depend package="pcl_tools"/>
   <depend package="roscpp"/>
   <depend package="pluginlib"/>
   <depend package="dynamic_reconfigure"/>
   <depend package="segment_fixtures_interface"/>
-
-  <depend package="visualizer"/>
 
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lsegment_fixtures_from_planes_plugin" />

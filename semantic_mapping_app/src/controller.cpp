@@ -20,7 +20,7 @@
 #include "segment_planes_interface/plane_segmentation.h"
 #include "segment_fixtures_interface/fixture_segmentation.h"
 
-#include <pcl17/filters/extract_indices.h>
+#include <pcl/filters/extract_indices.h>
 
 #include <ros/ros.h>
 #include <pluginlib/class_loader.h>
@@ -213,8 +213,12 @@ void Controller::extractROI()
   PointCloudPtr cabinet_centered_cloud_ptr (new PointCloud);
 
   ROS_INFO("move model to origin...");
+  //ROS_INFO_STREAM("ROI origin " <<  move_model_to_origin_);
+  //ROS_INFO_STREAM("ROI size " <<  ROI_size_);
   pcl_tools::transformPointCloud(pointcloud_ptrs_["aligned_scan"],cabinet_centered_cloud_ptr, move_model_to_origin_);
   ROS_INFO("Applying boxfilter to cloud..");
+  //io_obj_.savePointcloudToFile(cabinet_centered_cloud_ptr, "moved_cloud"); 
+  //pcl_tools::filterCloud (cabinet_centered_cloud_ptr, Eigen::Vector4f(-99,-99,-99,1), Eigen::Vector4f(99,99,99,1), cabinet_cloud_ptr);
   pcl_tools::filterCloud (cabinet_centered_cloud_ptr, Eigen::Vector4f(0,0,0,1), ROI_size_, cabinet_cloud_ptr);
 
   add_pointcloud("model",cabinet_cloud_ptr);
@@ -258,8 +262,8 @@ void Controller::segmentPlanes()
 }
 
 
-#include <pcl17/segmentation/extract_clusters.h>
-#include <pcl17/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/segmentation/sac_segmentation.h>
 void Controller::segmentFixtures()
 {
   ROS_INFO("segment fixtures...");
@@ -275,21 +279,21 @@ void Controller::segmentFixtures()
   visualizer_.removeAllClouds();
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], fixture_indices_ptrs_);
 
-//  pcl17::PointIndicesPtr inliers (new pcl17::PointIndices());
-//  pcl17::ModelCoefficients coefficients;
-//  pcl17::SACSegmentation<pcl17::PointXYZRGB> seg;
+//  pcl::PointIndicesPtr inliers (new pcl::PointIndices());
+//  pcl::ModelCoefficients coefficients;
+//  pcl::SACSegmentation<pcl::PointXYZRGB> seg;
 //  seg.setOptimizeCoefficients(true);
-//  seg.setModelType(pcl17::SACMODEL_PLANE);
-//  seg.setMethodType(pcl17::SAC_RANSAC);
+//  seg.setModelType(pcl::SACMODEL_PLANE);
+//  seg.setMethodType(pcl::SAC_RANSAC);
 //  seg.setDistanceThreshold(0.02);
 //  seg.setInputCloud(pointcloud_ptrs_["model"]);
 //  //        seg.setIndices(indices);
 //  seg.segment(*inliers, coefficients);
 
-//  std::vector<pcl17::PointIndices> cluster_indices;
-//  pcl17::EuclideanClusterExtraction<pcl17::PointXYZRGB> ec;
-//  pcl17::search::KdTree<pcl17::PointXYZRGB>::Ptr kd_tree(
-//        new pcl17::search::KdTree<pcl17::PointXYZRGB>);
+//  std::vector<pcl::PointIndices> cluster_indices;
+//  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+//  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr kd_tree(
+//        new pcl::search::KdTree<pcl::PointXYZRGB>);
 
 //  ec.setClusterTolerance(0.02);
 
@@ -306,9 +310,9 @@ void Controller::segmentFixtures()
 
 void Controller::displayAllSegmentedFeatures()
 {
-  std::vector<pcl17::PointIndicesConstPtr> feature_indices_ptrs;
+  std::vector<pcl::PointIndicesConstPtr> feature_indices_ptrs;
   feature_indices_ptrs = plane_indices_ptrs_;
-  for(std::vector<pcl17::PointIndicesConstPtr>::const_iterator itr=fixture_indices_ptrs_.begin(); itr!=fixture_indices_ptrs_.end();itr++)
+  for(std::vector<pcl::PointIndicesConstPtr>::const_iterator itr=fixture_indices_ptrs_.begin(); itr!=fixture_indices_ptrs_.end();itr++)
     feature_indices_ptrs.push_back(*itr);
   visualizer_.removeAllClouds();
   visualizer_.addCloudsToVisualizer(pointcloud_ptrs_["model"], feature_indices_ptrs);

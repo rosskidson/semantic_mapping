@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/pcl_typedefs</url>
   <depend package="roscpp"/>
-  <depend package="pcl17"/>
+  <depend package="pcl"/>
 
   <export>
       <cpp cflags="-I${prefix}/include"/>

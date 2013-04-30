@@ -10,7 +10,7 @@
 
 #include <pcl_typedefs/pcl_typedefs.h>
 
-#include <pcl17/ModelCoefficients.h>
+#include <pcl/ModelCoefficients.h>
 
 namespace segment_planes_interface
 {
@@ -21,8 +21,8 @@ namespace segment_planes_interface
       virtual ~PlaneSegmentation (){};
 
       virtual void segmentPlanes(const PointCloudConstPtr model,
-          std::vector<pcl17::PointIndicesConstPtr>& plane_indices_ptrs,
-          std::vector<pcl17::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
+          std::vector<pcl::PointIndicesConstPtr>& plane_indices_ptrs,
+          std::vector<pcl::ModelCoefficients::ConstPtr>& plane_coeffs)=0;
 
       virtual void setNormals(const PointCloudNormalsConstPtr normals) = 0;
 

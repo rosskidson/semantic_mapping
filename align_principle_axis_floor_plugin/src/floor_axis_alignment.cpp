@@ -6,16 +6,14 @@
  */
 
 #include "align_principle_axis_floor_plugin/floor_axis_alignment.h"
-#include <pcl17/ModelCoefficients.h>
-#include <pcl17/sample_consensus/method_types.h>
-#include <pcl17/sample_consensus/model_types.h>
-#include <pcl17/segmentation/sac_segmentation.h>
-#include <pcl17/filters/extract_indices.h>
-#include <pcl17/common/transforms.h>
+#include <pcl/ModelCoefficients.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/common/transforms.h>
 
 #include <pluginlib/class_list_macros.h>
-
-#include <visualizer/visualization.h>
 
 #include <Eigen/Geometry>
 
@@ -70,7 +68,6 @@ namespace align_principle_axis_floor_plugin
       const PointCloudPtr output_cloud_ptr,
       Eigen::Matrix4f& transform_output)
   {
-//        Visualization visualizer;
     Eigen::Matrix4f inital_guess;
     inital_guess.block<3,3>(0,0) = Eigen::AngleAxisf(angle_, axis_).toRotationMatrix();
 //    inital_guess = Eigen::Matrix4f::Zero(4,4);
@@ -80,18 +77,16 @@ namespace align_principle_axis_floor_plugin
 //    inital_guess(3,3) = 1.0;
     PointCloudPtr rotated_cloud_ptr (new PointCloud);
     transformPointCloud (*input_cloud_ptr, *rotated_cloud_ptr, inital_guess);
-//    std::vector<PointCloudConstPtr> vis_cloud_ptrs;
-//    vis_cloud_ptrs.push_back(rotated_cloud_ptr);
     //transformPointCloud (*input_cloud_ptr, *output_cloud_ptr, inital_guess);
 
     //assume the model is approx correct, i.e. z is height
     // find the largest plane perpendicular to z axis and use this to align cloud
-    pcl17::ModelCoefficients::Ptr coefficients (new pcl17::ModelCoefficients);
-    pcl17::PointIndices::Ptr inliers (new pcl17::PointIndices);
-    pcl17::SACSegmentation<PointType> seg;
+    pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+    pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+    pcl::SACSegmentation<PointType> seg;
     seg.setOptimizeCoefficients (true);
-    seg.setModelType (pcl17::SACMODEL_PERPENDICULAR_PLANE);
-    seg.setMethodType (pcl17::SAC_RANSAC);
+    seg.setModelType (pcl::SACMODEL_PERPENDICULAR_PLANE);
+    seg.setMethodType (pcl::SAC_RANSAC);
     seg.setDistanceThreshold (ransac_threshold_);
     seg.setMaxIterations(max_iterations_);
     //seg.setProbability(0.1);
@@ -103,14 +98,14 @@ namespace align_principle_axis_floor_plugin
 
     if (inliers->indices.size () == 0)
     {
-      PCL17_ERROR("Could not estimate a planar model for the given dataset.");
-      // I had some issues with pcl on a different computer to where I normally dev.  This is a workaround to be removed
-      coefficients->values.push_back(-0.0370391);
-      coefficients->values.push_back(0.0777064);
-      coefficients->values.push_back(0.996288);
-      coefficients->values.push_back(2.63374);
+      PCL_ERROR("Could not estimate a planar model for the given dataset.");
     }
 
+      // I had some issues with pcl on a different computer to where I normally dev.  This is a workaround to be removed
+    //  coefficients->values.push_back(-0.0370391);
+    //  coefficients->values.push_back(0.0777064);
+    //  coefficients->values.push_back(0.996288);
+    //  coefficients->values.push_back(2.63374);
 
     std::cerr << "Model coefficients: " << coefficients->values[0] << " " << coefficients->values[1]
     << " " << coefficients->values[2] << " " << coefficients->values[3] << std::endl;
@@ -129,11 +124,9 @@ namespace align_principle_axis_floor_plugin
     transform_output(2, 3) = coefficients->values[3];
     transformPointCloud (*rotated_cloud_ptr, *output_cloud_ptr, transform_output);
 
-//  pcl17::ExtractIndices<PointType> eifilter;
+//  pcl::ExtractIndices<PointType> eifilter;
 //   eifilter.setInputCloud (rotated_cloud_ptr);
 //   eifilter.setIndices (inliers);
 //   eifilter.filter (*output_cloud_ptr);
-//   vis_cloud_ptrs.push_back(output_cloud_ptr);
-//   visualizer.visualizeCloud(vis_cloud_ptrs);
   }
 }

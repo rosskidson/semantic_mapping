@@ -21,6 +21,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# PCL ####################
+find_package(PCL 1.6.1 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+
 # eIGEN ####################
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
